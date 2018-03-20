@@ -1,0 +1,68 @@
+@import 'lib/common.scss';
+
+.sr-wrapper {
+    display: flex;
+    margin: 25px auto;
+    .sr-button-wrapper {
+        display: flex;
+        flex: 1px;
+    }
+    .sr-button {
+        color: #333;
+        min-width: 80px;
+        height: 35px;
+        text-align: center;
+        line-height: 35px;
+        font-size: 14px;
+        box-sizing: border-box;
+        border: 1px solid #d2d2d2;
+        &.active {
+            background: $primary-color;
+            color: white;
+            border-right: 0;
+            border: 1px solid $primary-color;
+        }
+    }
+    .sr-button-hover:hover {
+        border: 1px solid $primary-color;
+    }
+    .sr-search {
+        display: flex;
+        margin-left: 46px;
+        .sr-select-wrapper {
+            margin: 0 0 0 8px;
+            select.sr-select {
+                display: block;
+                height: 35px;
+                padding: 0 0.5rem;
+                font-size: 14px;
+                border: 1px solid #c0c0c0;
+            }
+        }
+    }
+}
+
+.video-mb-20 {
+    margin-bottom: 20px;
+}
+
+@media only screen and (max-width: $mobile) {
+    .sr-wrapper {
+        display: block;
+        .sr-button {
+            flex: 1;
+        }
+        .sr-search {
+            margin: 0;
+            .sr-select-wrapper {
+                margin: 20px auto 0;
+                flex: 1;
+            }
+        }
+    }
+    .search-item {
+        .search-input {
+            width: 100%;
+        }
+    }
+}

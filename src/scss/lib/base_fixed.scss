@@ -1,0 +1,279 @@
+// common style fixed
+/** 清除内外边距 **/
+body, h1, h2, h3, h4, h5, h6, hr, p, blockquote, /* structural elements 结构元素 */
+dl, dt, dd, ul, ol, li, /* list elements 列表元素 */
+pre, /* text formatting elements 文本格式元素 */
+form, fieldset, legend, button, input, textarea, /* form elements 表单元素 */
+th, td /* table elements 表格元素 */ {
+    margin: 0;
+    padding: 0;
+}
+
+/** 设置默认字体 **/
+body {
+    // 知乎
+    font-family: -apple-system, BlinkMacSystemFont, Helvetica Neue, PingFang SC,
+        Microsoft YaHei, Source Han Sans SC, Noto Sans CJK SC,
+        WenQuanYi Micro Hei, sans-serif;
+    position: absolute;
+    height: 100%;
+    width: 100%;
+}
+
+button, input, select, textarea /* for ie */ {
+    font: 12px/1.5 tahoma, arial, \5b8b\4f53, sans-serif;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-size: 100%;
+}
+address,
+cite,
+dfn,
+em,
+var {
+    font-style: normal;
+} /* 将斜体扶正 */
+code,
+kbd,
+pre,
+samp {
+    font-family: courier new, courier, monospace;
+} /* 统一等宽字体 */
+small {
+    font-size: 12px;
+} /* 小于 12px 的中文很难阅读，让 small 正常化 */
+
+/** 重置列表元素 **/
+ul,
+ol {
+    list-style: none;
+}
+
+/** 重置文本格式元素 **/
+a {
+    text-decoration: none;
+}
+a:hover {
+    text-decoration: underline;
+}
+
+/** 重置表单元素 **/
+legend {
+    color: #000;
+} /* for ie6 */
+fieldset,
+img {
+    border: 0;
+} /* img 搭车：让链接里的 img 无边框 */
+button,
+input,
+select,
+textarea {
+    font-size: 100%;
+} /* 使得表单元素在 ie 下能继承字体大小 */
+/* 注：optgroup 无法扶正 */
+
+/** 重置表格元素 **/
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+// container
+@media (min-width: 1200px) {
+    .container {
+        max-width: 1360px !important;
+    }
+}
+
+// card hover
+.hoverable.card-hover:hover {
+    transform: scale(1.05);
+    z-index: 100;
+    transition: transform 0.3s ease-in;
+    box-shadow: 0 3px 7px 0 rgba(0, 0, 0, 0.2), 0 3px 5px 0 rgba(0, 0, 0, 0.19);
+    .card-content {
+        background: $primary-color;
+        height: 70px;
+        padding: 10px;
+        .grey-333,
+        .grey-666,
+        .grey-999 {
+            color: white;
+        }
+    }
+}
+
+// navbar
+.tum-header.navbar-expand-lg .navbar-nav .nav-link {
+    padding: 0.5rem 1.1rem !important;
+    text-align: center;
+}
+
+// pagination
+nav.pg-wrapper {
+    width: 100%;
+}
+.pagination {
+    li {
+        display: inline-block;
+        border-radius: 2px;
+        text-align: center;
+        vertical-align: top;
+        height: 30px;
+        min-width: 30px;
+        a {
+            color: #444;
+            display: inline-block;
+            padding: 0 10px;
+            line-height: 30px;
+            font-size: 1rem;
+            &:hover {
+                text-decoration: none;
+            }
+        }
+        &.active {
+            border-radius: 50%;
+            background: $primary-color;
+            a {
+                color: #fff;
+            }
+        }
+        &.disabled {
+            a {
+                cursor: default;
+                color: #999;
+            }
+        }
+        i {
+            font-size: 1.7rem;
+        }
+        .pages ul li {
+            display: inline-block;
+            float: none;
+        }
+    }
+    .page-total {
+        font-size: 1rem;
+        line-height: 30px;
+    }
+}
+
+@media only screen and (max-width: 992px) {
+    .pagination {
+        width: 100%;
+    }
+    .pagination li.prev,
+    .pagination li.next {
+        width: 10%;
+    }
+    .pagination li.pages {
+        width: 80%;
+        overflow: hidden;
+        white-space: nowrap;
+    }
+}
+
+// bages
+.badge {
+    font-weight: normal;
+    border-radius: 0;
+}
+
+// button
+.btn {
+    border-radius: 0;
+}
+
+button {
+    &:focus {
+        outline: 0;
+    }
+}
+
+// row col
+
+.row {
+    margin: 0 -0.25rem !important;
+    .col,
+    .col-1,
+    .col-10,
+    .col-11,
+    .col-12,
+    .col-2,
+    .col-3,
+    .col-4,
+    .col-5,
+    .col-6,
+    .col-7,
+    .col-8,
+    .col-9,
+    .col-auto,
+    .col-lg,
+    .col-lg-1,
+    .col-lg-10,
+    .col-lg-11,
+    .col-lg-12,
+    .col-lg-2,
+    .col-lg-3,
+    .col-lg-4,
+    .col-lg-5,
+    .col-lg-6,
+    .col-lg-7,
+    .col-lg-8,
+    .col-lg-9,
+    .col-lg-auto,
+    .col-md,
+    .col-md-1,
+    .col-md-10,
+    .col-md-11,
+    .col-md-12,
+    .col-md-2,
+    .col-md-3,
+    .col-md-4,
+    .col-md-5,
+    .col-md-6,
+    .col-md-7,
+    .col-md-8,
+    .col-md-9,
+    .col-md-auto,
+    .col-sm,
+    .col-sm-1,
+    .col-sm-10,
+    .col-sm-11,
+    .col-sm-12,
+    .col-sm-2,
+    .col-sm-3,
+    .col-sm-4,
+    .col-sm-5,
+    .col-sm-6,
+    .col-sm-7,
+    .col-sm-8,
+    .col-sm-9,
+    .col-sm-auto,
+    .col-xl,
+    .col-xl-1,
+    .col-xl-10,
+    .col-xl-11,
+    .col-xl-12,
+    .col-xl-2,
+    .col-xl-3,
+    .col-xl-4,
+    .col-xl-5,
+    .col-xl-6,
+    .col-xl-7,
+    .col-xl-8,
+    .col-xl-9,
+    .col-xl-auto {
+        padding: 0 0.25rem;
+    }
+}
+
+.form-control {
+    border-radius: 0;
+}
