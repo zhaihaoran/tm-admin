@@ -74,7 +74,7 @@
                 <el-table-column prop="addTimeStamp" label="上传时间" align="center"></el-table-column>
                 <el-table-column prop="category" label="分类" align="center"></el-table-column>
                 <el-table-column prop="intro" label="推荐位" align="center"></el-table-column>
-                <el-table-column prop="intro" label="推荐位" align="center">
+                <el-table-column prop="intro" label="启用" align="center">
                     <template slot-scope="scope">
                         <el-switch
                             v-model="scope.row.isStart"
@@ -130,7 +130,16 @@
                         <span class="left-info" >是否愿意将演讲视频在涂梦平台上公开展示</span>
                     </el-form-item>
                     <el-form-item label="您的照片">
-                        <img src="" alt="">
+                            <el-upload class="certifi-upload"  action="https://jsonplaceholder.typicode.com/posts/" list-type="picture-card" :on-preview="handlePictureCardPreview" :on-remove="handleRemove">
+                            <i class="el-icon-plus"></i>
+                        </el-upload>
+                        <div class="pic-info">
+                            <h3>请拍摄能够清晰的看到正脸的照片</h3>
+                            <p class="info-p">图片类型：JPG、PNG</p>
+                            <p class="info-p">图片大小：不超过5M</p>
+                            <h3 class="mm">样例</h3>
+                            <img src="/static/image/banner.png" class="img-fluid" alt="demo">
+                        </div>
                     </el-form-item>
                     <div class="individar"></div>
                     <h2>附加信息（选填）</h2>
