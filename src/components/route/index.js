@@ -18,6 +18,8 @@ import Video_category from '@comp/view/video_category.vue'
 //
 import Video_setting_top from '@comp/view/video_setting_top.vue'
 import Video_setting_hot from '@comp/view/video_setting_hot.vue'
+// error
+import ErrorPage from '@comp/view/errorPage.vue'
 
 // 登陆
 import Login from '@comp/view/login.vue'
@@ -30,6 +32,10 @@ const router = new Router({
     routes: [{
         path: '/',
         redirect: '/check/school'
+    }, {
+        path: '/404',
+        name: '404',
+        component: ErrorPage,
     }, {
         path: '/check/school',
         name: 'check_school',
@@ -97,14 +103,14 @@ const router = new Router({
         path: '/login',
         name: 'login',
         component: Login,
-    },{
+    }, {
         path: '/video/setting/top',
         name: 'video_setting_top',
         component: Video_setting_top,
         meta: {
             requireAuth: true,
         },
-    },{
+    }, {
         path: '/video/setting/hot',
         name: 'video_setting_hot',
         component: Video_setting_hot,
@@ -117,6 +123,12 @@ const router = new Router({
 // 拦截器
 router.beforeEach((to, from, next) => {
     console.log(to.fullPath)
+    // 如果跳转到其他网站，则404
+    if (to.matched.length < 1) {
+        next({
+            path: '/404',
+        })
+    }
     if (to.meta.requireAuth) { // 判断该路由是否需要登录权限
         // 判断用户是否登陆
         if (+sessionStorage.isLogin > 0) {

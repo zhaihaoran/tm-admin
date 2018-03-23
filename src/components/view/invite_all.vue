@@ -49,6 +49,13 @@
                     label="演讲者进展">
                 </el-table-column>
                 <el-table-column
+                    align="center"
+                    label="学校反馈">
+                    <template slot-scope="scope">
+                        <el-button @click="showResponse(scope.row.reason)" type="text">查看</el-button>
+                    </template>
+                </el-table-column>
+                <el-table-column
                     prop="reason"
                     align="center"
                     label="拒絕原因">
@@ -62,7 +69,7 @@
                 </el-table-column>
                 <el-table-column
                     align="center"
-                    min-width="160px"
+                    min-width="170px"
                     label="操作">
                     <template slot-scope="scope" >
                         <Operation :handleEdit="handleEdit" :scope="scope"></Operation>
@@ -109,6 +116,7 @@
                 class="pagination"
             >
             </el-pagination>
+            <ResponseDialog v-on:modal="handleClose" :modal="modal.response" title="哈哈哈" :photos="photos" ></ResponseDialog>
         </div>
     </div>
 </template>
@@ -117,6 +125,9 @@ import Operation from '@layout/operation.vue';
 import Search from '@layout/search.vue';
 import MessageBox from '@layout/modal/message.vue';
 import mapsAttr from '@comp/lib/api_maps.js';
+
+import ResponseDialog from '@layout/modal/response.vue';
+import img from '../../assets/image/admin/camera.png';
 
 export default {
     data() {
@@ -159,16 +170,103 @@ export default {
                     speakerStatus: mapsAttr['speakerStatus'][2], // 演讲者进展状态
                     reason: '不开心'
                 }
+            ],
+            modal: {
+                response: false
+            },
+            photos: [
+                {
+                    id: 1,
+                    url: img
+                },
+                {
+                    id: 1,
+                    url: img
+                },
+                {
+                    id: 1,
+                    url: img
+                },
+                {
+                    id: 1,
+                    url: img
+                },
+                {
+                    id: 1,
+                    url: img
+                },
+                {
+                    id: 1,
+                    url: img
+                },
+                {
+                    id: 1,
+                    url: img
+                },
+                {
+                    id: 1,
+                    url: img
+                },
+                {
+                    id: 1,
+                    url: img
+                },
+                {
+                    id: 1,
+                    url: img
+                },
+                {
+                    id: 1,
+                    url: img
+                },
+                {
+                    id: 1,
+                    url: img
+                },
+                {
+                    id: 1,
+                    url: img
+                },
+                {
+                    id: 1,
+                    url: img
+                },
+                {
+                    id: 1,
+                    url: img
+                },
+                {
+                    id: 1,
+                    url: img
+                },
+                {
+                    id: 1,
+                    url: img
+                },
+                {
+                    id: 1,
+                    url: img
+                },
+                {
+                    id: 1,
+                    url: img
+                }
             ]
         };
     },
-    components: { Search, Operation, MessageBox },
+    components: { Search, Operation, MessageBox, ResponseDialog },
     methods: {
         handleEdit(index, row) {
             console.log(index);
             console.log(row);
             this.modal_edit = true;
             this.form = Object.assign(row);
+        },
+        showResponse() {
+            this.modal.response = true;
+        },
+        handleClose() {
+            this.modal.response = false;
         }
     }
 };

@@ -10,9 +10,6 @@
             <li class="nav-header-item">
                 <a href="https://www.baidu.com">网站首页</a>
             </li>
-            <li class="nav-header-item">
-                <router-link to="/help" ><span @click="switchSidebarView('help')" >帮助</span> </router-link>
-            </li>
             <!-- 已登录 -->
             <li v-show="loginState === 1" class="nav-header-item user-logo">
                 <img :src="user_logo" alt="user">
