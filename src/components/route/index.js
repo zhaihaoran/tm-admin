@@ -13,7 +13,6 @@ import School_manage from '@comp/view/school_manage.vue'
 import Speaker_manage from '@comp/view/speaker_manage.vue'
 // 演讲视频
 import Video_manage from '@comp/view/video_manage.vue'
-import Video_recommend from '@comp/view/video_recommend.vue'
 import Video_category from '@comp/view/video_category.vue'
 //
 import Video_setting_top from '@comp/view/video_setting_top.vue'
@@ -82,13 +81,6 @@ const router = new Router({
         path: '/video/manage',
         name: 'video_manage',
         component: Video_manage,
-        meta: {
-            requireAuth: true,
-        },
-    }, {
-        path: '/video/recommend',
-        name: 'video_recommend',
-        component: Video_recommend,
         meta: {
             requireAuth: true,
         },

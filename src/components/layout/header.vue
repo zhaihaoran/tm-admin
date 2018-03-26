@@ -4,22 +4,12 @@
             <router-link to="/" ><img :src="logo" @click="switchSidebarView('main')" alt="logo"></router-link>
         </div>
         <ul class="header-right">
-            <li class="nav-header-item">
-                <router-link to="/admin" >管理中心</router-link>
-            </li>
-            <li class="nav-header-item">
-                <a href="https://www.baidu.com">网站首页</a>
-            </li>
-            <!-- 已登录 -->
-            <li v-show="loginState === 1" class="nav-header-item user-logo">
-                <img :src="user_logo" alt="user">
-            </li>
             <li v-show="loginState === 1" class="nav-header-item">
-                <a href="##" @click="handleSignOut" >退出</a>
+                <a href="##" @click="handleSignOut" ><i class="icon iconfont icon-tuichudenglu mr-20"></i> <span class="signout-btn">退出</span> </a>
             </li>
             <!-- 未登录 -->
             <li v-show="loginState === 0" class="nav-header-item"  >
-                <router-link to="/login" >请登陆</router-link>
+                <router-link to="/login" >  请登陆</router-link>
             </li>
         </ul>
     </el-header>
@@ -54,3 +44,16 @@ export default {
     })
 };
 </script>
+<style scoped >
+.mr-20 {
+    margin-right: 10px;
+    font-size: 28px;
+}
+.signout-btn {
+    line-height: 30px;
+    display: inline-block;
+    margin-bottom: -4px;
+    overflow: hidden;
+}
+</style>
+

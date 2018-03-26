@@ -1,28 +1,16 @@
 <template>
     <div>
-        <el-button type="text" @click="modal=true" class="tm-a" >对话<span v-if="scope.row.chatUnreadQuantity>0" > ({{scope.row.chatUnreadQuantity}})</span></el-button>
+        <el-button type="text" @click="getChatList" class="tm-a" >对话<span v-if="scope.row.chatUnreadQuantity>0" > ({{scope.row.chatUnreadQuantity}})</span></el-button>
         <el-dialog
             :visible.sync="modal"
             class="message-modal"
             width="500px"
         >
             <div class="message-box">
-                <div class="left mb-15">
-                    <p class="speaker no-margin" ><span class="name">张小山</span><span class="time">2017-12-12 12:12</span></p>
+                <div v-for="item in chatList" :key="item.$index" class="mb-15" :class="{left:item.senderType !== 3,right:item.senderType === 3}">
+                    <p class="no-margin" :class="{school:item.senderType ==1,speaker:item.senderType ==2,tumeng:item.senderType ==3 }" ><span class="name">{{item.senderName}}</span><span class="time"> {{item.addTimestamp}}</span></p>
                     <p class="message">
-                        我很擅长英语方面的知识，想要给你们学校做一个演讲，方便吗
-                    </p>
-                </div>
-                <div class="right mb-15">
-                    <p class="school no-margin" ><span class="name">河北实验中学</span><span class="time">2017-12-12 12:12</span></p>
-                    <p class="message">
-                        我很擅长英语方面的知识，想要给你们学校做一个演讲，方便吗
-                    </p>
-                </div>
-                <div class="left mb-15">
-                    <p class="tumeng no-margin" ><span class="name">涂梦小助手</span><span class="time">2017-12-12 12:12</span></p>
-                    <p class="message">
-                        感谢您在涂梦的分享
+                        {{item.message}}
                     </p>
                 </div>
             </div>
@@ -38,14 +26,38 @@
     </div>
 </template>
 <script>
+import axios from 'axios';
 export default {
     data() {
         return {
+            senderType: {
+                1: '学校',
+                2: '演讲者',
+                3: '涂梦管理员'
+            },
+
             modal: false,
-            replay: 'zhaihaoran'
+            replay: 'zhaihaoran',
+            chatList: [
+                {
+                    senderType: 1, // 发送者类型：1=学校；2=演讲者；3=途梦管理员
+                    senderName: '', // 发送者名称
+                    message: '', // 消息
+                    addTimestamp: 123 // 添加时间戳
+                }
+            ]
         };
     },
-    props: ['scope']
+    props: ['scope'],
+    methods: {
+        getChatList() {
+            axios.get('/admin/chatlist').then(res => {
+                const data = res.data.data.chatMessageList;
+                this.chatList = data;
+            });
+            this.modal = true;
+        }
+    }
 };
 </script>
 <style lang="scss" scoped>

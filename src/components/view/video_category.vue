@@ -3,7 +3,7 @@
         <div class="flex-end">
             <el-button @click="modal.add=true" class="tm-btn mb-20" >添加</el-button>
         </div>
-        <el-table :data="list" border >
+        <Table v-loading="loading" :isPagination="false" :data="list" >
             <el-table-column
                 align="center"
                 prop="category"
@@ -30,8 +30,6 @@
                 <template slot-scope="scope">
                     <el-switch
                         v-model="scope.row.isStart"
-                        active-color="#13ce66"
-                        inactive-color="#ff4949"
                     >
                     </el-switch>
                 </template>
@@ -45,7 +43,7 @@
                     <el-button @click="handleDelete" class="tm-btn-border" >删除</el-button>
                 </template>
             </el-table-column>
-        </el-table>
+        </Table>
         <!-- 修改分类 -->
         <el-dialog title="修改分类" :visible.sync="modal.edit" >
             <el-form label-width="80px" :model="submitForm" >
@@ -91,9 +89,12 @@
     </el-card>
 </template>
 <script>
+import axios from 'axios';
+import Table from '@layout/table.vue';
 export default {
     data() {
         return {
+            loading: false,
             modal: {
                 edit: false,
                 add: false
@@ -126,6 +127,9 @@ export default {
                 }
             ]
         };
+    },
+    components: {
+        Table
     },
     methods: {
         handleEdit(data) {

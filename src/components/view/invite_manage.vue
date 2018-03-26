@@ -1,11 +1,22 @@
 <template>
     <div>
-        <Search :searchConfig="searchConfig" ></Search>
+        <Search :orderType.sync="orderType" >
+            <div class="search-input">
+                <el-input placeholder="学校名称" v-model="schoolName" suffix-icon="el-icon-search" ></el-input>
+            </div>
+            <div class="search-input">
+                <el-input placeholder="演讲者名称" v-model="speakerName" suffix-icon="el-icon-search" ></el-input>
+            </div>
+            <div class="search-input">
+                <Timerange :timerange="timerange" startPlaceholder="演讲开始时间" ></Timerange>
+            </div>
+        </Search>
         <div class="tm-card">
-            <el-table :data="listData" border class="tm-table" >
+            <Table v-loading="loading" :data="listData" :page="filter.page" :perPage="filter.per_page" :totalCount="totalCount" >
                 <el-table-column
                     prop="fromSide"
                     align="center"
+                    :formatter="formatAttr"
                     label="发起者">
                 </el-table-column>
                 <el-table-column
@@ -26,6 +37,7 @@
                 <el-table-column
                     prop="speakTimestamp"
                     align="center"
+                    show-overflow-tooltip
                     label="演讲时间">
                 </el-table-column>
                 <el-table-column
@@ -34,14 +46,15 @@
                     label="演讲时长（分钟）">
                 </el-table-column>
                 <el-table-column
-                    prop="ct"
+                    prop="addTimestamp"
                     align="center"
+                    show-overflow-tooltip
                     label="发起邀约时间">
                 </el-table-column>
                 <el-table-column
                     prop="schoolStatus"
                     align="center"
-                    label="进展">
+                    label="学校进展">
                 </el-table-column>
                 <el-table-column
                     prop="speakerStatus"
@@ -67,108 +80,81 @@
                     min-width="170px"
                     label="操作">
                     <template slot-scope="scope" >
-                        <Operation :handleEdit="handleEdit" :scope="scope"></Operation>
-                        <!-- modal edit -->
-                        <el-dialog
-                            :visible.sync="modal_edit"
-                            width="30%"
-                        >
-                            <el-form ref="form" :model="scope.row" label-width="80px" >
-                                <el-form-item label="演讲者" >
-                                    <span>{{scope.row.speakerName}}</span>
-                                </el-form-item>
-                                <el-form-item label="演讲主题" >
-                                    <el-input v-model="scope.row.speakTitle" ></el-input>
-                                </el-form-item>
-                                <el-form-item label="演讲时间" >
-                                    <el-date-picker
-                                        v-model="scope.row.speakTimestamp"
-                                        type="datetime"
-                                        placeholder="选择日期时间">
-                                    </el-date-picker>
-                                </el-form-item>
-                                <el-form-item label="演讲时长" >
-                                    <el-input v-model="scope.row.speakDuration" >
-                                        <template slot="append">分钟</template>
-                                    </el-input>
-                                </el-form-item>
-                                <el-form-item label="邀约时间" >
-                                    <span>{{scope.row.speakTimestamp}}</span>
-                                </el-form-item>
-                            </el-form>
-                            <span slot="footer" class="tm-modal-footer">
-                                <el-button class="tm-btn" type="primary" @click="modal_edit = false">确 定</el-button>
-                            </span>
-                        </el-dialog>
+                        <el-button size="mini" @click="handleEdit(scope.$index,scope.row)" >修改</el-button>
+                        <el-button size="mini" class="tm-btn-border" @click="handledelete(scope.row.appointmentId)" >删除</el-button>
+                        <el-button size="mini" type="primary" v-show="scope.row.status === 4" @click="handleConfirm(scope.row.appointmentId)" >完成</el-button>
                     </template>
                 </el-table-column>
-            </el-table>
-            <el-pagination
-                :current-page.sync="paging.current"
-                :page-size="20"
-                layout="total, prev, pager, next"
-                :total="paging.totalCount"
-                class="pagination"
+            </Table>
+
+            <!-- 修改 modal -->
+            <el-dialog
+                :visible.sync="modal.edit"
+                width="30%"
             >
-            </el-pagination>
+                <el-form ref="form" :model="editForm" label-width="80px" >
+                    <el-form-item label="演讲者" >
+                        <span>{{editForm.speakerName}}</span>
+                    </el-form-item>
+                    <el-form-item label="演讲主题" >
+                        <el-input v-model="editForm.speakTitle" ></el-input>
+                    </el-form-item>
+                    <el-form-item label="演讲时间" >
+                        <el-date-picker
+                            v-model="editForm.speakTimestamp"
+                            type="datetime"
+                            placeholder="选择日期时间">
+                        </el-date-picker>
+                    </el-form-item>
+                    <el-form-item label="演讲时长" >
+                        <el-input v-model="editForm.speakDuration" >
+                            <template slot="append">分钟</template>
+                        </el-input>
+                    </el-form-item>
+                    <el-form-item label="邀约时间" >
+                        <span>{{editForm.speakTimestamp}}</span>
+                    </el-form-item>
+                </el-form>
+                <span slot="footer" class="tm-modal-footer">
+                    <el-button class="tm-btn" type="primary" @click="modal.edit = false">确 定</el-button>
+                </span>
+            </el-dialog>
+
             <ResponseDialog v-on:modal="handleClose" :modal="modal.response" title="哈哈哈" :photos="photos" ></ResponseDialog>
         </div>
     </div>
 </template>
 <script>
-import Operation from '@layout/operation.vue';
+import axios from 'axios';
+import { formatAttr } from '@comp/lib/api_maps.js';
+// comp
+import Timerange from '@layout/timerange.vue';
 import Search from '@layout/search.vue';
+import Table from '@layout/table.vue';
 import MessageBox from '@layout/modal/message.vue';
-import mapsAttr from '@comp/lib/api_maps.js';
-
 import ResponseDialog from '@layout/modal/response.vue';
+// img
 import img from '../../assets/image/admin/camera.png';
 
 export default {
     data() {
         return {
-            paging: {
-                current: 1,
-                totalCount: 111
+            filter: {
+                page: 1,
+                per_page: 20
             },
-            searchConfig: {
-                input: [973822200000, 973908600000],
-                category: 'right'
-            },
+            timerange: [],
+            totalCount: 111,
+            schoolName: '',
+            speakerName: 'asdasd',
+            loading: true,
+            orderType: 1,
+            editForm: {},
             modal: {
+                edit: false,
                 response: false
             },
-            modal_edit: false,
-            listData: [
-                {
-                    state: 0, // 0 :同意 1：修改
-                    status: mapsAttr['status'][1], //1. 发起中 2 进行中 3已完成 4 已拒绝
-                    fromSide: mapsAttr['fromSide'][1],
-                    speakerName: 'zhaiharoan',
-                    speakTitle: '电影人的梦想',
-                    speakTimestamp: '2017-12-12 12:12',
-                    speakDuration: 60,
-                    ct: '2015-12-12 12:12',
-                    chatUnreadQuantity: 2, // 对话信息数
-                    schoolStatus: mapsAttr['schoolStatus'][1], // 学校进展状态
-                    speakerStatus: mapsAttr['speakerStatus'][1], // 演讲者进展状态
-                    reason: '不开心'
-                },
-                {
-                    state: 1, // 0 :同意 1：修改
-                    status: mapsAttr['status'][2], //1. 发起中 2 进行中 3已完成 4 已拒绝
-                    fromSide: mapsAttr['fromSide'][2],
-                    speakerName: 'zhaiharoan',
-                    speakTitle: '电影人的梦想',
-                    speakTimestamp: '2017-12-12 12:12',
-                    speakDuration: 60,
-                    ct: '2015-12-12 12:12',
-                    chatUnreadQuantity: 2, // 对话信息数
-                    schoolStatus: mapsAttr['schoolStatus'][2], // 学校进展状态
-                    speakerStatus: mapsAttr['speakerStatus'][2], // 演讲者进展状态
-                    reason: '不开心'
-                }
-            ],
+            listData: [],
             photos: [
                 {
                     id: 1,
@@ -249,13 +235,62 @@ export default {
             ]
         };
     },
-    components: { Search, Operation, MessageBox, ResponseDialog },
+    components: {
+        Search,
+        Timerange,
+        Table,
+        MessageBox,
+        ResponseDialog
+    },
+    mounted() {
+        axios.get('/admin/list').then(res => {
+            const data = res.data.data.data;
+            this.listData = data;
+            this.loading = false;
+        });
+    },
     methods: {
+        formatAttr,
         handleEdit(index, row) {
-            console.log(index);
             console.log(row);
-            this.modal_edit = true;
-            this.form = Object.assign(row);
+            this.modal.edit = true;
+            this.editForm = Object.assign(row);
+        },
+        handledelete(id) {
+            this.$confirm('您确认要删除此次邀约, 是否继续?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            })
+                .then(res => {
+                    axios.get('/admin/logout').then(res => {
+                        // delete
+                        console.log(id);
+                        this.$message({
+                            type: 'success',
+                            message: '删除成功!'
+                        });
+                    });
+                })
+                .catch(() => {});
+        },
+        handleConfirm(id) {
+            this.$confirm('您确认要提交?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            })
+                .then(res => {
+                    axios.get('/admin/logout').then(res => {
+                        // delete
+                        console.log(id);
+                        this.$message({
+                            type: 'success',
+                            message: '删除成功!'
+                        });
+                    });
+                })
+                .catch(() => {});
         },
         showResponse() {
             this.modal.response = true;

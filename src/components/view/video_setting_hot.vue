@@ -13,12 +13,12 @@
                     </div>
                     <div class="vd-events">
                         <div class="e-box">
-                            <div class="e-cube">
-                                <i class="icon iconfont icon-weixin"></i>
+                            <div @click="handleChangeVideo(videoList[0].videoTypeId)" class="e-cube">
+                                <i class="icon iconfont icon-changeVideo"></i>
                                 <span>替换热门视频</span>
                             </div>
                             <div @click="handlePlayVideo(videoList[0].videoUrl)" class="e-cube border-left">
-                                <i class="icon iconfont icon-weixin"></i>
+                                <i class="icon iconfont icon-play"></i>
                                 <span>播放</span>
                             </div>
                         </div>
@@ -47,12 +47,12 @@
                     </div>
                     <div class="vd-events">
                         <div class="e-box">
-                            <div class="e-cube">
-                                <i class="icon iconfont icon-weixin"></i>
+                            <div @click="handleChangeVideo(videoList[1].videoTypeId)" class="e-cube">
+                                <i class="icon iconfont icon-changeVideo"></i>
                                 <span>替换热门视频</span>
                             </div>
                             <div @click="handlePlayVideo(videoList[1].videoUrl)" class="e-cube border-left">
-                                <i class="icon iconfont icon-weixin"></i>
+                                <i class="icon iconfont icon-play"></i>
                                 <span>播放</span>
                             </div>
                         </div>
@@ -66,17 +66,18 @@
                     </div>
                     <div class="vd-events">
                         <div class="e-box">
-                            <div class="e-cube">
-                                <i class="icon iconfont icon-weixin"></i>
+                            <div @click="handleChangeVideo(videoList[2].videoTypeId)" class="e-cube">
+                                <i class="icon iconfont icon-changeVideo"></i>
                                 <span>替换热门视频</span>
                             </div>
                             <div @click="handlePlayVideo(videoList[2].videoUrl)" class="e-cube border-left">
-                                <i class="icon iconfont icon-weixin"></i>
+                                <i class="icon iconfont icon-play"></i>
                                 <span>播放</span>
                             </div>
                         </div>
                     </div>
                 </div>
+                <SelectVideo v-on:modal="handleClose" title="查看详情" :modal="modal.selectVideo" ></SelectVideo>
             </el-col>
         </el-row>
     </el-card>
@@ -84,6 +85,9 @@
 <script>
 import $ from 'jquery';
 import index_video from 'assets/image/video_bg.png';
+import SelectVideo from '@layout/modal/selectVideo.vue';
+
+// image
 import video_1 from 'assets/image/video_sm.png';
 import video_2 from 'assets/image/video_sm1.png';
 
@@ -95,6 +99,7 @@ export default {
         return {
             videoList: [
                 {
+                    videoTypeId: '1',
                     recommendPos: 0,
                     previewUrl: index_video,
                     videoTitle: '知识改变命运',
@@ -108,6 +113,7 @@ export default {
                     recommendPos: 0 // 推荐位置：0=没有;
                 },
                 {
+                    videoTypeId: '2',
                     recommendPos: 1,
                     previewUrl: video_1,
                     videoTitle: '知识改变命运',
@@ -122,6 +128,7 @@ export default {
                     recommendPos: 0 // 推荐位置：0=没有;
                 },
                 {
+                    videoTypeId: '3',
                     recommendPos: 2,
                     previewUrl: video_2,
                     videoTitle: '知识改变命运',
@@ -137,7 +144,8 @@ export default {
             ],
             modal: {
                 video: false,
-                videoUrl: ''
+                videoUrl: '',
+                selectVideo: false
             },
             playerOptions: {
                 autoplay: true,
@@ -168,10 +176,18 @@ export default {
         handleVideoClose() {
             this.$refs.videoPlayer.player.pause();
             this.modal.video = false;
+        },
+        handleClose() {
+            this.modal.selectVideo = false;
+        },
+        handleChangeVideo(id) {
+            console.log(id);
+            this.modal.selectVideo = true;
         }
     },
     components: {
-        videoPlayer
+        videoPlayer,
+        SelectVideo
     }
 };
 </script>

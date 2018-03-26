@@ -195,91 +195,15 @@
             </el-form>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="modal.addVideo = false">取 消</el-button>
-                <el-button type="primary" @click="modal.addVideo = false">确 定</el-button>
+                <el-button width="200px" type="primary" placeholder="请输入关键词查询" @click="modal.addVideo = false">确 定</el-button>
             </span>
         </el-dialog>
-        <!-- 选择视频 -->
-        <el-dialog title="选择视频" :visible.sync="modal.selectVideo" width="80%" >
-            <el-input suffix-icon="el-icon-search" class="mb-20" ></el-input>
-            <el-table :data="slVideoList" border class="tm-table" >
-                <el-table-column
-                    align="center"
-                    label="预览图"
-                    >
-                    <template slot-scope="scope">
-                        <img :src="scope.row.previewUrl" class="img-fluid" alt="">
-                    </template>
-                </el-table-column>
-                <el-table-column
-                    align="center"
-                    prop="title"
-                    label="标题"
-                    >
-                </el-table-column>
-                <el-table-column
-                    align="center"
-                    prop="school"
-                    label="学校"
-                    >
-                </el-table-column>
-                <el-table-column
-                    align="center"
-                    prop="speakerName"
-                    label="演讲者"
-                    >
-                </el-table-column>
-                <el-table-column
-                    align="center"
-                    prop="startTime"
-                    label="演讲时间"
-                    >
-                </el-table-column>
-                <el-table-column
-                    align="center"
-                    prop="addTimeStamp"
-                    label="上传时间"
-                    >
-                </el-table-column>
-                <el-table-column
-                    align="center"
-                    prop="isStart"
-                    label="启用"
-                    >
-                    <template slot-scope="scope">
-                        <el-switch
-                            v-model="scope.row.isStart"
-                            active-color="#13ce66"
-                            inactive-color="#ff4949"
-                        >
-                        </el-switch>
-                    </template>
-                </el-table-column>
-                <el-table-column
-                    align="center"
-                    label="操作"
-                    >
-                    <template slot-scope="scope">
-                        <el-button type="primary" >选择</el-button>
-                    </template>
-                </el-table-column>
-            </el-table>
-            <!-- 分页 -->
-            <el-pagination
-                :current-page.sync="currentPage"
-                :page-size="10"
-                layout="total, prev, pager, next"
-                :total="200"
-                class="flex-end"
-            >
-            </el-pagination>
-            <div class="individar"></div>
-            <span slot="footer" class="dialog-footer">
-                <el-button @click="modal.selectVideo = false">取 消</el-button>
-            </span>
-        </el-dialog>
+        <SelectVideo v-on:modal="handleClose" title="查看详情" :modal="modal.selectVideo"  ></SelectVideo>
     </div>
 </template>
 <script>
+import axios from 'axios';
+import SelectVideo from '@layout/modal/selectVideo.vue';
 import VideoCard from '@layout/videoCard.vue';
 import image from '../../assets/image/logo/tsinghua.png';
 export default {
@@ -379,35 +303,6 @@ export default {
                 addVideo: false,
                 selectVideo: false
             },
-            slVideoList: [
-                {
-                    title: 'zhaihaoran',
-                    previewUrl: image,
-                    school: '石家庄实验小学',
-                    speakerName: '张小山',
-                    startTime: 123123,
-                    addTimeStamp: 123123,
-                    isStart: true
-                },
-                {
-                    title: 'zhaihaoran',
-                    previewUrl: image,
-                    school: '石家庄实验小学',
-                    speakerName: '张小山',
-                    startTime: 123123,
-                    addTimeStamp: 123123,
-                    isStart: false
-                },
-                {
-                    title: 'zhaihaoran',
-                    previewUrl: image,
-                    school: '石家庄实验小学',
-                    speakerName: '张小山',
-                    startTime: 123123,
-                    addTimeStamp: 123123,
-                    isStart: true
-                }
-            ],
             videos: [
                 {
                     id: '1',
@@ -482,7 +377,8 @@ export default {
         };
     },
     components: {
-        VideoCard
+        VideoCard,
+        SelectVideo
     },
 
     methods: {
@@ -499,6 +395,9 @@ export default {
         handleModalClose() {
             this.modal.addVideo = false;
             console.log('haha');
+        },
+        handleClose() {
+            this.modal.selectVideo = false;
         },
         // 远程select
         remoteMethod(query) {

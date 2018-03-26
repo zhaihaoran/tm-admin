@@ -1,9 +1,9 @@
 <template>
     <div class="cell" >
-        <el-button v-if="scope.row.state === 1" size="mini" @click="handleEdit(scope.$index,scope.row)" >修改</el-button>
-        <el-button v-if="scope.row.state === 1" size="mini" class="tm-btn-border" @click="handledelete" >删除</el-button>
-        <el-button v-if="scope.row.state === 0" size="mini" type="danger" class="tm-btn" @click="modal.agree=true" >同意</el-button>
-        <el-button v-if="scope.row.state === 0" size="mini" class="tm-btn-border" @click="modal.refuse=true" >拒绝</el-button>
+        <el-button v-if="scope.row.status === 1" size="mini" @click="handleEdit(scope.$index,scope.row)" >修改</el-button>
+        <el-button v-if="scope.row.status === 1" size="mini" class="tm-btn-border" @click="handledelete" >删除</el-button>
+        <el-button v-if="scope.row.status === 0" size="mini" type="danger" class="tm-btn" @click="modal.agree=true" >同意</el-button>
+        <el-button v-if="scope.row.status === 0" size="mini" class="tm-btn-border" @click="modal.refuse=true" >拒绝</el-button>
 
         <!-- modal -->
         <el-dialog

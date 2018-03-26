@@ -1,8 +1,16 @@
 <template>
     <div>
-        <Search :searchConfig="searchConfig" ></Search>
         <div class="tm-card">
-            <el-table :data="list" border class="tm-table" >
+            <el-radio-group v-model="orderType" class="radio-group" >
+                <el-radio-button label="0">综合排序</el-radio-button>
+                <el-radio-button label="1">申请时间</el-radio-button>
+            </el-radio-group>
+            <div class="search-input">
+                <el-input placeholder="学校名称" v-model="schoolName" suffix-icon="el-icon-search" ></el-input>
+            </div>
+        </div>
+        <div class="tm-card">
+            <Table v-loading="loading" :isPagination="false" :data="data" >
                 <el-table-column
                     prop="name"
                     align="center"
@@ -41,30 +49,29 @@
                     </template>
                 </el-table-column>
                 <el-table-column
-                min-width="90px"
+                    min-width="90px"
                     align="center"
                     label="操作">
                     <template slot-scope="scope">
-                        <Operation ></Operation>
+                        <Operation></Operation>
                     </template>
                 </el-table-column>
-            </el-table>
+            </Table>
         </div>
     </div>
 </template>
 <script>
-import Search from '@layout/search.vue';
+import axios from 'axios';
+import Table from '@layout/table.vue';
 import Operation from '@layout/op_manage.vue';
-import mapsAttr from '@comp/lib/api_maps.js';
 
 export default {
     data() {
         return {
-            searchConfig: {
-                input: 'zhaihaoran',
-                category: 'right'
-            },
-            list: [
+            loading: true,
+            orderType: 0,
+            schoolName: 11,
+            data: [
                 {
                     name: '石家庄实验中学',
                     address: '河北省石家庄栾城县',
@@ -76,7 +83,15 @@ export default {
             ]
         };
     },
-    components: { Search, Operation },
+    mounted() {
+        axios.get('/admin/applist').then(res => {
+            console.log(res);
+            const datas = res.data.data.schoolList;
+            this.data = datas;
+            this.loading = false;
+        });
+    },
+    components: { Operation, Table },
     methods: {
         showReason(reason) {
             this.$alert(reason, '拒绝原因').catch(() => {});

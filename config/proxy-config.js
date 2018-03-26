@@ -1,9 +1,12 @@
 module.exports = {
     proxyList: {
-        '/api': {
-            target: "https://jsonplaceholder.typicode.com",
+        '/admin': {
+            target: "https://www.easy-mock.com/mock/5ab1cd4e099ac320aa6ba75b",
             changeOrigin: true,
-            pathRewrite: {'^/api' : ''}
+            secure: false,
+            pathRewrite: {
+                '^/admin': ''
+            }
         }
     }
 }

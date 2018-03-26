@@ -1,5 +1,5 @@
 // 所有的接口字段map合集
-module.exports = {
+const attrs = {
     // 邀约状态
     "status": {
         1: "发起中",
@@ -54,7 +54,10 @@ module.exports = {
         1: "女",
         2: "男",
     },
+}
+module.exports = {
     // 日期格式化
+    attrs,
     dateformat(timestamp, state = 0) {
         var date = new Date(timestamp);
         var y = date.getFullYear();
@@ -74,5 +77,9 @@ module.exports = {
         } else {
             return `${y}-${m}-${d} ${h}:${minute}:${s}`
         }
+    },
+    // 属性格式化
+    formatAttr(row,column,cellValue) {
+        return attrs[column.property][cellValue];
     }
 }
