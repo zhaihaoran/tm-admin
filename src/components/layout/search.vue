@@ -1,6 +1,6 @@
 <template>
     <div class="tm-card">
-        <el-radio-group v-model="orderType" class="radio-group" >
+        <el-radio-group @change="handleChange"  v-model="type" class="radio-group" >
             <el-radio-button label="0">综合排序</el-radio-button>
             <el-radio-button label="1">最近演讲</el-radio-button>
             <el-radio-button label="2">最近邀约</el-radio-button>
@@ -11,10 +11,20 @@
 <script>
 export default {
     name: 'Search',
+    data() {
+        return {
+            type: this.orderType
+        };
+    },
     props: {
         orderType: {
             type: Number,
             default: 0
+        }
+    },
+    methods: {
+        handleChange() {
+            console.log(this.type);
         }
     }
 };

@@ -38,166 +38,7 @@
             </el-row>
         </el-card>
         <!-- 视频添加播放弹窗 -->
-        <el-dialog title="新增视频" :visible.sync="modal.addVideo" :before-close="handleModalClose" >
-            <el-form :model="addForm" :rules="addForm.rules" ref="addForm" label-width="100px" class="modal-form" >
-                <el-form-item label="视频文件">
-                    <el-upload
-                        class="upload-demo"
-                        action="https://jsonplaceholder.typicode.com/posts/"
-                        :on-preview="handlePreview"
-                        :before-remove="beforeRemove"
-                        :limit="1"
-                        :file-list="fileList">
-                        <el-button size="small" type="primary">点击上传</el-button>
-                        <div slot="tip" class="el-upload__tip">视频文件最好小于100k</div>
-                    </el-upload>
-                </el-form-item>
-                <el-form-item label="预览图片" >
-                    <el-upload
-                        class="upload-demo"
-                        action="https://jsonplaceholder.typicode.com/posts/"
-                        :on-preview="handlePreview"
-                        :before-remove="beforeRemove"
-                        :limit="1"
-                        :file-list="fileList">
-                        <el-button size="small" type="primary">点击上传</el-button>
-                        <div slot="tip" class="el-upload__tip">视频文件最好小于100k</div>
-                    </el-upload>
-                    <div class="upload-image-box"></div>
-                </el-form-item>
-                <el-form-item label="标题">
-                    <el-input v-model="addForm.title" ></el-input>
-                </el-form-item>
-                <el-form-item label="学校">
-                    <el-radio-group v-model="addForm.schoolRadio" size="small" >
-                        <el-radio-button label="选择"></el-radio-button>
-                        <el-radio-button label="填写"></el-radio-button>
-                    </el-radio-group>
-                    <el-tooltip class="item" effect="dark" content="没有数据？请手动填写，手动填写的学校无法查看主页，无法对其发起邀约" placement="right">
-                        <i class="el-icon-question md-qs"></i>
-                    </el-tooltip>
-                    <el-input placeholder="请输入学校名称" class="mt-10" v-show="addForm.schoolRadio === '填写' " v-model="addForm.schoolName" ></el-input>
-                    <el-select
-                        class="modal_select mt-10"
-                        v-model="addForm.schoolId"
-                        v-show="addForm.schoolRadio === '选择' "
-                        filterable
-                        remote
-                        :remote-method="remoteMethod"
-                        :loading="loading"
-                        placeholder="请选择">
-                        <el-option
-                            class="sl_option"
-                            v-for="item in list"
-                            :key="item.value"
-                            :label="item.label"
-                            :value="item.value"
-                            >
-                            <!-- value 控制选择色 -->
-                            <div class="sl_image">
-                                <img :src="item.url" class="img-fluid" alt="">
-                            </div>
-                            <div class="sl_body">
-                                <h4 class="sl_title">{{item.label}}</h4>
-                                <h5 class="sl_info">{{item.info}}</h5>
-                                <p class="sl_p">{{item.context}}</p>
-                            </div>
-                        </el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="演讲者">
-                    <el-radio-group v-model="addForm.speakerRadio" size="small" >
-                        <el-radio-button label="选择"></el-radio-button>
-                        <el-radio-button label="填写"></el-radio-button>
-                    </el-radio-group>
-                    <el-tooltip class="item" effect="dark" content="没有数据？请手动填写，手动填写的学校无法查看主页，无法对其发起邀约" placement="right">
-                        <i class="el-icon-question md-qs"></i>
-                    </el-tooltip>
-                    <el-input placeholder="请输入演讲者名称" class="mt-10" v-show="addForm.speakerRadio === '填写' " v-model="addForm.speakerName" ></el-input>
-                    <el-select
-                        class="modal_select mt-10"
-                        v-model="addForm.speakerId"
-                        v-show="addForm.speakerRadio === '选择' "
-                        filterable
-                        remote
-                        :remote-method="remoteMethod"
-                        :loading="loading"
-                        placeholder="请选择">
-                        <el-option
-                            class="sl_option"
-                            v-for="item in list"
-                            :key="item.value"
-                            :label="item.label"
-                            :value="item.value"
-                            >
-                            <!-- value 控制选择色 -->
-                            <div class="sl_image">
-                                <img :src="item.url" class="img-fluid" alt="">
-                            </div>
-                            <div class="sl_body">
-                                <h4 class="sl_title">{{item.label}}</h4>
-                                <h5 class="sl_info">{{item.info}}</h5>
-                                <p class="sl_p">{{item.context}}</p>
-                            </div>
-                        </el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="演讲时间">
-                    <el-date-picker
-                        v-model="addForm.startTime"
-                        type="datetime"
-                        placeholder="选择日期时间"
-                        align="right"
-                        :picker-options="pickerOptions1">
-                    </el-date-picker>
-                </el-form-item>
-                <el-form-item label="视频详情">
-                    <el-input v-model="addForm.videoDetail" type="textarea"></el-input>
-                </el-form-item>
-                <el-form-item label="分类">
-                    <el-select v-model="addForm.category" multiple placeholder="请选择">
-                        <el-option
-                        v-for="item in categoryTabs"
-                        :key="item.value"
-                        :label="item.label"
-                        :value="item.value">
-                        </el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="受益人次">
-                    <el-input v-model="addForm.manCounts" type="number"></el-input>
-                </el-form-item>
-                <el-form-item label="播放次数">
-                    <el-input v-model="addForm.playCounts" type="number" ></el-input>
-                </el-form-item>
-                <el-form-item label="标签">
-                    <el-select
-                        v-model="addForm.tabs"
-                        multiple
-                        filterable
-                        allow-create
-                        default-first-option
-                        placeholder="请选择">
-                        <el-option
-                        v-for="item in selfTabs"
-                        :key="item.value"
-                        :label="item.label"
-                        :value="item.value">
-                        </el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="启用">
-                    <el-switch
-                        v-model="addForm.start"
-                    >
-                    </el-switch>
-                </el-form-item>
-            </el-form>
-            <span slot="footer" class="dialog-footer">
-                <el-button @click="modal.addVideo = false">取 消</el-button>
-                <el-button width="200px" type="primary" placeholder="请输入关键词查询" @click="modal.addVideo = false">确 定</el-button>
-            </span>
-        </el-dialog>
+        <VideoDialog v-on:modal="handleClose" title="添加视频" :modal="modal.addVideo" ></VideoDialog>
         <SelectVideo v-on:modal="handleClose" title="查看详情" :modal="modal.selectVideo"  ></SelectVideo>
     </div>
 </template>
@@ -205,37 +46,13 @@
 import axios from 'axios';
 import SelectVideo from '@layout/modal/selectVideo.vue';
 import VideoCard from '@layout/videoCard.vue';
+import VideoDialog from '@layout/modal/VideoDialog.vue';
+import Upload from '@layout/upload.vue';
+
 import image from '../../assets/image/logo/tsinghua.png';
 export default {
     data() {
         return {
-            pickerOptions1: {
-                shortcuts: [
-                    {
-                        text: '今天',
-                        onClick(picker) {
-                            picker.$emit('pick', new Date());
-                        }
-                    },
-                    {
-                        text: '昨天',
-                        onClick(picker) {
-                            const date = new Date();
-                            date.setTime(date.getTime() - 3600 * 1000 * 24);
-                            picker.$emit('pick', date);
-                        }
-                    },
-                    {
-                        text: '一周前',
-                        onClick(picker) {
-                            const date = new Date();
-                            date.setTime(date.getTime() - 3600 * 1000 * 24 * 7);
-                            picker.$emit('pick', date);
-                        }
-                    }
-                ]
-            },
-            loading: false,
             schools: [
                 {
                     value: '1',
@@ -283,20 +100,6 @@ export default {
                 {
                     value: '选项5',
                     label: '北京烤鸭'
-                }
-            ],
-            selfTabs: [
-                {
-                    value: 'HTML',
-                    label: 'HTML'
-                },
-                {
-                    value: 'CSS',
-                    label: 'CSS'
-                },
-                {
-                    value: 'JavaScript',
-                    label: 'JavaScript'
                 }
             ],
             modal: {
@@ -372,98 +175,36 @@ export default {
                 category: [],
                 start: false,
                 rules: {}
-            },
-            fileList: []
+            }
         };
     },
     components: {
         VideoCard,
-        SelectVideo
+        Upload,
+        SelectVideo,
+        VideoDialog
     },
 
     methods: {
-        handlePreview(file) {
-            console.log(file);
-        },
-        beforeRemove(file, fileList) {
-            return this.$confirm(`确定移除 ${file.name}？`);
-        },
         handleAddVideo() {
             this.modal.addVideo = true;
         },
-        // 清空表单？
-        handleModalClose() {
-            this.modal.addVideo = false;
-            console.log('haha');
-        },
+
         handleClose() {
             this.modal.selectVideo = false;
+            this.modal.addVideo = false;
         },
-        // 远程select
-        remoteMethod(query) {
-            if (query !== '') {
-                this.loading = true;
-                setTimeout(() => {
-                    this.loading = false;
-                    this.list = this.schools.filter(item => {
-                        return (
-                            item.label
-                                .toLowerCase()
-                                .indexOf(query.toLowerCase()) > -1
-                        );
-                    });
-                }, 200);
-            } else {
-                this.list = [];
-            }
+
+        submitForm() {
+            console.log('haha');
         }
     }
 };
 </script>
 <style lang="scss">
-.md-qs {
-    margin-left: 10px;
-    font-size: 20px;
-    position: relative;
-    top: 5px;
-}
-
-.modal_select {
-    width: 100%;
-}
-
-.sl_option {
-    display: flex;
-    height: 110px;
-    width: 600px;
-    padding: 0;
-    .sl_image {
-        max-width: 80px;
-        margin-left: 10px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-    }
-    .sl_body {
-        flex: 1;
-        max-width: 475px;
-        display: flex;
-        flex-direction: column;
-        padding: 10px 15px;
-        .sl_title {
-            line-height: 26px;
-            margin: 0;
-        }
-        .sl_info {
-            margin: 0;
-        }
-        .sl_p {
-            margin: 0;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            line-height: 26px;
-        }
-    }
+.tip-info {
+    display: inline-block;
+    margin-left: 20px;
 }
 
 .card-header-save {

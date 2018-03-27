@@ -47,7 +47,7 @@
                         </el-select>
                     </el-form-item>
                 </div>
-                <el-button type="primary" @click="searchForm()" class="sr-search-btn" >检索</el-button>
+                <el-button type="primary" @click="searchFormSubmit" class="sr-search-btn" >检索</el-button>
             </el-form>
             <div class="sr-radio" >
                 <el-radio-group v-model="searchForm.category" class="radio-group" >
@@ -59,9 +59,9 @@
         </div>
         <div class="tm-card">
             <div class="flex-end mb-20">
-                <el-button type="primary" >添加</el-button>
+                <el-button type="primary" @click="modal.addVideo = true" >添加</el-button>
             </div>
-            <el-table :data="list" border class="tm-table">
+            <Table v-loading="loading" :isPagination="false" :data="list" >
                 <el-table-column prop="previewUrl" label="预览图" align="center">
                     <template slot-scope="scope">
                         <img :src="scope.row.previewUrl" class="img-fluid" alt="">
@@ -89,98 +89,39 @@
                         <el-button class="tm-btn-border" type="primary" >删除</el-button>
                     </template>
                 </el-table-column>
-            </el-table>
-            <!-- 查看/修改 -->
-            <el-dialog :visible.sync="modal.edit" title="查看/修改信息" width="860px" >
-                <el-form class="tm-form" :model="submitForm" label-width="120px">
-                    <h2>演讲者基本信息（必填）</h2>
-                    <el-form-item label="姓名">
-                        <el-input v-model="submitForm.name"></el-input>
-                    </el-form-item>
-                    <el-form-item label="性别">
-                        <el-radio-group size="small" v-model="submitForm.sex">
-                            <el-radio-button label="2">男</el-radio-button>
-                            <el-radio-button label="1">女</el-radio-button>
-                        </el-radio-group>
-                    </el-form-item>
-                    <el-form-item label="公司/机构名称">
-                        <el-input v-model="submitForm.company"></el-input>
-                    </el-form-item>
-                    <el-form-item label="工作岗位">
-                        <el-input v-model="submitForm.title"></el-input>
-                    </el-form-item>
-                    <el-form-item label="微信号">
-                        <el-input v-model="submitForm.wechat"></el-input>
-                    </el-form-item>
-                    <el-form-item label="邮箱">
-                        <el-input v-model="submitForm.email"></el-input>
-                    </el-form-item>
-                    <el-form-item label="通信地址">
-                        <el-input v-model="submitForm.address"></el-input>
-                        <span class="item-info" >用于证书，纪念品寄送</span>
-                    </el-form-item>
-                    <el-form-item label="可分享时间段">
-                        <el-input class="tm-textarea" type="textarea" v-model="submitForm.idleTimeDesc"></el-input>
-                    </el-form-item>
-                    <el-form-item label="演讲内容公开">
-                        <el-switch
-                            v-model="submitForm.showVideoOnSite"
-                        >
-                        </el-switch>
-                        <span class="left-info" >是否愿意将演讲视频在涂梦平台上公开展示</span>
-                    </el-form-item>
-                    <el-form-item label="您的照片">
-                        <el-upload class="certifi-upload"  action="https://jsonplaceholder.typicode.com/posts/" list-type="picture-card" :on-preview="handlePictureCardPreview" >
-                        <i class="el-icon-plus"></i>
-                    </el-upload>
-                    <div class="pic-info">
-                        <h3>请拍摄能够清晰的看到正脸的照片</h3>
-                        <p class="info-p">图片类型：JPG、PNG</p>
-                        <p class="info-p">图片大小：不超过5M</p>
-                        <h3 class="mm">样例</h3>
-                        <img src="/static/image/banner.png" class="img-fluid" alt="demo">
-                    </div>
-                    </el-form-item>
-                    <div class="individar"></div>
-                    <h2>附加信息（选填）</h2>
-                    <el-form-item label="教育背景">
-                        <el-input class="tm-textarea" type="textarea" v-model="submitForm.educationBackground"></el-input>
-                        <span class="item-info" >请填写院校、专业、学业等</span>
-                    </el-form-item>
-                    <el-form-item label="介绍人">
-                        <el-input v-model="submitForm.inviter"></el-input>
-                    </el-form-item>
-                    <el-form-item label="志愿者类型">
-                        <el-input v-model="submitForm.catogory"></el-input>
-                        <span class="item-info" >嘉宾前期准备需约6小时，1次分享1小时</span>
-                    </el-form-item>
-                    <el-form-item class="why-label" label="为什么申请涂梦演讲者">
-                        <el-input v-model="submitForm.whyChooseUs"></el-input>
-                    </el-form-item>
-                    <div class="individar"></div>
-                    <el-form-item label="驳回原因">
-                        <el-input class="tm-textarea" type="textarea" v-model="submitForm.rejectDesc"></el-input>
-                    </el-form-item>
-                    <el-form-item label="冻结原因">
-                        <el-input class="tm-textarea" type="textarea" v-model="submitForm.suspendDesc"></el-input>
-                    </el-form-item>
-                    <el-form-item label="课程剩余">
-                        <el-input v-model="submitForm.remainCount"></el-input>
-                    </el-form-item>
-                </el-form>
-                <span slot="footer" class="dialog-footer center">
-                    <el-button type="primary" @click="modal.edit = false">保 存</el-button>
-                    <el-button @click="modal.edit = false">取 消</el-button>
-                </span>
-            </el-dialog>
+            </Table>
+
+            <!-- 添加视频 -->
+            <VideoDialog v-on:modal="handleClose('addVideo')" title="添加视频" :modal="modal.addVideo" ></VideoDialog>
+            <!-- 修改视频 -->
+            <VideoDialog :data="formData" v-on:modal="handleClose('editVideo')" title="修改信息" :modal="modal.editVideo" ></VideoDialog>
         </div>
     </div>
 </template>
 <script>
+import Table from '@layout/table.vue';
+import VideoDialog from '@layout/modal/VideoDialog.vue';
+import { formatAttr } from '@comp/lib/api_maps.js';
+
 import image from '../../assets/image/logo/tsinghua.png';
 export default {
     data() {
         return {
+            formData: {
+                title: 'as',
+                photoUrl:
+                    'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100',
+                manCounts: 1,
+                playCounts: 1,
+                schoolRadio: '选择',
+                schoolId: '',
+                speakerRadio: '填写',
+                speakerId: '',
+                tabs: [],
+                category: [],
+                start: false
+            },
+            loading: false,
             options: [
                 {
                     value: '选项1',
@@ -211,7 +152,8 @@ export default {
                 value: ''
             },
             modal: {
-                edit: false
+                editVideo: false,
+                addVideo: false
             },
             list: [
                 {
@@ -236,57 +178,29 @@ export default {
                     addTimeStamp: 123123,
                     isStart: true
                 }
-            ],
-            submitForm: {
-                speakerId: '',
-                name: 'zhaihr',
-                sex: 1,
-                company: 'zhaihr',
-                title: 'zhaihr',
-                wechat: 'zhaihr',
-                phone: 'zhaihr',
-                address: 'zhaihr',
-                idleTimeDesc: 'zhaihr',
-                showVideoOnSite: 1,
-                photoUrl: 'zhaihr',
-                educationBackground: 'zhaihr',
-                inviter: 'zhaihr',
-                whyChooseUs: 'zhaihr',
-                rejectDesc: 'zhaihr',
-                suspendDesc: 'zhaihr',
-                benefitPeopleTimesAdd: 1
-            }
+            ]
         };
     },
     methods: {
+        formatAttr,
         handleUpdate(data) {
-            this.modal.edit = true;
+            const id = data.id;
+            this.modal.editVideo = true;
         },
-        handlePictureCardPreview(data) {}
+        handleClose(modalName) {
+            this.modal[modalName] = false;
+        },
+        searchFormSubmit() {
+            console.log('提交表单');
+        }
+    },
+    components: {
+        Table,
+        VideoDialog
     }
 };
 </script>
 <style lang="scss">
-.why-label {
-    label.el-form-item__label {
-        line-height: 20px;
-    }
-}
-.tm-form {
-    width: 550px;
-}
-.item-info {
-    position: absolute;
-    top: 0;
-    left: 0;
-    margin-left: 105%;
-    min-width: 200px;
-    line-height: 20px;
-}
-.left-info {
-    margin-left: 10px;
-}
-
 .sr-wrapper {
     display: flex;
     position: relative;

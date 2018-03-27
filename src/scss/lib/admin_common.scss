@@ -27,6 +27,12 @@ a {
         right: 30px;
     }
 }
+
+// label direction
+.el-form-item__label {
+    text-align: left;
+}
+
 // custom a
 .tm-a {
     color: $primary-color;
@@ -371,7 +377,10 @@ img {
 
 .message-modal {
     .el-dialog__body {
-        padding: 20px 0 5px;
+        padding: 0;
+    }
+    .el-dialog__header {
+        padding: 15px;
     }
 }
 

@@ -162,85 +162,8 @@ export default {
                 response: false,
                 edit: false
             },
-            editForm: {},
-            photos: [
-                {
-                    id: 1,
-                    url: img
-                },
-                {
-                    id: 1,
-                    url: img
-                },
-                {
-                    id: 1,
-                    url: img
-                },
-                {
-                    id: 1,
-                    url: img
-                },
-                {
-                    id: 1,
-                    url: img
-                },
-                {
-                    id: 1,
-                    url: img
-                },
-                {
-                    id: 1,
-                    url: img
-                },
-                {
-                    id: 1,
-                    url: img
-                },
-                {
-                    id: 1,
-                    url: img
-                },
-                {
-                    id: 1,
-                    url: img
-                },
-                {
-                    id: 1,
-                    url: img
-                },
-                {
-                    id: 1,
-                    url: img
-                },
-                {
-                    id: 1,
-                    url: img
-                },
-                {
-                    id: 1,
-                    url: img
-                },
-                {
-                    id: 1,
-                    url: img
-                },
-                {
-                    id: 1,
-                    url: img
-                },
-                {
-                    id: 1,
-                    url: img
-                },
-                {
-                    id: 1,
-                    url: img
-                },
-                {
-                    id: 1,
-                    url: img
-                }
-            ]
+            photos: [],
+            editForm: {}
         };
     },
     components: { Search, Timerange, MessageBox, ResponseDialog, Table },
@@ -298,6 +221,11 @@ export default {
                 .catch(() => {});
         },
         showResponse() {
+            axios.get('/admin/feedbacklist').then(res => {
+                const data = res.data.data.feedbackList;
+                console.log(data);
+                this.photos = data;
+            });
             this.modal.response = true;
         },
         handleClose() {

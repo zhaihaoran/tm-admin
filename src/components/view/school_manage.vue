@@ -19,13 +19,13 @@
             <el-table-column align="center" prop="addTimestamp" label="申请时间" ></el-table-column>
             <el-table-column align="center" width="100px" label="详细信息" >
                 <template slot-scope="scope">
-                    <el-button size="mini" @click="showReason(scope.row.reason,'详细信息')" type="text" >查看原因</el-button>
+                    <el-button size="mini" @click="handleShowReason(scope.row)" type="text" >查看原因</el-button>
                 </template>
             </el-table-column>
             <el-table-column align="center" width="160px" label="操作" >
                 <template slot-scope="scope">
-                    <el-button size="mini" type="primary" class="tm-btn" >通过</el-button>
-                    <el-button size="mini" class="tm-btn-border" >驳回</el-button>
+                    <el-button size="mini" type="primary" class="tm-btn" @click="handleSuccess" >通过</el-button>
+                    <el-button size="mini" class="tm-btn-border" @click="handleReject" >驳回</el-button>
                 </template>
             </el-table-column>
             <el-table-column align="center" width="240px" label="冻结操作" >
@@ -39,12 +39,18 @@
                 </template>
             </el-table-column>
         </Table>
+        <!-- 查看原因 -->
+        <EditSchool :data="rowData" v-on:modal="handleClose('showReason')" title="修改信息" :modal="modal.showReason" ></EditSchool>
+        <!-- 驳回 -->
+        <Reject v-on:modal="handleClose('reject')"  :modal="modal.reject" ></Reject>
     </el-card>
 </div>
 </template>
 <script>
 import axios from 'axios';
 import Table from '@layout/table.vue';
+import EditSchool from '@layout/modal/editSchool.vue';
+import Reject from '@layout/modal/reject.vue';
 import { formatAttr } from '@comp/lib/api_maps.js';
 
 export default {
@@ -84,16 +90,50 @@ export default {
                     classQuantity: 3
                 }
             ],
-            modal: {}
+            modal: {
+                showReason: false,
+                reject: false
+            },
+            rowData: {
+                radios: 3,
+                name: '',
+                address: '',
+                teacher: '',
+                teacherPhone: '',
+                pic1: '',
+                pic2: '',
+                delivery: false,
+                type: [],
+                resource: '',
+                freeinfo: '',
+                radio: true,
+                remainCount: 12
+            }
         };
     },
     components: {
-        Table
+        Table,
+        EditSchool,
+        Reject
     },
     methods: {
         formatAttr,
         showReason(reason, title) {
             this.$alert(reason, title).catch(() => {});
+        },
+        handleShowReason(data) {
+            const id = '3';
+            console.log(this.rowData);
+            this.modal.showReason = true;
+        },
+        handleClose(modalName) {
+            this.modal[modalName] = false;
+        },
+        handleSuccess() {
+            this.modal.reject = false;
+        },
+        handleReject() {
+            this.modal.reject = true;
         }
     }
 };

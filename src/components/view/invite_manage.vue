@@ -55,11 +55,37 @@
                     prop="schoolStatus"
                     align="center"
                     label="学校进展">
+                    <template slot-scope="scope">
+                        <el-popover class="offer-step" ref="schoolpopover" trigger="click">
+                            <el-steps direction="vertical" class="admin-step" :active="+scope.row.schoolStatus">
+                                <el-step title="待开课通知"></el-step>
+                                <el-step title="待上课"></el-step>
+                                <el-step title="待课后反馈提交"></el-step>
+                                <el-step title="待课后反馈确认"></el-step>
+                                <el-step title="完成"></el-step>
+                            </el-steps>
+                        </el-popover>
+                        <el-button type="text" v-popover:schoolpopover >
+                            {{attrs['schoolStatus'][scope.row.schoolStatus]}}
+                        </el-button>
+                    </template>
                 </el-table-column>
                 <el-table-column
                     prop="speakerStatus"
                     align="center"
                     label="演讲者进展">
+                    <template slot-scope="scope">
+                        <el-popover ref="speakerpopover" trigger="click">
+                            <el-steps direction="vertical" class="admin-step" :active="+scope.row.speakerStatus">
+                                <el-step title="待开课通知"></el-step>
+                                <el-step title="待上课"></el-step>
+                                <el-step title="完成"></el-step>
+                            </el-steps>
+                        </el-popover>
+                        <el-button type="text" v-popover:speakerpopover >
+                            {{attrs['speakerStatus'][scope.row.speakerStatus]}}
+                        </el-button>
+                    </template>
                 </el-table-column>
                 <el-table-column
                     align="center"
@@ -126,19 +152,18 @@
 </template>
 <script>
 import axios from 'axios';
-import { formatAttr } from '@comp/lib/api_maps.js';
+import { formatAttr, attrs } from '@comp/lib/api_maps.js';
 // comp
 import Timerange from '@layout/timerange.vue';
 import Search from '@layout/search.vue';
 import Table from '@layout/table.vue';
 import MessageBox from '@layout/modal/message.vue';
 import ResponseDialog from '@layout/modal/response.vue';
-// img
-import img from '../../assets/image/admin/camera.png';
 
 export default {
     data() {
         return {
+            attrs,
             filter: {
                 page: 1,
                 per_page: 20
@@ -155,84 +180,7 @@ export default {
                 response: false
             },
             listData: [],
-            photos: [
-                {
-                    id: 1,
-                    url: img
-                },
-                {
-                    id: 1,
-                    url: img
-                },
-                {
-                    id: 1,
-                    url: img
-                },
-                {
-                    id: 1,
-                    url: img
-                },
-                {
-                    id: 1,
-                    url: img
-                },
-                {
-                    id: 1,
-                    url: img
-                },
-                {
-                    id: 1,
-                    url: img
-                },
-                {
-                    id: 1,
-                    url: img
-                },
-                {
-                    id: 1,
-                    url: img
-                },
-                {
-                    id: 1,
-                    url: img
-                },
-                {
-                    id: 1,
-                    url: img
-                },
-                {
-                    id: 1,
-                    url: img
-                },
-                {
-                    id: 1,
-                    url: img
-                },
-                {
-                    id: 1,
-                    url: img
-                },
-                {
-                    id: 1,
-                    url: img
-                },
-                {
-                    id: 1,
-                    url: img
-                },
-                {
-                    id: 1,
-                    url: img
-                },
-                {
-                    id: 1,
-                    url: img
-                },
-                {
-                    id: 1,
-                    url: img
-                }
-            ]
+            photos: []
         };
     },
     components: {
@@ -293,6 +241,11 @@ export default {
                 .catch(() => {});
         },
         showResponse() {
+            axios.get('/admin/feedbacklist').then(res => {
+                const data = res.data.data.feedbackList;
+                console.log(data);
+                this.photos = data;
+            });
             this.modal.response = true;
         },
         handleClose() {

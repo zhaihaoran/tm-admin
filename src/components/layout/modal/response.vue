@@ -3,7 +3,7 @@
         <div class="photos">
             <el-row :gutter="10" >
                 <el-col class="img-box" :span="8" v-for="photo in photos" :key="photo.$index" >
-                    <img :src="photo.url" class="img-fluid" alt="">
+                    <img :src="photo.photoUrl" class="img-fluid" alt="">
                 </el-col>
             </el-row>
         </div>
@@ -37,7 +37,7 @@ export default {
 </script>
 <style lang="scss" scoped>
 .photos {
-    max-height: 500px;
+    max-height: 700px;
     overflow-y: auto;
     overflow-x: hidden;
 }
