@@ -1,6 +1,6 @@
 <template>
     <div class="login-box">
-        <div class="login-title">涂梦后台登陆</div>
+        <div class="login-title">途梦后台登陆</div>
         <el-form :model="form" ref="form" :rules="formRules" label-width="100px" class="login-form" label-position="top" >
             <el-form-item label="用户名"  prop="username" >
                 <el-input v-model="form.username"></el-input>

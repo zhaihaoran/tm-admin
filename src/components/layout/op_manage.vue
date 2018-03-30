@@ -8,7 +8,7 @@
             width="30%"
             >
             <h3 class="text-center modal-title" >你确定同意邀约吗？</h3>
-            <span>同意邀约后，邀约信息将进入"进入中"列表，涂梦平台工作人员将会联系您和演讲者处理进一步事宜</span>
+            <span>同意邀约后，邀约信息将进入"进入中"列表，途梦平台工作人员将会联系您和演讲者处理进一步事宜</span>
             <span slot="footer" class="tm-modal-footer">
                 <el-button class="tm-btn-border" @click="modal.agree=false">取 消</el-button>
                 <el-button class="tm-btn" type="primary" @click="handleOk(scope.$index,scope.row)" >确 定</el-button>

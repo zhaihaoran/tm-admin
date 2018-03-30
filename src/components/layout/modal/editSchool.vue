@@ -104,7 +104,7 @@
                 <el-form-item prop="freeinfo"  label-width="0" >
                     <el-input type="textarea" :rows="row" class="info-textarea"  v-model="form.freeinfo"></el-input>
                 </el-form-item>
-                <h5 class="info-h5">为什么选择涂梦？希望涂梦为学生带来什么</h5>
+                <h5 class="info-h5">为什么选择途梦？希望途梦为学生带来什么</h5>
                 <el-form-item prop="freeinfo"  label-width="0" >
                     <el-input type="textarea" :rows="row" class="info-textarea" v-model="form.freeinfo"></el-input>
                 </el-form-item>

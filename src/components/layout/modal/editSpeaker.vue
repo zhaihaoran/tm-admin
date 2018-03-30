@@ -39,7 +39,7 @@
                     v-model="form.showVideoOnSite"
                 >
                 </el-switch>
-                <span class="left-info" >是否愿意将演讲视频在涂梦平台上公开展示</span>
+                <span class="left-info" >是否愿意将演讲视频在途梦平台上公开展示</span>
             </el-form-item>
             <el-form-item label="您的照片" >
                 <Upload action="/admin/logout" :previewUrl="form.photoUrl" ></Upload>
@@ -64,7 +64,7 @@
                 <el-input v-model="form.catogory"></el-input>
                 <span class="item-info" >嘉宾前期准备需约6小时，1次分享1小时</span>
             </el-form-item>
-            <el-form-item class="why-label" label="为什么申请涂梦演讲者">
+            <el-form-item class="why-label" label="为什么申请途梦演讲者">
                 <el-input v-model="form.whyChooseUs"></el-input>
             </el-form-item>
             <div class="individar"></div>

@@ -41,7 +41,7 @@ export default {
             senderType: {
                 1: '学校',
                 2: '演讲者',
-                3: '涂梦管理员'
+                3: '途梦管理员'
             },
             loading: false,
             modal: false,
