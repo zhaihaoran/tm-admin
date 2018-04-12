@@ -18,8 +18,7 @@
 <script>
 import logo from '@image/logo/logo_white.png';
 import qinghua from '@image/logo/tsinghua.png';
-// action 可以执行异步操作、mutations只能执行同步操作
-// actions 提交的是mutation，不直接变更状态，同时通过dispatch分发
+import { baseURL } from '@comp/lib/api_maps';
 import { mapState, mapMutations } from 'vuex';
 
 export default {
@@ -27,9 +26,11 @@ export default {
     data() {
         return {
             logo,
-            user_logo: qinghua
+            user_logo: qinghua,
+            baseURL
         };
     },
+    mounted() {},
     methods: {
         handleSignOut() {
             this.signout();
@@ -40,7 +41,7 @@ export default {
     // 方便 属性使用 mapState
     computed: mapState({
         sidebar: state => state.common.sidebar_toggle,
-        loginState: state => state.common.login_state
+        loginState: state => state.common.isLogin
     })
 };
 </script>
@@ -56,4 +57,3 @@ export default {
     overflow: hidden;
 }
 </style>
-

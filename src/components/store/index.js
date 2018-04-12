@@ -1,12 +1,17 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import count from '@store/module/count'
+import search from '@store/module/search'
+import upload from '@store/module/upload'
 import common from '@store/module/common'
+import modal from '@store/module/modal'
+
 Vue.use(Vuex)
 
 export default new Vuex.Store({
     modules: {
-        count,
-        common
+        common,
+        search,
+        upload,
+        modal
     },
 })

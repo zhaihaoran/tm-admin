@@ -1,6 +1,6 @@
 <template>
     <div>
-        <el-button type="text" @click="getChatList" class="tm-a" >对话<span v-if="scope.row.chatUnreadQuantity>0" > ({{scope.row.chatUnreadQuantity}})</span></el-button>
+        <el-button type="text" @click="handleChatList(scope.row)" class="tm-a" >对话<span v-if="scope.row.chatUnreadQuantity>0" > ({{scope.row.chatUnreadQuantity}})</span></el-button>
         <el-dialog
             :visible.sync="modal"
             class="message-modal"
@@ -10,12 +10,12 @@
             <div ref="mesbox" v-loading="loading" class="message-box">
                 <div v-for="item in chatList"
                     :key="item.$index" class="mb-15"
-                    :class="{left: item.senderType != 3,right:item.senderType == 3}"
+                    :class="{left: item.senderType != 2,right:item.senderType == 2}"
                 >
                     <p class="no-margin"
                         :class="{school:item.senderType ==1,speaker:item.senderType ==2,tumeng:item.senderType ==3 }"
                     >
-                        <span class="name">{{item.senderName}}</span><span class="time"> {{item.addTimestamp}}</span>
+                        <span class="name">{{item.senderName}}</span><span class="time"> {{dateformat(item.addTimestamp)}}</span>
                     </p>
                     <p class="message">
                         {{item.message}}
@@ -23,18 +23,20 @@
                 </div>
             </div>
             <el-form ref="modal_message" class="message-form">
-                <el-form-item  >
-                    <el-input class="tm-textarea" type="textarea" v-model="message" placeholder="请输入..." ></el-input>
+                <el-form-item>
+                    <el-input @keyup.native.ctrl.enter="sendMessage(scope.row)" class="tm-textarea" type="textarea" v-model="message" placeholder="ctrl + enter 快捷发送" ></el-input>
                 </el-form-item>
             </el-form>
             <span slot="footer">
-                <el-button class="tm-btn" type="primary" @click="sendMessage(scope.row.id)">发送</el-button>
+                <el-button class="tm-btn" type="primary" @click="sendMessage(scope.row)">发送</el-button>
             </span>
         </el-dialog>
     </div>
 </template>
 <script>
-import axios from 'axios';
+import { dateformat } from '@comp/lib/api_maps';
+import { mapState, mapMutations } from 'vuex';
+
 export default {
     data() {
         return {
@@ -45,53 +47,58 @@ export default {
             },
             loading: false,
             modal: false,
-            message: '',
-            chatList: [
-                {
-                    senderType: 1, // 发送者类型：1=学校；2=演讲者；3=途梦管理员
-                    senderName: '', // 发送者名称
-                    message: '', // 消息
-                    addTimestamp: 123 // 添加时间戳
-                }
-            ]
+            message: ''
+            // chatList: [
+            //     {
+            //         senderType: 1, // 发送者类型：1=学校；2=演讲者；3=途梦管理员
+            //         senderName: '', // 发送者名称
+            //         message: '', // 消息
+            //         addTimestamp: 123 // 添加时间戳
+            //     }
+            // ]
         };
+    },
+    computed: {
+        ...mapState({
+            chatList: state => state.search.chatList
+        })
     },
     props: ['scope'],
     methods: {
-        getChatList() {
+        dateformat,
+        ...mapMutations(['getChatList', 'sendChatMsg']),
+        handleChatList(row) {
             this.loading = true;
             this.modal = true;
-            axios
-                .get('/admin/chatlist')
-                .then(res => {
-                    const data = res.data.data.chatMessageList;
-                    this.chatList = data;
-                })
-                .then(res => {
+
+            this.getChatList({
+                act: 'getChatMessageList',
+                appointmentId: row.appointmentId,
+                onSuccess: res => {
                     this.loading = false;
                     this.$refs.mesbox.scrollTop = this.$refs.mesbox.scrollHeight;
-                });
+                }
+            });
         },
-        sendMessage() {
-            console.log('111');
+        handleSend() {
+            console.log('haha');
+        },
+        sendMessage(row) {
             if (!this.message) {
                 this.$message('消息不能为空');
             } else {
-                axios
-                    .get('/admin/logout')
-                    .then(res => {
-                        this.chatList.push({
-                            senderType: 3, // 发送者类型：1=学校；2=演讲者；3=途梦管理员
-                            senderName: this.senderType[3], // 发送者名称
-                            message: this.message, // 消息
-                            addTimestamp: 123 // 添加时间戳
-                        });
-                    })
-                    .then(() => {
+                this.sendChatMsg({
+                    act: 'sendChatMessage',
+                    appointmentId: row.appointmentId,
+                    message: this.message,
+                    onSuccess: res => {
+                        console.log(res);
                         // 将滚动条控制在最底部
                         this.$refs.mesbox.scrollTop = this.$refs.mesbox.scrollHeight;
+                        // 清空内容
                         this.message = '';
-                    });
+                    }
+                });
             }
         }
     }
@@ -104,6 +111,7 @@ export default {
     flex-direction: column;
     background: rgb(245, 245, 245);
     max-height: 400px;
+    min-height: 300px;
     overflow-y: scroll;
 
     .mb-15 {

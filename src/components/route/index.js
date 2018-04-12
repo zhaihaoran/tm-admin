@@ -1,7 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 
-import Button from '@comp/Button.vue'
 // 审核信息
 import Check_school from '@comp/view/check_school.vue'
 import Check_speaker from '@comp/view/check_speaker.vue'

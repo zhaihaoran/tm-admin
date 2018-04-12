@@ -19,8 +19,5 @@ export default {
     props: ['video']
 };
 </script>
-<style>
-
-</style>
 
 

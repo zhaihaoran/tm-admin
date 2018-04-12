@@ -1,49 +1,63 @@
 <template>
+<div>
     <el-upload
         class="avatar-uploader"
         :action="action"
+        :disabled="disabled"
         list-type="picture-card"
+        :with-credentials="true"
         :show-file-list="false"
+        :auto-upload="false"
         :on-change="handlePicChange"
         >
-        <img v-if="imageUrl" :src="imageUrl" class="img-fluid avatar">
+        <img v-if="preview" :src="preview" class="img-fluid avatar">
         <i v-else class="el-icon-plus"></i>
     </el-upload>
+</div>
 </template>
 <script>
+import { mapState, mapMutations } from 'vuex';
+
 export default {
-    data() {
-        return {
-            // 用props初始化
-            imageUrl: this.previewUrl
-        };
-    },
-    // 验证
     props: {
         action: {
-            type: String,
-            required: true
+            type: String
         },
-        previewUrl: {
+        disabled: {
+            type: Boolean,
+            default: false
+        },
+        preview: {
+            type: String,
+            default: ''
+        },
+        filepathname: {
+            type: String,
+            default: ''
+        },
+        previewname: {
             type: String,
             default: ''
         }
     },
     methods: {
-        handlePicChange(file) {
-            // 渲染图片
-            this.imageUrl = file.url;
+        ...mapMutations(['update', 'commonUpload']),
+        handlePicChange(file, fileList) {
+            let formCfg = new FormData();
+            // 创建formData
+            // 这里记住一定要是file的源文件，本身传过来的file是被element ui包了一层
+            formCfg.append('file', file.raw);
+            // append的值在控制台里是看不到的（formData原型），但是可以通过formCfg.get('file')来取
+
+            // 上传
+            this.commonUpload({
+                formCfg,
+                filepathname: this.filepathname,
+                previewname: this.previewname
+            });
         }
     }
 };
 </script>
-<style lang="scss">
-.avatar-uploader .el-upload--picture-card {
-    width: 380px;
-    height: 250px;
-    line-height: 250px;
-    overflow: hidden;
-}
-</style>
 
 

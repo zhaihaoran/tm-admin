@@ -1,41 +1,46 @@
 <template>
     <div class="cell" >
-        <el-button v-if="scope.row.status === 1" size="mini" @click="handleEdit(scope.$index,scope.row)" >修改</el-button>
-        <el-button v-if="scope.row.status === 1" size="mini" class="tm-btn-border" @click="handledelete" >删除</el-button>
-        <el-button v-if="scope.row.status === 0" size="mini" type="danger" class="tm-btn" @click="modal.agree=true" >同意</el-button>
-        <el-button v-if="scope.row.status === 0" size="mini" class="tm-btn-border" @click="modal.refuse=true" >拒绝</el-button>
+        <div v-if="scope.row.status == 1 && scope.row.fromSide == 2" >
+            <el-button size="mini" @click="handleEdit(scope.$index,scope.row)" >修改</el-button>
+            <el-button size="mini" class="tm-btn-border" @click="handledelete(scope.row)" >删除</el-button>
+        </div>
+        <div v-if="scope.row.status == 1 && scope.row.fromSide == 1" >
+            <el-button size="mini" type="danger" class="tm-btn" @click="modal.agree=true" >通过</el-button>
+            <el-button size="mini" class="tm-btn-border" @click="modal.refuse=true" >驳回</el-button>
+        </div>
 
         <!-- modal -->
         <el-dialog
             :visible.sync="modal.agree"
             width="30%"
             >
-            <h3 class="text-center modal-title" >你确定同意邀约吗？</h3>
-            <span>同意邀约后，邀约信息将进入"进入中"列表，途梦平台工作人员将会联系您和演讲者处理进一步事宜</span>
+            <h3 class="text-center modal-title" >你确定通过邀约？</h3>
             <span slot="footer" class="tm-modal-footer">
                 <el-button class="tm-btn-border" @click="modal.agree=false">取 消</el-button>
-                <el-button class="tm-btn" type="primary" @click="handleOk(scope.$index,scope.row)" >确 定</el-button>
+                <el-button class="tm-btn" type="primary" @click="handleOk(scope.row)" >确 定</el-button>
             </span>
         </el-dialog>
         <el-dialog
             :visible.sync="modal.refuse"
             width="30%"
         >
-            <h3 class="text-center modal-title" >确定拒绝邀约吗？</h3>
-            <span>请填写拒绝原因，用于告知邀请者</span>
+            <h3 class="text-center modal-title" >确定驳回邀约吗？</h3>
+            <span>请填写驳回原因，用于告知邀请者</span>
             <el-form ref="form" >
                 <el-form-item class="no-margin" >
-                    <el-input type="textarea" class="tm-textarea"></el-input>
+                    <el-input type="textarea" v-model="rejectDesc" class="tm-textarea"></el-input>
                 </el-form-item>
             </el-form>
             <span slot="footer" class="tm-modal-footer">
                 <el-button class="tm-btn-border" @click="modal.refuse = false">取 消</el-button>
-                <el-button class="tm-btn" type="primary" @click="handleRefuse(scope.$index,scope.row)">确 定</el-button>
+                <el-button class="tm-btn" type="primary" @click="handleRefuse(scope.row)">确 定</el-button>
             </span>
         </el-dialog>
     </div>
 </template>
 <script>
+import { mapState, mapMutations } from 'vuex';
+
 export default {
     data() {
         return {
@@ -43,29 +48,51 @@ export default {
                 agree: false,
                 delete: false,
                 refuse: false
-            }
+            },
+            rejectDesc: ''
         };
     },
-    props: ['scope', 'handleEdit'],
+    props: {
+        scope: {
+            type: Object
+        },
+        handleEdit: {
+            type: Function
+        },
+        action: {
+            type: Object
+        },
+        type: {
+            type: String
+        }
+    },
     methods: {
-        handleOk(index, row) {
+        ...mapMutations(['deleteSubmit', 'Ok', 'refuse']),
+        handleOk(obj) {
             this.modal.agree = false;
-            console.log(index, row);
+            this.Ok({
+                act: this.action.Ok,
+                [this.type]: this.scope.row[this.type]
+            });
         },
-        handleRefuse(index, row) {
-            this.modal.delete = false;
-            console.log(index, row);
+        handleRefuse(obj) {
+            this.modal.refuse = false;
+            this.refuse({
+                act: this.action.refuse,
+                [this.type]: this.scope.row[this.type],
+                rejectDesc: this.rejectDesc
+            });
         },
-        handledelete() {
+        handledelete(obj) {
             this.$confirm('您确认要删除此次邀约, 是否继续?', '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
                 type: 'warning'
             })
                 .then(() => {
-                    this.$message({
-                        type: 'success',
-                        message: '删除成功!'
+                    this.deleteSubmit({
+                        act: this.action.delete,
+                        [this.type]: this.scope.row[this.type]
                     });
                 })
                 .catch(() => {});

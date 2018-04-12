@@ -1,18 +1,16 @@
 <template>
     <div>
+        <Search :cfg="searchCfg" >
+            <template slot-scope="props" >
+                <div class="search-input">
+                    <el-input placeholder="学校名称" v-model="searchCfg.searchText" suffix-icon="el-icon-search" ></el-input>
+                </div>
+            </template>
+        </Search>
         <div class="tm-card">
-            <el-radio-group v-model="orderType" class="radio-group" >
-                <el-radio-button label="0">综合排序</el-radio-button>
-                <el-radio-button label="1">申请时间</el-radio-button>
-            </el-radio-group>
-            <div class="search-input">
-                <el-input placeholder="学校名称" v-model="schoolName" suffix-icon="el-icon-search" ></el-input>
-            </div>
-        </div>
-        <div class="tm-card">
-            <Table v-loading="loading" :isPagination="false" :data="data" >
+            <Table :loading="tableLoading" :data="data" >
                 <el-table-column
-                    prop="name"
+                    prop="schoolName"
                     align="center"
                     label="学校名称">
                 </el-table-column>
@@ -33,8 +31,12 @@
                 </el-table-column>
                 <el-table-column
                     prop="addTimestamp"
+                    width="140px"
                     align="center"
                     label="申请时间">
+                    <template slot-scope="scope">
+                        {{dateformat(scope.row.addTimestamp)}}
+                    </template>
                 </el-table-column>
                 <el-table-column
                     prop="classQuantity"
@@ -53,46 +55,66 @@
                     align="center"
                     label="操作">
                     <template slot-scope="scope">
-                        <Operation></Operation>
+                        <Operation :handleEdit="handleEdit" :scope="scope" type="schoolId" :action="actions" ></Operation>
                     </template>
                 </el-table-column>
             </Table>
+            <Pagination :cfg="searchCfg" :count="count" ></Pagination>
         </div>
     </div>
 </template>
 <script>
-import axios from 'axios';
+import { mapState, mapMutations } from 'vuex';
+
+import { dateformat, commonPageInit } from '@comp/lib/api_maps.js';
+
 import Table from '@layout/table.vue';
-import Operation from '@layout/op_manage.vue';
+import Operation from '@layout/operation.vue';
+import Pagination from '@layout/pagination.vue';
 
 export default {
     data() {
         return {
-            loading: true,
-            orderType: 0,
-            schoolName: 11,
-            data: [
-                {
-                    name: '石家庄实验中学',
-                    address: '河北省石家庄栾城县',
-                    teacher: '电影人的梦想',
-                    teacherPhone: 13888888888,
-                    addTimestamp: 60,
-                    classQuantity: 3
-                }
-            ]
+            searchCfg: {
+                act: 'getSchoolApplicationList',
+                orderType: this.orderType,
+                searchText: '11',
+                authStatus: 0
+            },
+            actions: {
+                ok: '',
+                delete: '',
+                refuse: ''
+            }
         };
     },
+    computed: {
+        ...mapState({
+            orderType: state => state.search.orderType,
+            timerange: state => state.search.timerange,
+            data: state => state.search.data,
+            count: state => state.search.count,
+            tableLoading: state => state.search.tableLoading,
+            page: state => state.search.page,
+            perPage: state => state.search.perPage,
+            status: state => state.search.status
+        })
+    },
     mounted() {
-        axios.get('/admin/applist').then(res => {
-            console.log(res);
-            const datas = res.data.data.schoolList;
-            this.data = datas;
-            this.loading = false;
+        commonPageInit(this, {
+            act: 'getSchoolApplicationList'
         });
     },
-    components: { Operation, Table },
+    components: { Operation, Table, Pagination },
     methods: {
+        dateformat,
+        ...mapMutations([
+            'updateValue',
+            'getPageData',
+            'formSubmit',
+            'showModal',
+            'getRejectDesc'
+        ]),
         showReason(reason) {
             this.$alert(reason, '拒绝原因').catch(() => {});
         }

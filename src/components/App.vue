@@ -19,20 +19,24 @@ export default {
     name: 'App',
     components: { Sidebar, Header },
     computed: mapState({
-        isLogin: state => state.common.login_state
+        isLogin: state => state.common.isLogin
     }),
-    // 通用状态初始化
+    // 通用状态初始化,存入session中
     mounted() {
-        this.initState();
+        this.getUserLogin({
+            act: 'getUserLogin',
+            onSuccess: res => {
+                // 如登陆，则拿菜单列表
+                if (sessionStorage.isLogin > 0) {
+                    this.getMenuList();
+                }
+            }
+        });
     },
     methods: {
-        ...mapMutations(['initState'])
+        ...mapMutations(['getUserLogin'])
     }
 };
 </script>
-<style lang="scss">
-@import '../scss/variable/_school.scss';
-@import '../scss/lib/admin_common.scss';
-</style>
 
 

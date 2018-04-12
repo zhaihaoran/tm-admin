@@ -83,6 +83,7 @@
     </el-card>
 </template>
 <script>
+import { mapState, mapMutations } from 'vuex';
 import $ from 'jquery';
 import index_video from 'assets/image/video_bg.png';
 import SelectVideo from '@layout/modal/selectVideo.vue';

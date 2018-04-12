@@ -18,7 +18,12 @@
 </template>
 <script>
 export default {
-    props: ['progress']
+    props: {
+        progress: {
+            type: Number,
+            default: 1
+        }
+    }
 };
 </script>
 

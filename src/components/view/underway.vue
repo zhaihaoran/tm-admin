@@ -24,7 +24,7 @@
                 <el-table-column
                     prop="speakTitle"
                     align="center"
-                    label="演讲主题">
+                    label="演讲主题"  show-overflow-tooltip>
                 </el-table-column>
                 <el-table-column
                     prop="speakTimestamp"

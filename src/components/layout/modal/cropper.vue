@@ -1,43 +1,75 @@
 <template>
-  <div id="demo">
-    <!-- 遮罩层 -->
-    <div class="container" v-show="panel">
-        <img id="image" class="img-fluid" :src="config.url" alt="Picture">
-        <el-button id="cancel" @click="cancel">取 消</el-button>
-        <el-button type="primary" id="button" @click="commit" >确 定</el-button>
-    </div>
-    <div class="show"  >
-        <div class="picture" @click="triggerChange()" :style="'backgroundImage:url('+config.url+')'">
-            <i class="el-icon-plus"></i>
+    <div :class="boxClass" id="cropper">
+        <el-upload
+            class="avatar-uploader"
+            :action="action"
+            list-type="picture-card"
+            :show-file-list="false"
+            :auto-upload="false"
+            :on-change="change"
+            >
+            <img v-if="previewUrl" :src="previewUrl" class="img-fluid">
+            <i v-else class="el-icon-plus"></i>
+        </el-upload>
+        <!-- 遮罩层 -->
+        <div class="container" v-show="panel">
+            <img id="image" class="img-fluid" :src="url" alt="Picture">
+            <el-button id="cancel" @click="cancel">取 消</el-button>
+            <el-button type="primary" id="button" @click="commit" >确 定</el-button>
         </div>
     </div>
-    <div class="upload-btn" >
-        <input class="hidden" ref="changes" type="file" id="change" accept="image" @change="change">
-        <label for="change"></label>
-    </div>
-    <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="config.modal=false" >确 定</el-button>
-    </span>
-  </div>
 </template>
-
-
 <script>
+import { mapState, mapMutations } from 'vuex';
 import Cropper from 'cropperjs';
+
 export default {
-    props: ['config'],
+    props: {
+        previewUrl: {
+            type: String
+        },
+        filepathname: {
+            type: String
+        },
+        previewname: {
+            type: String
+        },
+        boxClass: {
+            type: String,
+            default: 'box'
+        },
+        croppable: {
+            type: Boolean,
+            default: true
+        },
+        accept: {
+            type: String,
+            default: 'image/gif, image/jpeg, image/png, image/jpg'
+        },
+        aspectRatio: {
+            type: Number,
+            default: 1
+        },
+        background: {
+            type: Boolean,
+            default: true
+        },
+        zoomable: {
+            type: Boolean,
+            default: true
+        },
+        action: {
+            type: String,
+            default: ''
+        }
+    },
     data() {
-        console.log(this);
         return {
             picValue: '',
+            blob: '', // canvas Blob 文件
             cropper: '',
-            croppable: this.config.croppable || false,
             panel: false,
-            imgCropperData: {
-                accept:
-                    this.config.accept ||
-                    'image/gif, image/jpeg, image/png, image/jpg'
-            }
+            url: ''
         };
     },
     mounted() {
@@ -45,10 +77,10 @@ export default {
         var self = this;
         var image = document.getElementById('image');
         this.cropper = new Cropper(image, {
-            aspectRatio: this.config.aspectRatio || 1, // 比例1:1
+            aspectRatio: this.aspectRatio, // 比例1:1
             viewMode: 1,
-            background: this.config.background || true,
-            zoomable: this.config.zoomable || true,
+            background: this.background,
+            zoomable: this.zoomable,
             rotatable: true,
             autoCropArea: false, // 是否允许自动剪裁
             ready: function() {
@@ -57,15 +89,10 @@ export default {
         });
     },
     methods: {
-        triggerChange() {
-            // js 中的触发方法
-            this.$refs.changes.click();
-        },
+        ...mapMutations(['update', 'commonUpload']),
         //取消上传
         cancel() {
             this.panel = false;
-            var obj = document.getElementById('change');
-            obj.outerHTML = obj.outerHTML;
         },
         //创建url路径
         getObjectURL(file) {
@@ -83,12 +110,12 @@ export default {
             return url;
         },
         //input框change事件，获取到上传的文件
-        change(e) {
-            let files = e.target.files || e.dataTransfer.files;
-            if (!files.length) return;
-            let type = files[0].type; //文件的类型，判断是否是图片
-            let size = files[0].size; //文件的大小，判断图片的大小
-            if (this.imgCropperData.accept.indexOf(type) == -1) {
+        change(mmm) {
+            let files = mmm.raw;
+            if (!files.size) return;
+            let type = files.type; //文件的类型，判断是否是图片
+            let size = files.size; //文件的大小，判断图片的大小
+            if (this.accept.indexOf(type) == -1) {
                 this.$message({
                     message: '请选择我们支持的图片格式！',
                     type: 'error',
@@ -106,11 +133,11 @@ export default {
                 });
                 return false;
             }
-            this.picValue = files[0];
-            this.config.url = this.getObjectURL(this.picValue);
+            this.picValue = files;
+            this.url = this.getObjectURL(this.picValue);
             //每次替换图片要重新得到新的url
             if (this.cropper) {
-                this.cropper.replace(this.config.url);
+                this.cropper.replace(this.url);
             }
             this.panel = true;
         },
@@ -127,9 +154,14 @@ export default {
             croppedCanvas = this.cropper.getCroppedCanvas();
             // Round
             roundedCanvas = this.getRoundedCanvas(croppedCanvas);
-            this.config.url = roundedCanvas.toDataURL();
-            //上传图片
-            this.postImg();
+            this.url = roundedCanvas.toDataURL();
+            // 经过剪裁之后，如何将canvas的数据传递给接口？
+            // canvas转Blob后，file文件类型本身也是blob二进制类型，通过blob来作为接口数据传递
+            roundedCanvas.toBlob(blob => {
+                this.blob = blob;
+                //上传图片
+                this.postImg();
+            });
         },
         //canvas画图
         getRoundedCanvas(sourceCanvas) {
@@ -157,354 +189,69 @@ export default {
         },
         //提交上传函数
         postImg() {
-            this.$message({
-                message: '上传成功',
-                type: 'success',
-                showClose: true,
-                duration: 3000
+            let formCfg = new FormData();
+            // this.blob = Object.assign(this.picValue, this.blob);
+            // console.log(this.picValue);
+            // console.log(this.blob);
+            formCfg.append('file', this.blob, this.picValue.name);
+
+            this.commonUpload({
+                formCfg,
+                filepathname: this.filepathname,
+                previewname: this.previewname,
+                onSuccess: res => {
+                    this.$emit('update', {
+                        fileUrl: res.data.data.fileUrl,
+                        shortPathFilename: res.data.data.shortPathFilename
+                    });
+                }
             });
         }
     }
 };
 </script>
 
-<style>
-.el-dialog__body {
-    padding: 0 0 30px;
-}
+<style lang="scss">
+@import '../../../scss/cropper.scss';
 
-#demo #button,
-#demo #cancel {
-    position: absolute;
-    right: 10px;
-    top: 10px;
-    width: 80px;
-    height: 40px;
-    border: none;
-    border-radius: 5px;
-    background: white;
-    color: #000;
-}
-#demo #cancel {
-    left: 10px;
-}
-
-#demo {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-}
-#demo .show {
-    width: 200px;
-    height: 200px;
-    overflow: hidden;
-    position: relative;
-    border: 1px solid #d5d5d5;
-}
-
-#demo .container {
-    z-index: 99;
-    position: fixed;
-    padding-top: 60px;
-    left: 0;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 1);
-}
-
-#demo .upload-btn {
-    margin: 10px 0;
-}
-#demo .picture {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    background-position: center center;
-    background-repeat: no-repeat;
-    background-size: cover;
-}
-
-#demo .picture:hover {
-    cursor: pointer;
-}
-
-#demo .picture i {
-    font-size: 40px;
-}
-
-#demo #image {
-    max-width: 100%;
-}
-.cropper-view-box,
-.cropper-face {
-    border-radius: 50%;
-}
-/*!
- * Cropper.js v1.0.0-rc
- * https://github.com/fengyuanchen/cropperjs
- *
- * Copyright (c) 2017 Fengyuan Chen
- * Released under the MIT license
- *
- * Date: 2017-03-25T12:02:21.062Z
- */
-.cropper-container {
-    font-size: 0;
-    line-height: 0;
-    position: relative;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-    direction: ltr;
-    -ms-touch-action: none;
-    touch-action: none;
-}
-.cropper-container img {
-    display: block;
-    min-width: 0 !important;
-    max-width: none !important;
-    min-height: 0 !important;
-    max-height: none !important;
-    width: 100%;
-    height: 100%;
-    image-orientation: 0deg;
-}
-.cropper-wrap-box,
-.cropper-canvas,
-.cropper-drag-box,
-.cropper-crop-box,
-.cropper-modal {
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-}
-.cropper-wrap-box {
-    overflow: hidden;
-}
-.cropper-drag-box {
-    opacity: 0;
-    background-color: #fff;
-}
-.cropper-modal {
-    opacity: 0.5;
-    background-color: #000;
-}
-.cropper-view-box {
-    display: block;
-    overflow: hidden;
-    width: 100%;
-    height: 100%;
-    outline: 1px solid #39f;
-    outline-color: rgba(51, 153, 255, 0.75);
-}
-.cropper-dashed {
-    position: absolute;
-    display: block;
-    opacity: 0.5;
-    border: 0 dashed #eee;
-}
-.cropper-dashed.dashed-h {
-    top: 33.33333%;
-    left: 0;
-    width: 100%;
-    height: 33.33333%;
-    border-top-width: 1px;
-    border-bottom-width: 1px;
-}
-.cropper-dashed.dashed-v {
-    top: 0;
-    left: 33.33333%;
-    width: 33.33333%;
-    height: 100%;
-    border-right-width: 1px;
-    border-left-width: 1px;
-}
-.cropper-center {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    display: block;
-    width: 0;
-    height: 0;
-    opacity: 0.75;
-}
-.cropper-center:before,
-.cropper-center:after {
-    position: absolute;
-    display: block;
-    content: ' ';
-    background-color: #eee;
-}
-.cropper-center:before {
-    top: 0;
-    left: -3px;
-    width: 7px;
-    height: 1px;
-}
-.cropper-center:after {
-    top: -3px;
-    left: 0;
-    width: 1px;
-    height: 7px;
-}
-.cropper-face,
-.cropper-line,
-.cropper-point {
-    position: absolute;
-    display: block;
-    width: 100%;
-    height: 100%;
-    opacity: 0.1;
-}
-.cropper-face {
-    top: 0;
-    left: 0;
-    background-color: #fff;
-}
-.cropper-line {
-    background-color: #39f;
-}
-.cropper-line.line-e {
-    top: 0;
-    right: -3px;
-    width: 5px;
-    cursor: e-resize;
-}
-.cropper-line.line-n {
-    top: -3px;
-    left: 0;
-    height: 5px;
-    cursor: n-resize;
-}
-.cropper-line.line-w {
-    top: 0;
-    left: -3px;
-    width: 5px;
-    cursor: w-resize;
-}
-.cropper-line.line-s {
-    bottom: -3px;
-    left: 0;
-    height: 5px;
-    cursor: s-resize;
-}
-.cropper-point {
-    width: 5px;
-    height: 5px;
-    opacity: 0.75;
-    background-color: #39f;
-}
-.cropper-point.point-e {
-    top: 50%;
-    right: -3px;
-    margin-top: -3px;
-    cursor: e-resize;
-}
-.cropper-point.point-n {
-    top: -3px;
-    left: 50%;
-    margin-left: -3px;
-    cursor: n-resize;
-}
-.cropper-point.point-w {
-    top: 50%;
-    left: -3px;
-    margin-top: -3px;
-    cursor: w-resize;
-}
-.cropper-point.point-s {
-    bottom: -3px;
-    left: 50%;
-    margin-left: -3px;
-    cursor: s-resize;
-}
-.cropper-point.point-ne {
-    top: -3px;
-    right: -3px;
-    cursor: ne-resize;
-}
-.cropper-point.point-nw {
-    top: -3px;
-    left: -3px;
-    cursor: nw-resize;
-}
-.cropper-point.point-sw {
-    bottom: -3px;
-    left: -3px;
-    cursor: sw-resize;
-}
-.cropper-point.point-se {
-    right: -3px;
-    bottom: -3px;
-    width: 20px;
-    height: 20px;
-    cursor: se-resize;
-    opacity: 1;
-}
-@media (min-width: 768px) {
-    .cropper-point.point-se {
-        width: 15px;
-        height: 15px;
+#cropper {
+    #button,
+    #cancel {
+        position: absolute;
+        right: 10px;
+        top: 10px;
+        width: 80px;
+        height: 40px;
+        border: none;
+        border-radius: 5px;
+        background: white;
+        color: #000;
     }
-}
-@media (min-width: 992px) {
-    .cropper-point.point-se {
-        width: 10px;
-        height: 10px;
+
+    #cancel {
+        left: 10px;
     }
-}
-@media (min-width: 1200px) {
-    .cropper-point.point-se {
-        width: 5px;
-        height: 5px;
-        opacity: 0.75;
+
+    .show {
+        width: 200px;
+        height: 200px;
+        overflow: hidden;
+        position: relative;
+        border: 1px solid #d5d5d5;
     }
-}
-.cropper-point.point-se:before {
-    position: absolute;
-    right: -50%;
-    bottom: -50%;
-    display: block;
-    width: 200%;
-    height: 200%;
-    content: ' ';
-    opacity: 0;
-    background-color: #39f;
-}
-.cropper-invisible {
-    opacity: 0;
-}
-.cropper-bg {
-    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAQMAAAAlPW0iAAAAA3NCSVQICAjb4U/gAAAABlBMVEXMzMz////TjRV2AAAACXBIWXMAAArrAAAK6wGCiw1aAAAAHHRFWHRTb2Z0d2FyZQBBZG9iZSBGaXJld29ya3MgQ1M26LyyjAAAABFJREFUCJlj+M/AgBVhF/0PAH6/D/HkDxOGAAAAAElFTkSuQmCC');
-}
-.cropper-hide {
-    position: absolute;
-    display: block;
-    width: 0;
-    height: 0;
-}
-.cropper-hidden {
-    display: none !important;
-}
-.cropper-move {
-    cursor: move;
-}
-.cropper-crop {
-    cursor: crosshair;
-}
-.cropper-disabled .cropper-drag-box,
-.cropper-disabled .cropper-face,
-.cropper-disabled .cropper-line,
-.cropper-disabled .cropper-point {
-    cursor: not-allowed;
+
+    .container {
+        z-index: 1239;
+        position: fixed;
+        padding-top: 60px;
+        left: 0;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 1);
+    }
+    .upload-btn {
+        margin: 10px 0;
+    }
 }
 </style>

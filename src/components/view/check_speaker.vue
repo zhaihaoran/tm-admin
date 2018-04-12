@@ -1,16 +1,14 @@
 <template>
     <div>
+        <Search :cfg="searchCfg" >
+            <template slot-scope="props" >
+                <div class="search-input">
+                    <el-input placeholder="演讲者名称" v-model="searchCfg.searchText" suffix-icon="el-icon-search" ></el-input>
+                </div>
+            </template>
+        </Search>
         <div class="tm-card">
-            <el-radio-group v-model="orderType" class="radio-group" >
-                <el-radio-button label="0">综合排序</el-radio-button>
-                <el-radio-button label="1">申请时间</el-radio-button>
-            </el-radio-group>
-            <div class="search-input">
-                <el-input placeholder="学校名称" v-model="schoolName" suffix-icon="el-icon-search" ></el-input>
-            </div>
-        </div>
-        <div class="tm-card">
-            <Table v-loading="loading" :data="data" >
+            <Table :loading="tableLoading" :data="data" >
                 <el-table-column
                     prop="name"
                     align="center"
@@ -48,8 +46,12 @@
                 </el-table-column>
                 <el-table-column
                     prop="addTimestamp"
+                    width="140px"
                     align="center"
                     label="申请时间">
+                    <template slot-scope="scope">
+                        {{dateformat(scope.row.addTimestamp)}}
+                    </template>
                 </el-table-column>
                 <el-table-column
                     align="center"
@@ -63,40 +65,66 @@
                     align="center"
                     label="操作">
                     <template slot-scope="scope">
-                        <Operation ></Operation>
+                        <Operation :handleEdit="handleEdit" :scope="scope" type="speakerId" :action="actions" ></Operation>
                     </template>
                 </el-table-column>
             </Table>
+            <Pagination :cfg="searchCfg" :count="count" ></Pagination>
         </div>
     </div>
 </template>
 <script>
-import axios from 'axios';
+import { mapState, mapMutations } from 'vuex';
+
+import { dateformat, commonPageInit } from '@comp/lib/api_maps.js';
+
 import Table from '@layout/table.vue';
-import Operation from '@layout/op_manage.vue';
+import Operation from '@layout/operation.vue';
+import Pagination from '@layout/pagination.vue';
 
 export default {
     data() {
         return {
-            loading: true,
-            orderType: 0,
-            schoolName: 11,
-            data: [
-                {
-                    name: '石家庄实验中学',
-                    sex: '男',
-                    company: '北京大学',
-                    title: '程序员',
-                    wechat: 'zzq234',
-                    phone: '13888888888',
-                    email: 'zzq@sina.com',
-                    addTimestamp: 60
-                }
-            ]
+            searchCfg: {
+                act: 'getSpeakerApplicationList',
+                orderType: this.orderType,
+                searchText: '11',
+                authStatus: 0
+            },
+            actions: {
+                ok: '',
+                delete: '',
+                refuse: ''
+            }
         };
     },
-    components: { Operation, Table },
+    computed: {
+        ...mapState({
+            orderType: state => state.search.orderType,
+            timerange: state => state.search.timerange,
+            data: state => state.search.data,
+            count: state => state.search.count,
+            tableLoading: state => state.search.tableLoading,
+            page: state => state.search.page,
+            perPage: state => state.search.perPage,
+            status: state => state.search.status
+        })
+    },
+    mounted() {
+        commonPageInit(this, {
+            act: 'getSpeakerApplicationList'
+        });
+    },
+    components: { Operation, Table, Pagination },
     methods: {
+        dateformat,
+        ...mapMutations([
+            'updateValue',
+            'getPageData',
+            'formSubmit',
+            'showModal',
+            'getRejectDesc'
+        ]),
         showReason(reason) {
             this.$alert(reason, '拒绝原因').catch(() => {});
         }

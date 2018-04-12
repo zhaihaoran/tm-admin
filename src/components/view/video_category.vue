@@ -3,7 +3,13 @@
         <div class="flex-end">
             <el-button @click="modal.add=true" class="tm-btn mb-20" >添加</el-button>
         </div>
-        <Table v-loading="loading" :isPagination="false" :data="list" >
+        <Table :data="data" :loading="tableLoading" >
+            <el-table-column
+                type="index"
+                align="center"
+                width="40"
+            >
+            </el-table-column>
             <el-table-column
                 align="center"
                 prop="category"
@@ -109,24 +115,20 @@ export default {
                 isStart: true,
                 category: 'zhaihaoran',
                 index: 11
-            },
-            list: [
-                {
-                    id: 1,
-                    category: 2,
-                    videoCounts: 100,
-                    index: 1,
-                    isStart: false
-                },
-                {
-                    id: 2,
-                    category: 3,
-                    videoCounts: 100,
-                    index: 1,
-                    isStart: true
-                }
-            ]
+            }
         };
+    },
+    computed: {
+        ...mapState({
+            orderType: state => state.search.orderType,
+            timerange: state => state.search.timerange,
+            data: state => state.search.data,
+            count: state => state.search.count,
+            tableLoading: state => state.search.tableLoading,
+            page: state => state.search.page,
+            perPage: state => state.search.perPage,
+            status: state => state.search.status
+        })
     },
     components: {
         Table

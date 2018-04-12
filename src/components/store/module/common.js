@@ -1,22 +1,108 @@
+import Util from '@comp/lib/utils'
+
 const state = {
     common_sidebar: false, // 主体侧边栏状态
     help_sidebar: false, // 帮助侧边栏
     sidebar_toggle: false, // 侧边栏展开状态
     // sesson里取
-    login_state: 0, // 登陆状态 0：未登录
-    check_state: 1 // 检验状态 0：未审核、1：已审核
+    isLogin: 0, // 登陆状态 0：未登录
+    checkState: 0, // 审核状态
+    menuList: {},
 }
-
 // 模块的mutations 、 actions、getter 默认注册在全局命名空间的
 const mutations = {
-    // state -- 初始化 从session里取
-    initState(state) {
-        state.login_state = +sessionStorage.isLogin || 0
-        state.check_state = +sessionStorage.check_state || 0
+    setValue(state, payload) {
+        state = Object.assign(state, payload)
     },
-    toggle(state) {
+    toggleState(state) {
         //在这里改变state中的数据
-        state.sidebar_toggle = !state.sidebar_toggle
+        state.check_state = state.check_state ? 0 : 1
+    },
+    getFormData(state, {
+        onError,
+        onSuccess,
+        ...cfg
+    }) {
+        Util.fetchPost({
+            onError,
+            onSuccess,
+            cfg
+        })
+    },
+    /**
+     * 拿到用户登陆状态
+     *
+     * @param {any} state
+     * @param {any}
+     */
+    getUserLogin(state, {
+        onError,
+        onSuccess,
+        ...cfg
+    }) {
+        Util.commonPost({
+            url: "api/common/",
+            onError,
+            onSuccess,
+            cfg,
+            ActionSuccess: res=> {
+                state.isLogin = +res.data.data.isLogin
+                sessionStorage.isLogin = +res.data.data.isLogin;
+            }
+        })
+    },
+
+    /**
+     *
+     * 获取用户菜单列表
+     * @param {any} state
+     * @param {any}
+     */
+    getMenuList(state) {
+        const cfg = {
+            act: 'getMenuList',
+        }
+        Util.fetchPost({
+            cfg,
+            ActiveSuccess: res => {
+                state.menuList = res.data.data.menuList
+            }
+        })
+    },
+    /**
+     * 数组 Post
+     *
+     * @param {any} state
+     * @param {any}
+     */
+    getArrayData(state, {
+        onError,
+        onSuccess,
+        ...cfg
+    }) {
+        Util.fetchPost({
+            onError,
+            onSuccess,
+            cfg
+        })
+    },
+    /* 获取表单数据 */
+    formSubmit(state, {
+        onError,
+        onSuccess,
+        isMessage = true,
+        successText = "提交成功",
+        errorText = "提交失败",
+        ...cfg
+    }) {
+        Util.fetchPost({
+            onError,
+            onSuccess,
+            isMessage,
+            successText,
+            cfg,
+            errorText
+        })
     },
     switchSidebarView(state, view) {
         if (view === "help") {
@@ -27,13 +113,40 @@ const mutations = {
             state.common_sidebar = true;
         }
     },
-    login(state) {
-        state.login_state = 1;
-        sessionStorage.isLogin = 1;
+    /**
+     * 涂梦端登陆
+     *
+     * @param {any} state
+     */
+    login(state, {
+        onSuccess,
+        onError,
+        ...param
+    }) {
+        Util.commonPost({
+            url: "api/common/",
+            onSuccess,
+            onError,
+            cfg: Object.assign({
+                act: "adminLogin"
+            }, param),
+            ActionSuccess: res => {
+                state.isLogin = +res.data.data.isLogin
+                sessionStorage.isLogin = +res.data.data.isLogin;
+            }
+        })
     },
     signout(state) {
-        state.login_state = 0;
-        sessionStorage.isLogin = 0;
+        Util.commonPost({
+            url: "api/common/",
+            cfg: {
+                act: "logout"
+            },
+            ActionSuccess: res => {
+                sessionStorage.clear();
+                state.isLogin = 0;
+            }
+        })
     },
     handleCheckState(state, ) {
         state.check_state = 0;

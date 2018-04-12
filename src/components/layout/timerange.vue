@@ -1,6 +1,8 @@
 <template>
     <el-date-picker
         v-model="timerange"
+        value-format="timestamp"
+        :default-time="now"
         type="datetimerange"
         :picker-options="pickerOptions"
         range-separator="至"
@@ -9,6 +11,7 @@
     </el-date-picker>
 </template>
 <script>
+import { mapState, mapMutations } from 'vuex';
 export default {
     name: 'datetimerange',
     data() {
@@ -49,13 +52,22 @@ export default {
                         }
                     }
                 ]
-            }
+            },
+            now: new Date().getTime()
         };
     },
-    props: {
+    computed: {
         timerange: {
-            type: Array
-        },
+            set(value) {
+                this.$store.commit('setTimeRange', value || []);
+            },
+            get() {
+                let ary = this.$store.state.search.timerange;
+                return [ary[0] * 1000, ary[1] * 1000];
+            }
+        }
+    },
+    props: {
         startPlaceholder: {
             type: String,
             default: '开始时间'
@@ -64,6 +76,9 @@ export default {
             type: String,
             default: '结束时间'
         }
+    },
+    methods: {
+        ...mapMutations(['setTimeRange'])
     }
 };
 </script>

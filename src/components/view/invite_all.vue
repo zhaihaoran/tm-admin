@@ -1,29 +1,48 @@
 <template>
     <div v-loading.lock="Loading" >
-        <Search :orderType.sync="orderType" >
-            <div class="search-input">
-                <el-input placeholder="学校名称" v-model="schoolName" suffix-icon="el-icon-search" ></el-input>
-            </div>
-            <div class="search-input">
-                <el-input placeholder="演讲者名称" v-model="speakerName" suffix-icon="el-icon-search" ></el-input>
-            </div>
-            <div class="search-input">
-                <Timerange :timerange="timerange" startPlaceholder="演讲开始时间" ></Timerange>
-            </div>
+        <Search :cfg="searchCfg" >
+            <template slot-scope="props" >
+                <div class="search-input">
+                    <el-input placeholder="学校名称" v-model="schoolName" suffix-icon="el-icon-search" ></el-input>
+                </div>
+                <div class="search-input">
+                    <el-input placeholder="演讲者名称" v-model="speakerName" suffix-icon="el-icon-search" ></el-input>
+                </div>
+                <div class="search-input">
+                    <Timerange></Timerange>
+                </div>
+            </template>
         </Search>
         <div class="tm-card">
-            <Table :data="listData" :page="filter.page" :perPage="filter.per_page" :totalCount="totalCount" >
+            <Table :data="data" :loading="tableLoading" >
+                <el-table-column
+                    type="index"
+                    align="center"
+                    width="40"
+                >
+                </el-table-column>
                 <el-table-column
                     prop="status"
                     align="center"
-                    :formatter="formatAttr"
                     label="状态">
+                    <template slot-scope="scope">
+                        <el-tag
+                        :type="attrs['status'][scope.row.status+''+scope.row.fromSide].tags"
+                        close-transition>
+                        {{attrs["status"][scope.row.status+''+scope.row.fromSide].text}}</el-tag>
+                    </template>
                 </el-table-column>
                 <el-table-column
                     prop="fromSide"
                     align="center"
                     :formatter="formatAttr"
-                    label="发起者">
+                    label="发起者"
+                >
+                    <template slot-scope="scope">
+                        <el-tag
+                        :type="scope.row.fromSide == 1 ? 'primary' : 'success'"
+                        close-transition>{{attrs["fromSide"][scope.row.fromSide]}}</el-tag>
+                    </template>
                 </el-table-column>
                 <el-table-column
                     prop="schoolName"
@@ -38,24 +57,31 @@
                 <el-table-column
                     prop="speakTitle"
                     align="center"
-                    label="演讲主题">
+                    label="演讲主题" show-overflow-tooltip>
                 </el-table-column>
                 <el-table-column
                     prop="speakTimestamp"
-                    show-overflow-tooltip
+                    width="140px"
                     align="center"
                     label="演讲时间">
+                    <template slot-scope="scope">
+                        {{dateformat(scope.row.speakTimestamp)}}
+                    </template>
                 </el-table-column>
                 <el-table-column
                     prop="speakDuration"
                     align="center"
-                    label="演讲时长">
+                    label="演讲时长（分钟）" width="80"
+                    >
                 </el-table-column>
                 <el-table-column
                     prop="addTimestamp"
                     align="center"
-                    show-overflow-tooltip
+                    width="140px"
                     label="发起邀约时间">
+                    <template slot-scope="scope">
+                        {{dateformat(scope.row.addTimestamp)}}
+                    </template>
                 </el-table-column>
                 <el-table-column
                     prop="schoolStatus"
@@ -73,7 +99,7 @@
                     align="center"
                     label="学校反馈">
                     <template slot-scope="scope">
-                        <el-button @click="showResponse(scope.row.reason)" type="text">查看</el-button>
+                        <el-button  v-show="scope.row.status == 4" type="text" @click="showReason(scope.row)" >查看原因</el-button>
                     </template>
                 </el-table-column>
                 <el-table-column
@@ -85,59 +111,40 @@
                 </el-table-column>
                 <el-table-column
                     align="center"
-                    min-width="170px"
+                    width="180px"
                     label="操作">
                     <template slot-scope="scope" >
-                        <el-button size="mini" @click="handleEdit(scope.$index,scope.row)" >修改</el-button>
-                        <el-button size="mini" class="tm-btn-border" @click="handledelete(scope.row.appointmentId)" >删除</el-button>
-                        <el-button size="mini" type="primary" v-show="scope.row.status === 4" @click="handleConfirm(scope.row.appointmentId)" >完成</el-button>
+                        <Operation :handleEdit="handleEdit" :scope="scope"></Operation>
                     </template>
                 </el-table-column>
             </Table>
 
-            <!-- 修改 modal -->
-            <el-dialog
-                :visible.sync="modal.edit"
-                width="30%"
-            >
-                <el-form ref="form" :model="editForm" label-width="80px" >
-                    <el-form-item label="演讲者" >
-                        <span>{{editForm.speakerName}}</span>
-                    </el-form-item>
-                    <el-form-item label="演讲主题" >
-                        <el-input v-model="editForm.speakTitle" ></el-input>
-                    </el-form-item>
-                    <el-form-item label="演讲时间" >
-                        <el-date-picker
-                            v-model="editForm.speakTimestamp"
-                            type="datetime"
-                            placeholder="选择日期时间">
-                        </el-date-picker>
-                    </el-form-item>
-                    <el-form-item label="演讲时长" >
-                        <el-input v-model="editForm.speakDuration" >
-                            <template slot="append">分钟</template>
-                        </el-input>
-                    </el-form-item>
-                    <el-form-item label="邀约时间" >
-                        <span>{{editForm.speakTimestamp}}</span>
-                    </el-form-item>
-                </el-form>
-                <span slot="footer" class="tm-modal-footer">
-                    <el-button class="tm-btn" type="primary" @click="modal.edit = false">确 定</el-button>
-                </span>
-            </el-dialog>
+            <Pagination :cfg="searchCfg" :count="count" ></Pagination>
+            <!-- edit -->
+            <EditInvite></EditInvite>
 
             <ResponseDialog v-on:modal="handleClose" :modal="modal.response" title="哈哈哈" :photos="photos" ></ResponseDialog>
         </div>
     </div>
 </template>
 <script>
+import { mapState, mapMutations } from 'vuex';
+import {
+    attrs,
+    formatAttr,
+    dateformat,
+    commonPageInit
+} from '@comp/lib/api_maps.js';
+
+import Pagination from '@layout/pagination.vue';
+import Operation from '@layout/operation.vue';
+import EditInvite from '@layout/modal/editInvite.vue';
+
 import Table from '@layout/table.vue';
 import Timerange from '@layout/timerange.vue';
 import Search from '@layout/search.vue';
 import MessageBox from '@layout/modal/message.vue';
-import { formatAttr } from '@comp/lib/api_maps.js';
+
 import axios from 'axios';
 
 import ResponseDialog from '@layout/modal/response.vue';
@@ -146,80 +153,83 @@ import img from '../../assets/image/admin/camera.png';
 export default {
     data() {
         return {
-            filter: {
-                per_page: 10,
-                page: 1,
-                sorts: ''
+            attrs,
+            form: {},
+            searchCfg: {
+                act: 'getAppointmentList',
+                orderType: this.orderType,
+                speakTimestampStart: undefined,
+                speakTimestampEnd: undefined
             },
+
             schoolName: '',
             speakerName: 'asdasd',
-            totalCount: 100,
-            Loading: true,
-            orderType: 1,
-            timerange: [],
-            listData: [],
             modal: {
                 response: false,
                 edit: false
             },
-            photos: [],
-            editForm: {}
+            photos: []
         };
     },
-    components: { Search, Timerange, MessageBox, ResponseDialog, Table },
+    computed: {
+        ...mapState({
+            orderType: state => state.search.orderType,
+            timerange: state => state.search.timerange,
+            data: state => state.search.data,
+            count: state => state.search.count,
+            tableLoading: state => state.search.tableLoading,
+            page: state => state.search.page,
+            perPage: state => state.search.perPage,
+            status: state => state.search.status
+        })
+    },
+    components: {
+        Search,
+        Operation,
+        MessageBox,
+        EditInvite,
+        Table,
+        TimeRange,
+        Pagination,
+        ResponseDialog
+    },
     mounted() {
-        this.renderPage();
+        commonPageInit(
+            this,
+            { status: 0 },
+            {
+                act: 'getAppointmentList',
+                status: 0
+            }
+        );
     },
     methods: {
         formatAttr,
-        renderPage() {
-            axios.get('/admin/list').then(res => {
-                const data = res.data.data.data;
-                this.listData = data;
-                this.Loading = false;
+        dateformat,
+        ...mapMutations([
+            'updateValue',
+            'getPageData',
+            'formSubmit',
+            'showModal',
+            'getRejectDesc'
+        ]),
+
+        handleEdit(index, row) {
+            this.showModal(row);
+        },
+
+        showReason(obj) {
+            this.getRejectDesc({
+                act: 'getRejectDescOfAppointment',
+                appointmentId: obj.appointmentId,
+                onSuccess: res => {
+                    this.$alert(res.data.data.rejectDesc, '拒绝原因').catch(
+                        () => {}
+                    );
+                }
             });
         },
-        handleEdit(index, row) {
-            console.log(row);
-            this.modal.edit = true;
-            this.editForm = Object.assign(row);
-        },
-        handledelete(id) {
-            this.$confirm('您确认要删除此次邀约, 是否继续?', '提示', {
-                confirmButtonText: '确定',
-                cancelButtonText: '取消',
-                type: 'warning'
-            })
-                .then(res => {
-                    axios.get('/admin/logout').then(res => {
-                        // delete
-                        console.log(id);
-                        this.$message({
-                            type: 'success',
-                            message: '删除成功!'
-                        });
-                    });
-                })
-                .catch(() => {});
-        },
-        handleConfirm(id) {
-            this.$confirm('您确认要提交?', '提示', {
-                confirmButtonText: '确定',
-                cancelButtonText: '取消',
-                type: 'warning'
-            })
-                .then(res => {
-                    axios.get('/admin/logout').then(res => {
-                        // delete
-                        console.log(id);
-                        this.$message({
-                            type: 'success',
-                            message: '删除成功!'
-                        });
-                    });
-                })
-                .catch(() => {});
-        },
+
         showResponse() {
             axios.get('/admin/feedbacklist').then(res => {
                 const data = res.data.data.feedbackList;

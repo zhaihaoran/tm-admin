@@ -4,7 +4,7 @@
             <el-form class="sr-wrapper" label-width="40px" :model="searchForm" >
                 <div class="sr-item">
                     <el-form-item label-width="0" >
-                        <el-input v-model="searchForm.title" placeholder="标题" ></el-input>
+                        <el-input v-model="searchForm.speakTitle" placeholder="标题" ></el-input>
                     </el-form-item>
                     <el-form-item label="分类" >
                         <el-select v-model="searchForm.value" placeholder="全部分类" >
@@ -19,7 +19,7 @@
                 </div>
                 <div class="sr-item">
                     <el-form-item label-width="0" >
-                        <el-input v-model="searchForm.school" placeholder="学校" ></el-input>
+                        <el-input v-model="searchForm.schoolName" placeholder="学校" ></el-input>
                     </el-form-item>
                     <el-form-item label="分类" >
                         <el-select v-model="searchForm.value" placeholder="全部分类" >
@@ -34,7 +34,7 @@
                 </div>
                 <div class="sr-item">
                     <el-form-item label-width="0" >
-                        <el-input v-model="searchForm.speaker" placeholder="演讲者" ></el-input>
+                        <el-input v-model="searchForm.speakerName" placeholder="演讲者" ></el-input>
                     </el-form-item>
                     <el-form-item label="分类" >
                         <el-select v-model="searchForm.value" placeholder="全部分类" >
@@ -47,13 +47,13 @@
                         </el-select>
                     </el-form-item>
                 </div>
-                <el-button type="primary" @click="searchFormSubmit" class="sr-search-btn" >检索</el-button>
+                <el-button type="primary" @click="handleSearch" class="sr-search-btn" >检索</el-button>
             </el-form>
             <div class="sr-radio" >
-                <el-radio-group v-model="searchForm.category" class="radio-group" >
-                    <el-radio-button label="1">综合排序</el-radio-button>
-                    <el-radio-button label="2">演讲时间</el-radio-button>
-                    <el-radio-button label="3">上传时间</el-radio-button>
+                <el-radio-group @change="handleSearch" v-model="searchForm.orderType" class="radio-group" >
+                    <el-radio-button label="0">综合排序</el-radio-button>
+                    <el-radio-button label="1">最近演讲</el-radio-button>
+                    <el-radio-button label="2">最近上传</el-radio-button>
                 </el-radio-group>
             </div>
         </div>
@@ -61,17 +61,19 @@
             <div class="flex-end mb-20">
                 <el-button type="primary" @click="modal.addVideo = true" >添加</el-button>
             </div>
-            <Table v-loading="loading" :isPagination="false" :data="list" >
+            <Table v-loading="tableLoading" :data="data" >
                 <el-table-column prop="previewUrl" label="预览图" align="center">
                     <template slot-scope="scope">
-                        <img :src="scope.row.previewUrl" class="img-fluid" alt="">
+                        <img :src="scope.row.previewUrl" class="img-fluid" :alt="scope.row.title">
                     </template>
                 </el-table-column>
                 <el-table-column prop="title" label="标题" align="center"></el-table-column>
-                <el-table-column prop="school" label="学校" align="center"></el-table-column>
+                <el-table-column prop="schoolName" label="学校" align="center"></el-table-column>
                 <el-table-column prop="speakerName" label="演讲者" align="center"></el-table-column>
-                <el-table-column prop="startTime" label="演讲时间" align="center"></el-table-column>
-                <el-table-column prop="addTimeStamp" label="上传时间" align="center"></el-table-column>
+                <el-table-column prop="speakTimestamp" label="演讲时间" align="center">
+
+                </el-table-column>
+                <el-table-column prop="addTimeStamp" width="140px" label="上传时间" align="center"></el-table-column>
                 <el-table-column prop="category" label="分类" align="center"></el-table-column>
                 <el-table-column prop="intro" label="推荐位" align="center"></el-table-column>
                 <el-table-column prop="intro" label="启用" align="center">
@@ -84,12 +86,13 @@
                 </el-table-column>
                 <el-table-column align="center" label="操作">
                     <template class="cubes" slot-scope="scope">
-                        <el-button type="primary" >冻结</el-button>
+                        <el-button type="primary" @click="handleSuspendUser" >冻结</el-button>
                         <el-button @click="handleUpdate(scope.row)" type="text" >查看/修改</el-button>
-                        <el-button class="tm-btn-border" type="primary" >删除</el-button>
+                        <el-button @click="handleDelete(scope.row)" class="tm-btn-border" type="primary" >删除</el-button>
                     </template>
                 </el-table-column>
             </Table>
+            <Pagination :cfg="searchCfg" :count="count" ></Pagination>
 
             <!-- 添加视频 -->
             <VideoDialog v-on:modal="handleClose('addVideo')" title="添加视频" :modal="modal.addVideo" ></VideoDialog>
@@ -99,12 +102,22 @@
     </div>
 </template>
 <script>
+import { mapState, mapMutations } from 'vuex';
+import {
+    attrs,
+    formatAttr,
+    dateformat,
+    commonPageInit
+} from '@comp/lib/api_maps.js';
+
 import Table from '@layout/table.vue';
+import Pagination from '@layout/pagination.vue';
 import VideoDialog from '@layout/modal/VideoDialog.vue';
-import { formatAttr } from '@comp/lib/api_maps.js';
 
 import image from '../../assets/image/logo/tsinghua.png';
+
 export default {
+    name: 'video_manage',
     data() {
         return {
             formData: {
@@ -121,7 +134,6 @@ export default {
                 category: [],
                 start: false
             },
-            loading: false,
             options: [
                 {
                     value: '选项1',
@@ -145,41 +157,53 @@ export default {
                 }
             ],
             searchForm: {
-                category: 1,
-                speaker: '',
-                school: '',
-                title: '',
-                value: ''
+                act: 'getVideoList',
+                orderType: 0,
+                speakTitle: '',
+                schoolName: '',
+                speakerName: '',
+                videoTypeId: '', //视频类型id
+                speakerName: '',
+                enable: 0,
+                recommend: 0
             },
             modal: {
                 editVideo: false,
                 addVideo: false
-            },
-            list: [
-                {
-                    title: 'zhaihaoran',
-                    previewUrl: image,
-                    school: '石家庄实验小学',
-                    speakerName: '张小山',
-                    startTime: 123123,
-                    addTimeStamp: 123123,
-                    category: 1,
-                    intro: '首页第一推荐位',
-                    isStart: true
-                },
-                {
-                    title: 'zhaihaoran',
-                    previewUrl: image,
-                    school: '石家庄实验小学',
-                    speakerName: '张小山',
-                    category: 1,
-                    intro: '首页第一推荐位',
-                    startTime: 123123,
-                    addTimeStamp: 123123,
-                    isStart: true
-                }
-            ]
+            }
         };
+    },
+    components: {
+        Table,
+        VideoDialog,
+        Pagination
+    },
+    computed: {
+        ...mapState({
+            orderType: state => state.search.orderType,
+            timerange: state => state.search.timerange,
+            data: state => state.search.data,
+            count: state => state.search.count,
+            tableLoading: state => state.search.tableLoading,
+            page: state => state.search.page,
+            perPage: state => state.search.perPage,
+            status: state => state.search.status
+        }),
+        orderType: {
+            set(value) {
+                this.updateValue({
+                    orderType: value
+                });
+            },
+            get() {
+                return this.$store.state.search.orderType;
+            }
+        }
+    },
+    mounted() {
+        commonPageInit(this, {
+            act: 'getVideoList'
+        });
     },
     methods: {
         formatAttr,
@@ -190,13 +214,34 @@ export default {
         handleClose(modalName) {
             this.modal[modalName] = false;
         },
-        searchFormSubmit() {
-            console.log('提交表单');
+        /* 查询 */
+        handleSearch() {
+            this.getPageData(this.searchForm);
+        },
+        /* 删除 */
+        handleDelete(obj) {
+            this.$confirm('您确认要删除视频吗？, 是否继续？', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            })
+                .then(() => {
+                    this.deleteSubmit({
+                        act: 'removeVideo',
+                        videoId: obj.videoId
+                    });
+                })
+                .catch(() => {});
+        },
+        // ????? 到底冻结学校还是演讲者
+        /* 冻结 */
+        handleSuspendUser(obj) {
+            this.refuse({
+                act: 'suspendUser',
+                userId: obj.appointmentId,
+                suspendDesc: this.suspendDesc
+            });
         }
-    },
-    components: {
-        Table,
-        VideoDialog
     }
 };
 </script>

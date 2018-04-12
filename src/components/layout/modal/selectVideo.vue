@@ -37,6 +37,7 @@
             <el-table-column
                 align="center"
                 prop="addTimeStamp"
+                width="140px"
                 label="上传时间"
                 >
             </el-table-column>
@@ -55,6 +56,7 @@
             <el-table-column
                 align="center"
                 label="操作"
+                width="180px"
                 >
                 <template slot-scope="scope">
                     <el-button @click="submitVideo(scope.row)" type="primary" >选择</el-button>
@@ -69,7 +71,6 @@
 <script>
 import image from 'assets/image/logo/tsinghua.png';
 
-import axios from 'axios';
 import Table from '@layout/table.vue';
 export default {
     name: 'select_video_modal',
