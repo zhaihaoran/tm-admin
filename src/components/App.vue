@@ -27,14 +27,14 @@ export default {
             act: 'getUserLogin',
             onSuccess: res => {
                 // 如登陆，则拿菜单列表
-                if (sessionStorage.isLogin > 0) {
+                if (+sessionStorage.isLogin > 0) {
                     this.getMenuList();
                 }
             }
         });
     },
     methods: {
-        ...mapMutations(['getUserLogin'])
+        ...mapMutations(['getUserLogin', 'getMenuList'])
     }
 };
 </script>

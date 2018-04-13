@@ -10,7 +10,7 @@
             <div ref="mesbox" v-loading="loading" class="message-box">
                 <div v-for="item in chatList"
                     :key="item.$index" class="mb-15"
-                    :class="{left: item.senderType != 2,right:item.senderType == 2}"
+                    :class="{left: item.senderType != 3,right:item.senderType == 3}"
                 >
                     <p class="no-margin"
                         :class="{school:item.senderType ==1,speaker:item.senderType ==2,tumeng:item.senderType ==3 }"
@@ -48,14 +48,6 @@ export default {
             loading: false,
             modal: false,
             message: ''
-            // chatList: [
-            //     {
-            //         senderType: 1, // 发送者类型：1=学校；2=演讲者；3=途梦管理员
-            //         senderName: '', // 发送者名称
-            //         message: '', // 消息
-            //         addTimestamp: 123 // 添加时间戳
-            //     }
-            // ]
         };
     },
     computed: {
@@ -76,12 +68,11 @@ export default {
                 appointmentId: row.appointmentId,
                 onSuccess: res => {
                     this.loading = false;
-                    this.$refs.mesbox.scrollTop = this.$refs.mesbox.scrollHeight;
+                    this.$nextTick(function() {
+                        this.$refs.mesbox.scrollTop = this.$refs.mesbox.scrollHeight;
+                    });
                 }
             });
-        },
-        handleSend() {
-            console.log('haha');
         },
         sendMessage(row) {
             if (!this.message) {

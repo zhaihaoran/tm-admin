@@ -161,8 +161,8 @@ const mutations = {
                 act: "adminLogin"
             }, param),
             ActionSuccess: res => {
-                state.isLogin = +res.data.data.isLogin
-                sessionStorage.isLogin = +res.data.data.isLogin;
+                state.isLogin = 1
+                sessionStorage.isLogin = 1;
             }
         })
     },
