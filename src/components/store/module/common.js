@@ -7,7 +7,9 @@ const state = {
     // sesson里取
     isLogin: 0, // 登陆状态 0：未登录
     checkState: 0, // 审核状态
-    menuList: {},
+    menuList: {}, // 菜单列表
+    selectOptions: [], // 远程select option
+    optionsCounts: 0, // option count
 }
 // 模块的mutations 、 actions、getter 默认注册在全局命名空间的
 const mutations = {
@@ -17,6 +19,34 @@ const mutations = {
     toggleState(state) {
         //在这里改变state中的数据
         state.check_state = state.check_state ? 0 : 1
+    },
+    /**
+     * 远程获取select数据
+     *
+     * @param {any} state
+     * @param {any}
+     */
+    getSelectOptions(state,{
+        onSuccess,
+        ...cfg
+    }) {
+        Util.fetchPost({
+            onSuccess,
+            cfg,
+            ActionSuccess: res => {
+                state.selectOptions = res.data.data.data;
+                state.optionsCounts = +res.data.data.count;
+            }
+        })
+    },
+    /**
+     * 清空option
+     *
+     * @param {any} state
+     */
+    clearOptions(state) {
+        state.selectOptions = [];
+        state.optionsCounts = 0;
     },
     getFormData(state, {
         onError,

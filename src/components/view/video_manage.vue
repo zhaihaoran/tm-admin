@@ -6,45 +6,15 @@
                     <el-form-item label-width="0" >
                         <el-input v-model="searchForm.speakTitle" placeholder="标题" ></el-input>
                     </el-form-item>
-                    <el-form-item label="分类" >
-                        <el-select v-model="searchForm.value" placeholder="全部分类" >
-                            <el-option
-                                v-for="item in options"
-                                :key="item.value"
-                                :label="item.label"
-                                :value="item.value">
-                            </el-option>
-                        </el-select>
+                </div>
+                <div class="sr-item">
+                    <el-form-item label-width="0" >
+                        <el-input placeholder="学校名称" v-model="searchForm.schoolName" suffix-icon="el-icon-search" ></el-input>
                     </el-form-item>
                 </div>
                 <div class="sr-item">
                     <el-form-item label-width="0" >
-                        <el-input v-model="searchForm.schoolName" placeholder="学校" ></el-input>
-                    </el-form-item>
-                    <el-form-item label="分类" >
-                        <el-select v-model="searchForm.value" placeholder="全部分类" >
-                            <el-option
-                                v-for="item in options"
-                                :key="item.value"
-                                :label="item.label"
-                                :value="item.value">
-                            </el-option>
-                        </el-select>
-                    </el-form-item>
-                </div>
-                <div class="sr-item">
-                    <el-form-item label-width="0" >
-                        <el-input v-model="searchForm.speakerName" placeholder="演讲者" ></el-input>
-                    </el-form-item>
-                    <el-form-item label="分类" >
-                        <el-select v-model="searchForm.value" placeholder="全部分类" >
-                            <el-option
-                                v-for="item in options"
-                                :key="item.value"
-                                :label="item.label"
-                                :value="item.value">
-                            </el-option>
-                        </el-select>
+                        <el-input placeholder="演讲者名称" v-model="searchForm.speakerName" suffix-icon="el-icon-search" ></el-input>
                     </el-form-item>
                 </div>
                 <el-button type="primary" @click="handleSearch" class="sr-search-btn" >检索</el-button>
@@ -56,6 +26,16 @@
                     <el-radio-button label="2">最近上传</el-radio-button>
                 </el-radio-group>
             </div>
+            <el-form-item label="分类" >
+                <el-select v-model="searchForm.videoTypeId" placeholder="全部分类" >
+                    <el-option
+                        v-for="item in options"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value">
+                    </el-option>
+                </el-select>
+            </el-form-item>
         </div>
         <div class="tm-card">
             <div class="flex-end mb-20">
@@ -70,38 +50,57 @@
                 <el-table-column prop="title" label="标题" align="center"></el-table-column>
                 <el-table-column prop="schoolName" label="学校" align="center"></el-table-column>
                 <el-table-column prop="speakerName" label="演讲者" align="center"></el-table-column>
-                <el-table-column prop="speakTimestamp" label="演讲时间" align="center">
-
+                <el-table-column prop="speakTimestamp" width="140px" label="演讲时间" align="center">
+                    <template slot-scope="scope">
+                        {{dateformat(scope.row.speakTimestamp)}}
+                    </template>
                 </el-table-column>
-                <el-table-column prop="addTimeStamp" width="140px" label="上传时间" align="center"></el-table-column>
+                <el-table-column prop="addTimeStamp" width="140px" label="上传时间" align="center">
+                    <template slot-scope="scope">
+                        {{dateformat(scope.row.addTimeStamp)}}
+                    </template>
+                </el-table-column>
                 <el-table-column prop="category" label="分类" align="center"></el-table-column>
                 <el-table-column prop="intro" label="推荐位" align="center"></el-table-column>
                 <el-table-column prop="intro" label="启用" align="center">
                     <template slot-scope="scope">
                         <el-switch
-                            v-model="scope.row.isStart"
+                            v-model="scope.row.enable"
                         >
                         </el-switch>
                     </template>
                 </el-table-column>
                 <el-table-column align="center" label="操作">
                     <template class="cubes" slot-scope="scope">
-                        <el-button type="primary" @click="handleSuspendUser" >冻结</el-button>
+                        <el-button type="primary" @click="handlePlayVideo(scope.row.videoUrl)" >播放</el-button>
                         <el-button @click="handleUpdate(scope.row)" type="text" >查看/修改</el-button>
                         <el-button @click="handleDelete(scope.row)" class="tm-btn-border" type="primary" >删除</el-button>
                     </template>
                 </el-table-column>
             </Table>
-            <Pagination :cfg="searchCfg" :count="count" ></Pagination>
+            <Pagination :cfg="searchForm" :count="count" ></Pagination>
 
             <!-- 添加视频 -->
-            <VideoDialog v-on:modal="handleClose('addVideo')" title="添加视频" :modal="modal.addVideo" ></VideoDialog>
+            <VideoDialog v-on:modal="handleClose('addVideo')" title="添加视频" action="addVideo" :modal="modal.addVideo" ></VideoDialog>
             <!-- 修改视频 -->
-            <VideoDialog :data="formData" v-on:modal="handleClose('editVideo')" title="修改信息" :modal="modal.editVideo" ></VideoDialog>
+            <VideoDialog :data="formData" v-on:modal="handleClose('editVideo')" action="modifyVideo"  title="修改信息" :modal="modal.editVideo" ></VideoDialog>
+            <!-- 视频播放弹窗 -->
+            <el-dialog width="1200px" :visible.sync="modal.video" :before-close="handleVideoClose" >
+                <div class="video-player">
+                    <video-player
+                        class="vjs-custom-skin"
+                        ref="videoPlayer"
+                        :options="playerOptions"
+                        :playsinline="true"
+                    >
+                    </video-player>
+                </div>
+            </el-dialog>
         </div>
     </div>
 </template>
 <script>
+import $ from 'jquery';
 import { mapState, mapMutations } from 'vuex';
 import {
     attrs,
@@ -112,7 +111,11 @@ import {
 
 import Table from '@layout/table.vue';
 import Pagination from '@layout/pagination.vue';
+import SlRemote from '@layout/slremote.vue';
 import VideoDialog from '@layout/modal/VideoDialog.vue';
+
+import { videoPlayer } from 'vue-video-player';
+import 'video.js/dist/video-js.css';
 
 import image from '../../assets/image/logo/tsinghua.png';
 
@@ -120,6 +123,17 @@ export default {
     name: 'video_manage',
     data() {
         return {
+            playerOptions: {
+                autoplay: true,
+                sources: [
+                    {
+                        type: 'video/mp4',
+                        src: ''
+                    }
+                ],
+                notSupportedMessage: '此视频暂无法播放，请稍后再试',
+                poster: '' //封面
+            },
             formData: {
                 title: 'as',
                 photoUrl:
@@ -169,13 +183,15 @@ export default {
             },
             modal: {
                 editVideo: false,
-                addVideo: false
+                addVideo: false,
+                video: false
             }
         };
     },
     components: {
         Table,
         VideoDialog,
+        SlRemote,
         Pagination
     },
     computed: {
@@ -233,19 +249,21 @@ export default {
                 })
                 .catch(() => {});
         },
-        // ????? 到底冻结学校还是演讲者
-        /* 冻结 */
-        handleSuspendUser(obj) {
-            this.refuse({
-                act: 'suspendUser',
-                userId: obj.appointmentId,
-                suspendDesc: this.suspendDesc
-            });
+
+        // 播放视频
+        handlePlayVideo(videourl) {
+            this.modal.video = true;
+            this.playerOptions.sources[0].src = videourl;
+        },
+        handleVideoClose() {
+            this.$refs.videoPlayer.player.pause();
+            this.modal.video = false;
         }
     }
 };
 </script>
 <style lang="scss">
+@import '../../scss/variable/_video.scss';
 .sr-wrapper {
     display: flex;
     position: relative;

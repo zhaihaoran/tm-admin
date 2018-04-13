@@ -180,7 +180,7 @@ export default {
         MessageBox,
         EditInvite,
         Table,
-        TimeRange,
+        Timerange,
         Pagination,
         ResponseDialog
     },

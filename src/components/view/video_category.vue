@@ -12,30 +12,30 @@
             </el-table-column>
             <el-table-column
                 align="center"
-                prop="category"
+                prop="name"
                 label="分类名"
                 >
             </el-table-column>
             <el-table-column
                 align="center"
-                prop="videoCounts"
+                prop="videoQuantity"
                 label="视频数量"
                 >
             </el-table-column>
             <el-table-column
                 align="center"
-                prop="index"
-                label="顺序号"
-                >
+                prop="orderNum"
+                label="排序"
+            >
             </el-table-column>
             <el-table-column
                 align="center"
-                prop="isStart"
+                prop="enable"
                 label="启用"
                 >
                 <template slot-scope="scope">
                     <el-switch
-                        v-model="scope.row.isStart"
+                        v-model="scope.row.enable"
                     >
                     </el-switch>
                 </template>
@@ -46,7 +46,7 @@
                 >
                 <template slot-scope="scope">
                     <el-button @click="handleEdit(scope.row)" >修改</el-button>
-                    <el-button @click="handleDelete" class="tm-btn-border" >删除</el-button>
+                    <el-button @click="handleDelete(scope.row)" class="tm-btn-border" >删除</el-button>
                 </template>
             </el-table-column>
         </Table>
@@ -54,14 +54,14 @@
         <el-dialog title="修改分类" :visible.sync="modal.edit" >
             <el-form label-width="80px" :model="submitForm" >
                 <el-form-item label="分类名称" >
-                    <el-input v-model="submitForm.category" ></el-input>
+                    <el-input v-model="submitForm.name" ></el-input>
                 </el-form-item>
                 <el-form-item label="顺序号">
-                    <el-input type="number" v-model="submitForm.index" ></el-input>
+                    <el-input type="number" v-model="submitForm.orderNum" ></el-input>
                 </el-form-item>
                 <el-form-item label="启用">
                     <el-switch
-                        v-model="submitForm.isStart"
+                        v-model="submitForm.enable"
                     >
                     </el-switch>
                 </el-form-item>
@@ -75,27 +75,28 @@
         <el-dialog title="新增分类" :visible.sync="modal.add" >
             <el-form label-width="80px" :model="addForm" >
                 <el-form-item label="分类名称" >
-                    <el-input v-model="addForm.category" ></el-input>
+                    <el-input v-model="addForm.name" ></el-input>
                 </el-form-item>
                 <el-form-item label="顺序号">
-                    <el-input type="number" v-model="addForm.index" ></el-input>
+                    <el-input type="number" v-model="addForm.orderNum" ></el-input>
                 </el-form-item>
                 <el-form-item label="启用">
                     <el-switch
-                        v-model="addForm.isStart"
+                        v-model="addForm.enable"
                     >
                     </el-switch>
                 </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="modal.add = false">取 消</el-button>
-                <el-button @click="modal.add = false" type="primary" >保存</el-button>
+                <el-button @click="handleAddVideoType" type="primary" >保存</el-button>
             </span>
         </el-dialog>
     </el-card>
 </template>
 <script>
-import axios from 'axios';
+import { mapState, mapMutations } from 'vuex';
+import { formatAttr, dateformat, commonPageInit } from '@comp/lib/api_maps.js';
 import Table from '@layout/table.vue';
 export default {
     data() {
@@ -105,53 +106,66 @@ export default {
                 edit: false,
                 add: false
             },
-            addForm: {
-                isStart: true,
-                category: 'zhaihaoran',
-                index: 11
-            },
-            submitForm: {
-                id: 0,
-                isStart: true,
-                category: 'zhaihaoran',
-                index: 11
-            }
+            addForm: {},
+            submitForm: {}
         };
+    },
+    mounted() {
+        commonPageInit(this, {
+            act: 'getVideoTypeList'
+        });
     },
     computed: {
         ...mapState({
-            orderType: state => state.search.orderType,
-            timerange: state => state.search.timerange,
             data: state => state.search.data,
-            count: state => state.search.count,
-            tableLoading: state => state.search.tableLoading,
-            page: state => state.search.page,
-            perPage: state => state.search.perPage,
-            status: state => state.search.status
+            tableLoading: state => state.search.tableLoading
         })
     },
     components: {
         Table
     },
     methods: {
+        ...mapMutations(['updateValue', 'getPageData', 'formSubmit']),
         handleEdit(data) {
             console.log(data);
-            this.submitForm = Object.assign(data);
+            this.submitForm = Object.assign(this.submitForm, data);
             this.modal.edit = true;
         },
-        handleDelete() {
+        handleDelete(obj) {
             this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
                 type: 'warning'
             })
                 .then(() => {
-                    this.$message({
-                        type: 'success',
-                        message: '删除成功!'
+                    this.formSubmit({
+                        act: 'removeVideoType',
+                        videoTypeId: obj.videoTypeId,
+                        successText: '删除成功'
                     });
                 })
                 .catch(() => {});
+        },
+        /* 添加分类 */
+        handleAddVideoType() {
+            this.formSubmit({
+                act: 'addVideoType',
+                name: this.submitForm.name,
+                orderNum: this.submitForm.orderNum,
+                enable: this.submitForm.enable,
+                successText: '添加成功'
+            });
+        },
+        /* 修改分类 */
+        handleEditVideoType() {
+            this.formSubmit({
+                act: 'modifyVideoType',
+                videoTypeId: this.submitForm.videoTypeId,
+                name: this.submitForm.name,
+                orderNum: this.submitForm.orderNum,
+                enable: this.submitForm.enable,
+                successText: '修改成功'
+            });
         }
     }
 };

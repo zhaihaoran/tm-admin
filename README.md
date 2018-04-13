@@ -2,20 +2,41 @@
 
 > tumeng project
 
-## Build Setup
+* 途梦控制台
+  * ok-[通用-获取菜单]
+  * ok-[通用-冻结用户]
 
-``` bash
-# install dependencies
-npm install
+  * ok-[学校申请处理-获取学校申请表列表]
+  * ok-[学校申请处理-获取学校申请表]
+  * [学校申请处理-修改学校申请表]
+  * ok-[学校申请处理-通过学校申请表]
+  * ok-[学校申请处理-驳回学校申请表]
 
-# serve with hot reload at localhost:8080
-npm run dev
+  * ok-[演讲者申请处理-获取演讲者申请列表]
+  * ok-[演讲者申请处理-获取演讲者申请表]
+  * [演讲者申请处理-修改演讲者申请表]
+  * ok-[演讲者申请处理-通过演讲者申请表]
+  * ok-[演讲者申请处理-驳回演讲者申请表]
 
-# build for production with minification
-npm run build
+  * ok-[所有邀约-获取邀约列表]
+  * ok-[所有邀约-获取反馈列表]
+  * ok-[所有邀约-修改邀约]
+  * ok-[所有邀约-修改邀约进度状态]
+  * ok-[所有邀约-完成邀约]
 
-# build for production and view the bundle analyzer report
-npm run build --report
-```
+  * ok-[视频管理-获取视频列表]
+  * [视频管理-获取视频]
+  * ok-[视频管理-添加视频]
+  * ok-[视频管理-修改视频]
+  * ok-[视频管理-删除视频]
+  * [视频管理-获取学校列表]
+  * [视频管理-获取演讲者列表]
+  * [视频管理-设置视频推荐]
 
-For a detailed explanation on how things work, check out the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
+  * ok-[视频分类设置-获取视频分类列表]
+  * ok-[视频分类设置-添加视频分类]
+  * ok-[视频分类设置-修改视频分类]
+  * ok-[视频分类设置-删除视频分类]
+
+  * ok-[推荐视频设置-获取视频推荐列表]
+  * (??)ok-[推荐视频设置-修改视频推荐]

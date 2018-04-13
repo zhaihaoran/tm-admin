@@ -13,7 +13,7 @@
                     </div>
                     <div class="vd-events">
                         <div class="e-box">
-                            <div @click="handleChangeVideo(videoList[0].videoTypeId)" class="e-cube">
+                            <div @click="handleChangeVideo" class="e-cube">
                                 <i class="icon iconfont icon-changeVideo"></i>
                                 <span>替换热门视频</span>
                             </div>
@@ -47,7 +47,7 @@
                     </div>
                     <div class="vd-events">
                         <div class="e-box">
-                            <div @click="handleChangeVideo(videoList[1].videoTypeId)" class="e-cube">
+                            <div @click="handleChangeVideo" class="e-cube">
                                 <i class="icon iconfont icon-changeVideo"></i>
                                 <span>替换热门视频</span>
                             </div>
@@ -66,7 +66,7 @@
                     </div>
                     <div class="vd-events">
                         <div class="e-box">
-                            <div @click="handleChangeVideo(videoList[2].videoTypeId)" class="e-cube">
+                            <div @click="handleChangeVideo" class="e-cube">
                                 <i class="icon iconfont icon-changeVideo"></i>
                                 <span>替换热门视频</span>
                             </div>
@@ -162,6 +162,7 @@ export default {
         };
     },
     methods: {
+        ...mapMutations(['getPageData']),
         handleHoverEnter(event) {
             const $target = $(event.target);
             $target.find('.vd-events').addClass('active');
@@ -181,9 +182,13 @@ export default {
         handleClose() {
             this.modal.selectVideo = false;
         },
+        /* 当点击替换视频时，就去拿视频列表 */
         handleChangeVideo(id) {
-            console.log(id);
             this.modal.selectVideo = true;
+
+            this.getPageData({
+                act: 'getVideoList'
+            });
         }
     },
     components: {

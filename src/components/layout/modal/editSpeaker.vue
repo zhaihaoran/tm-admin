@@ -71,9 +71,6 @@
             <el-form-item label="驳回原因">
                 <el-input class="tm-textarea" type="textarea" v-model="form.rejectDesc"></el-input>
             </el-form-item>
-            <el-form-item label="冻结原因">
-                <el-input class="tm-textarea" type="textarea" v-model="form.suspendDesc"></el-input>
-            </el-form-item>
             <el-form-item label="课程剩余">
                 <el-input v-model="form.remainCount"></el-input>
             </el-form-item>
@@ -107,7 +104,6 @@ export default {
                 inviter: 'zhaihr',
                 whyChooseUs: 'zhaihr',
                 rejectDesc: 'zhaihr',
-                suspendDesc: 'zhaihr',
                 benefitPeopleTimesAdd: 1
             },
             form: this.data

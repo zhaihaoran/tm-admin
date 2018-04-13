@@ -26,33 +26,7 @@
                     <i class="el-icon-question md-qs"></i>
                 </el-tooltip>
                 <el-input placeholder="请输入学校名称" class="mt-10" v-show="form.schoolRadio === '填写' " v-model="form.schoolName" ></el-input>
-                <el-select
-                    class="modal_select mt-10"
-                    v-model="form.schoolId"
-                    v-show="form.schoolRadio === '选择' "
-                    filterable
-                    remote
-                    :remote-method="remoteMethod"
-                    :loading="loading"
-                    placeholder="请选择">
-                    <el-option
-                        class="sl_option"
-                        v-for="item in list"
-                        :key="item.value"
-                        :label="item.label"
-                        :value="item.value"
-                        >
-                        <!-- value 控制选择色 -->
-                        <div class="sl_image">
-                            <img :src="item.url" class="img-fluid" alt="">
-                        </div>
-                        <div class="sl_body">
-                            <h4 class="sl_title">{{item.label}}</h4>
-                            <h5 class="sl_info">{{item.info}}</h5>
-                            <p class="sl_p">{{item.context}}</p>
-                        </div>
-                    </el-option>
-                </el-select>
+                <SlRemote placeholder="学校名称" v-on:id="handleUpdateSchoolId" :id="form.schoolId" action="getSelectOptions" ></SlRemote>
             </el-form-item>
             <el-form-item label="演讲者">
                 <el-radio-group v-model="form.speakerRadio" size="small" >
@@ -63,33 +37,7 @@
                     <i class="el-icon-question md-qs"></i>
                 </el-tooltip>
                 <el-input placeholder="请输入演讲者名称" class="mt-10" v-show="form.speakerRadio === '填写' " v-model="form.speakerName" ></el-input>
-                <el-select
-                    class="modal_select mt-10"
-                    v-model="form.speakerId"
-                    v-show="form.speakerRadio === '选择' "
-                    filterable
-                    remote
-                    :remote-method="remoteMethod"
-                    :loading="loading"
-                    placeholder="请选择">
-                    <el-option
-                        class="sl_option"
-                        v-for="item in list"
-                        :key="item.value"
-                        :label="item.label"
-                        :value="item.value"
-                        >
-                        <!-- value 控制选择色 -->
-                        <div class="sl_image">
-                            <img :src="item.url" class="img-fluid" alt="">
-                        </div>
-                        <div class="sl_body">
-                            <h4 class="sl_title">{{item.label}}</h4>
-                            <h5 class="sl_info">{{item.info}}</h5>
-                            <p class="sl_p">{{item.context}}</p>
-                        </div>
-                    </el-option>
-                </el-select>
+                <SlRemote placeholder="演讲者名称" v-on:id="handleUpdateSpeakerId" :id="form.speakerId" action="getSelectOptions" ></SlRemote>
             </el-form-item>
             <el-form-item label="演讲时间">
                 <el-date-picker
@@ -149,7 +97,11 @@
     </el-dialog>
 </template>
 <script>
+import { mapState, mapMutations } from 'vuex';
+
 import Upload from '@layout/upload.vue';
+import SlRemote from '@layout/slremote.vue';
+
 import image from 'assets/image/logo/tsinghua.png';
 
 export default {
@@ -220,31 +172,7 @@ export default {
                     }
                 ]
             },
-            fileList: [],
-            list: [
-                {
-                    title: 'zhaihaoran',
-                    previewUrl: image,
-                    school: '石家庄实验小学',
-                    speakerName: '张小山',
-                    startTime: 123123,
-                    addTimeStamp: 123123,
-                    category: 1,
-                    intro: '首页第一推荐位',
-                    isStart: true
-                },
-                {
-                    title: 'zhaihaoran',
-                    previewUrl: image,
-                    school: '石家庄实验小学',
-                    speakerName: '张小山',
-                    category: 1,
-                    intro: '首页第一推荐位',
-                    startTime: 123123,
-                    addTimeStamp: 123123,
-                    isStart: true
-                }
-            ]
+            fileList: []
         };
     },
     props: {
@@ -273,82 +201,44 @@ export default {
                     start: true
                 };
             }
+        },
+        action: {
+            type: String
         }
     },
     components: {
-        Upload
+        Upload,
+        SlRemote
     },
     methods: {
+        ...mapMutations(['formSubmit']),
         submitVideo() {
-            console.log('11');
+            this.formSubmit({
+                act: this.action,
+                ...this.form
+            });
         },
         handleModalClose() {
             // 通过$emit 实现子组件与父组件进行沟通
             this.$emit('modal');
         },
-        // 远程select
-        remoteMethod(query) {
-            if (query !== '') {
-                this.loading = true;
-                setTimeout(() => {
-                    this.loading = false;
-                    this.list = this.schools.filter(item => {
-                        return (
-                            item.label
-                                .toLowerCase()
-                                .indexOf(query.toLowerCase()) > -1
-                        );
-                    });
-                }, 200);
-            } else {
-                this.list = [];
-            }
+
+        handleUpdateSchoolId(value) {
+            this.form.schoolId = value;
+        },
+
+        handleUpdateSpeakerId(value) {
+            this.form.speakerId = value;
         }
     }
 };
 </script>
 <style lang="scss">
-.modal_select {
-    width: 100%;
-}
 .md-qs {
     margin-left: 10px;
     font-size: 20px;
     position: relative;
     top: 5px;
-}
-.sl_option {
-    display: flex;
-    height: 110px;
-    width: 600px;
-    padding: 0;
-    .sl_image {
-        max-width: 80px;
-        margin-left: 10px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-    }
-    .sl_body {
-        flex: 1;
-        max-width: 475px;
-        display: flex;
-        flex-direction: column;
-        padding: 10px 15px;
-        .sl_title {
-            line-height: 26px;
-            margin: 0;
-        }
-        .sl_info {
-            margin: 0;
-        }
-        .sl_p {
-            margin: 0;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            line-height: 26px;
-        }
-    }
 }
 </style>
 

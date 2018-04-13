@@ -1,14 +1,9 @@
 <template>
     <div class="cell" >
-        <div v-if="scope.row.status == 1 && scope.row.fromSide == 2" >
-            <el-button size="mini" @click="handleEdit(scope.$index,scope.row)" >修改</el-button>
-            <el-button size="mini" class="tm-btn-border" @click="handledelete(scope.row)" >删除</el-button>
-        </div>
-        <div v-if="scope.row.status == 1 && scope.row.fromSide == 1" >
+        <div>
             <el-button size="mini" type="danger" class="tm-btn" @click="modal.agree=true" >通过</el-button>
             <el-button size="mini" class="tm-btn-border" @click="modal.refuse=true" >驳回</el-button>
         </div>
-
         <!-- modal -->
         <el-dialog
             :visible.sync="modal.agree"
@@ -46,7 +41,6 @@ export default {
         return {
             modal: {
                 agree: false,
-                delete: false,
                 refuse: false
             },
             rejectDesc: ''
@@ -67,7 +61,7 @@ export default {
         }
     },
     methods: {
-        ...mapMutations(['deleteSubmit', 'Ok', 'refuse']),
+        ...mapMutations(['Ok', 'refuse']),
         handleOk(obj) {
             this.modal.agree = false;
             this.Ok({
@@ -82,20 +76,6 @@ export default {
                 [this.type]: this.scope.row[this.type],
                 rejectDesc: this.rejectDesc
             });
-        },
-        handledelete(obj) {
-            this.$confirm('您确认要删除此次邀约, 是否继续?', '提示', {
-                confirmButtonText: '确定',
-                cancelButtonText: '取消',
-                type: 'warning'
-            })
-                .then(() => {
-                    this.deleteSubmit({
-                        act: this.action.delete,
-                        [this.type]: this.scope.row[this.type]
-                    });
-                })
-                .catch(() => {});
         }
     }
 };

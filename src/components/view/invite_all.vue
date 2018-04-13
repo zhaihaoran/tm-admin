@@ -1,12 +1,12 @@
 <template>
-    <div v-loading.lock="Loading" >
+    <div>
         <Search :cfg="searchCfg" >
             <template slot-scope="props" >
                 <div class="search-input">
-                    <el-input placeholder="学校名称" v-model="schoolName" suffix-icon="el-icon-search" ></el-input>
+                    <SlRemote placeholder="学校名称" v-on:id="handleUpdateSchoolId" :id="searchCfg.schoolId" action="getSelectOptions" ></SlRemote>
                 </div>
                 <div class="search-input">
-                    <el-input placeholder="演讲者名称" v-model="speakerName" suffix-icon="el-icon-search" ></el-input>
+                    <SlRemote placeholder="演讲者名称" v-on:id="handleUpdateSpeakerId" :id="searchCfg.speakerId" action="getSelectOptions" ></SlRemote>
                 </div>
                 <div class="search-input">
                     <Timerange></Timerange>
@@ -86,20 +86,28 @@
                 <el-table-column
                     prop="schoolStatus"
                     align="center"
-                    :formatter="formatAttr"
                     label="学校进展">
+                    <template slot-scope="scope">
+                        <el-button @click="handleGetStatus(scope.row)" type="text" v-popover:schoolpopover >
+                            {{attrs['schoolStatus'][scope.row.schoolStatus]}}
+                        </el-button>
+                    </template>
                 </el-table-column>
                 <el-table-column
                     prop="speakerStatus"
                     align="center"
-                    :formatter="formatAttr"
                     label="演讲者进展">
+                    <template slot-scope="scope">
+                        <el-button @click="handleGetStatus(scope.row)" type="text" v-popover:speakerpopover >
+                            {{attrs['speakerStatus'][scope.row.speakerStatus]}}
+                        </el-button>
+                    </template>
                 </el-table-column>
                 <el-table-column
                     align="center"
                     label="学校反馈">
                     <template slot-scope="scope">
-                        <el-button  v-show="scope.row.status == 4" type="text" @click="showReason(scope.row)" >查看原因</el-button>
+                        <el-button v-show="scope.row.status == 4" type="text" @click="showReason(scope.row)" >查看原因</el-button>
                     </template>
                 </el-table-column>
                 <el-table-column
@@ -119,11 +127,16 @@
                 </el-table-column>
             </Table>
 
+            <!-- 学校进度 popover -->
+            <ScProgress :active="schoolProgress" ref="schoolpopover" ></ScProgress>
+            <!-- 演讲者进度 popover -->
+            <SpProgress :active="speakerProgress" ref="speakerpopover" ></SpProgress>
+
             <Pagination :cfg="searchCfg" :count="count" ></Pagination>
             <!-- edit -->
             <EditInvite></EditInvite>
 
-            <ResponseDialog v-on:modal="handleClose" :modal="modal.response" title="哈哈哈" :photos="photos" ></ResponseDialog>
+            <ResponseDialog v-on:modal="handleClose" :modal="modal.response" title="哈哈哈" :photos="feedList" ></ResponseDialog>
         </div>
     </div>
 </template>
@@ -136,8 +149,11 @@ import {
     commonPageInit
 } from '@comp/lib/api_maps.js';
 
+import ScProgress from '@layout/modal/schoolProgress.vue';
+import SpProgress from '@layout/modal/speakerProgress.vue';
 import Pagination from '@layout/pagination.vue';
-import Operation from '@layout/operation.vue';
+import SlRemote from '@layout/slremote.vue';
+import Operation from '@layout/invite_operation.vue';
 import EditInvite from '@layout/modal/editInvite.vue';
 
 import Table from '@layout/table.vue';
@@ -159,16 +175,14 @@ export default {
                 act: 'getAppointmentList',
                 orderType: this.orderType,
                 speakTimestampStart: undefined,
-                speakTimestampEnd: undefined
+                speakTimestampEnd: undefined,
+                schoolId: '',
+                speakerId: ''
             },
-
-            schoolName: '',
-            speakerName: 'asdasd',
             modal: {
                 response: false,
                 edit: false
-            },
-            photos: []
+            }
         };
     },
     computed: {
@@ -180,16 +194,22 @@ export default {
             tableLoading: state => state.search.tableLoading,
             page: state => state.search.page,
             perPage: state => state.search.perPage,
-            status: state => state.search.status
+            status: state => state.search.status,
+            feedList: state => state.search.feedList,
+            schoolProgress: state => state.progress.schoolProgress,
+            speakerProgress: state => state.progress.speakerProgress
         })
     },
     components: {
         Search,
+        ScProgress,
+        SpProgress,
+        SlRemote,
         Operation,
         MessageBox,
         EditInvite,
         Table,
-        TimeRange,
+        Timerange,
         Pagination,
         ResponseDialog
     },
@@ -211,8 +231,17 @@ export default {
             'getPageData',
             'formSubmit',
             'showModal',
+            'getProgressStatus',
             'getRejectDesc'
         ]),
+
+        handleUpdateSchoolId(value) {
+            this.searchCfg.schoolId = value;
+        },
+
+        handleUpdateSpeakerId(value) {
+            this.searchCfg.speakerId = value;
+        },
 
         handleEdit(index, row) {
             this.showModal(row);
@@ -230,16 +259,25 @@ export default {
             });
         },
 
-        showResponse() {
-            axios.get('/admin/feedbacklist').then(res => {
-                const data = res.data.data.feedbackList;
-                console.log(data);
-                this.photos = data;
+        getResponseList(obj) {
+            this.getFeedList({
+                act: 'getFeedbackList',
+                appointmentId: obj.appointmentId,
+                onSuccess: res => {
+                    console.log(res);
+                }
             });
-            this.modal.response = true;
         },
         handleClose() {
             this.modal.response = false;
+        },
+        // 获取邀约状态
+        handleGetStatus(obj, value, active) {
+            this.getProgressStatus({
+                schoolProgress: obj.schoolStatus,
+                speakerProgress: obj.speakerStatus
+            });
+            active = value;
         }
     }
 };

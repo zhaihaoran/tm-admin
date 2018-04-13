@@ -63,6 +63,18 @@ const mutations = {
             },
         });
     },
+    /* 完成 */
+    finishInvite(state,cfg) {
+        Util.fetchPost({
+            cfg,
+            isMessage: true,
+            successText: "成功",
+            onSuccess: res => {
+                // 提交成功
+                state.data = state.data.filter(el => el.appointmentId !== cfg.appointmentId);
+            },
+        });
+    },
     /* 拒绝 */
     refuse(state, cfg) {
         Util.fetchPost({

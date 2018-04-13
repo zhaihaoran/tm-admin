@@ -28,25 +28,18 @@
             </el-table-column>
             <el-table-column align="center" width="160px" label="操作" >
                 <template slot-scope="scope">
-                    <Operation :handleEdit="handleEdit" :scope="scope"></Operation>
+                    <Operation :handleEdit="handleEdit" :scope="scope" type="speakerId" :action="actions" ></Operation>
                 </template>
             </el-table-column>
             <el-table-column align="center" width="240px" label="冻结操作" >
                 <template slot-scope="scope">
-                    <div v-show="+scope.row.suspend>0" >
-                        <span>已冻结</span>
-                        <el-button size="mini" type="text" @click="showReason(scope.row)" v-show="scope.row.suspend>0">查看原因</el-button>
-                        <el-button size="mini" v-show="scope.row.suspend>0" class="tm-btn-border" @click="handleUnsuspend" >解冻</el-button>
-                    </div>
-                    <el-button size="mini" v-show="+scope.row.suspend==0" type="primary" class="tm-btn" >冻结</el-button>
+                    <Suspend :scope="scope" ></Suspend>
                 </template>
             </el-table-column>
         </Table>
         <Pagination :cfg="searchCfg" :count="count" ></Pagination>
         <!-- 查看原因 -->
         <EditSpeaker :data="form" v-on:modal="handleClose('showReason')" title="修改信息" :modal="modal.showReason" ></EditSpeaker>
-        <!-- 驳回 -->
-        <Reject v-on:modal="handleClose('reject')"  :modal="modal.reject" ></Reject>
     </el-card>
 </div>
 </template>
@@ -60,10 +53,10 @@ import {
 } from '@comp/lib/api_maps.js';
 
 import Table from '@layout/table.vue';
+import Suspend from '@layout/suspend.vue';
 import Pagination from '@layout/pagination.vue';
 import Operation from '@layout/operation.vue';
 import EditSpeaker from '@layout/modal/editSpeaker.vue';
-import Reject from '@layout/modal/reject.vue';
 
 export default {
     name: 'speaker_manage',
@@ -98,6 +91,10 @@ export default {
                 rejectDesc: 'zhaihr',
                 suspendDesc: 'zhaihr',
                 benefitPeopleTimesAdd: 1
+            },
+            actions: {
+                ok: 'passSpeakerApplication',
+                refuse: 'rejectSpeakerApplication'
             }
         };
     },
@@ -122,8 +119,8 @@ export default {
         Pagination,
         Table,
         EditSpeaker,
-        Reject,
-        Operation
+        Operation,
+        Suspend
     },
     methods: {
         formatAttr,
@@ -137,30 +134,6 @@ export default {
         ]),
         handleEdit(index, row) {
             this.showModal(row);
-        },
-        /* 查看冻结原因 */
-        showReason(obj) {
-            this.getRejectDesc({
-                act: 'getSuspendReason',
-                userId: obj.schoolId,
-                onSuccess: res => {
-                    this.$alert(res.data.data.suspendDesc, '拒绝原因').catch(
-                        () => {}
-                    );
-                }
-            });
-        },
-        /* 解冻 */
-        handleUnsuspend() {
-            this.formSubmit({
-                act: 'suspendUser',
-                userId: obj.schoolId,
-                onSuccess: res => {
-                    this.$alert(res.data.data.rejectDesc, '拒绝原因').catch(
-                        () => {}
-                    );
-                }
-            });
         },
         handleShowReason(data) {
             const id = '3';
