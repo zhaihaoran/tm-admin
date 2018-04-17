@@ -1,15 +1,35 @@
 <template>
     <el-header height="70px" class="admin-header">
         <div class="logo">
-            <router-link to="/" ><img :src="logo" @click="switchSidebarView('main')" alt="logo"></router-link>
+            <router-link to="/" ><img :src="logo" alt="logo"></router-link>
         </div>
         <ul class="header-right">
-            <li v-show="loginState === 1" class="nav-header-item">
-                <a href="##" @click="handleSignOut" ><i class="icon iconfont icon-tuichudenglu mr-20"></i> <span class="signout-btn">退出</span> </a>
+            <li class="nav-header-item">
+                <router-link to="/" > <span>管理中心</span> </router-link>
+            </li>
+            <li class="nav-header-item">
+                <a :href="baseURL">网站首页</a>
             </li>
             <!-- 未登录 -->
-            <li v-show="loginState === 0" class="nav-header-item"  >
+            <li v-show="+users.isLogin < 1" class="nav-header-item"  >
                 <router-link to="/login" >  请登陆</router-link>
+            </li>
+            <!-- 已登录 -->
+            <li v-show="+users.isLogin > 0" class="nav-header-item user-logo">
+                <el-dropdown trigger="click" type="primary">
+                    <span class="el-dropdown-link">
+                        <img :src="users.profilePhotoUrl"  alt="user">
+                    </span>
+                    <el-dropdown-menu slot="dropdown" >
+                        <el-dropdown-item disabled >账号</el-dropdown-item>
+                        <el-dropdown-item>{{users.account}}</el-dropdown-item>
+                        <el-dropdown-item disabled >身份</el-dropdown-item>
+                        <el-dropdown-item>{{attrs["userType"][users.userType]}}</el-dropdown-item>
+                        <el-dropdown-item @click.native="handleSignout" divided>
+                            <a class="tm-link" href="#">登出</a>
+                        </el-dropdown-item>
+                    </el-dropdown-menu>
+                </el-dropdown>
             </li>
         </ul>
     </el-header>
@@ -17,8 +37,7 @@
 
 <script>
 import logo from '@image/logo/logo_white.png';
-import qinghua from '@image/logo/tsinghua.png';
-import { baseURL } from '@comp/lib/api_maps';
+import { baseURL, attrs } from '@comp/lib/api_maps';
 import { mapState, mapMutations } from 'vuex';
 
 export default {
@@ -26,34 +45,31 @@ export default {
     data() {
         return {
             logo,
-            user_logo: qinghua,
+            attrs,
             baseURL
         };
     },
-    mounted() {},
-    methods: {
-        handleSignOut() {
-            this.signout();
-            this.$router.push({ path: '/login' });
-        },
-        ...mapMutations(['switchSidebarView', 'signout'])
-    },
     // 方便 属性使用 mapState
     computed: mapState({
-        sidebar: state => state.common.sidebar_toggle,
-        loginState: state => state.common.isLogin
-    })
+        users: state => state.common.users
+    }),
+    mounted() {
+        this.getUserLogin({ baseURL });
+    },
+    methods: {
+        ...mapMutations(['getUserLogin', 'signout']),
+        handleSignout() {
+            this.signout({
+                onSuccess: res => {
+                    this.$router.push({ path: '/login' });
+                }
+            });
+        }
+    }
 };
 </script>
 <style scoped >
-.mr-20 {
-    margin-right: 10px;
-    font-size: 28px;
-}
-.signout-btn {
-    line-height: 30px;
-    display: inline-block;
-    margin-bottom: -4px;
-    overflow: hidden;
+.el-dropdown-menu__item {
+    text-align: center;
 }
 </style>

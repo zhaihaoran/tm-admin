@@ -9,11 +9,11 @@
     </Search>
     <el-card>
         <Table :loading="tableLoading" :data="data" >
-            <el-table-column :formatter="formatAttr" align="center" prop="authStatus" label="认证状态" ></el-table-column>
+            <el-table-column width="100" :formatter="formatAttr" align="center" prop="authStatus" label="认证状态" ></el-table-column>
             <el-table-column align="center" prop="name" label="学校名称" ></el-table-column>
-            <el-table-column align="center" prop="address" label="学校地址" ></el-table-column>
+            <el-table-column align="center" show-overflow-tooltip prop="address" label="学校地址" ></el-table-column>
             <el-table-column align="center" prop="teacher" label="责任老师" ></el-table-column>
-            <el-table-column align="center" prop="teacherPhone" label="联系电话" ></el-table-column>
+            <el-table-column align="center" width="120" prop="teacherPhone" label="联系电话" ></el-table-column>
             <el-table-column align="center" prop="addTimestamp" width="140px" label="申请时间" >
                 <template slot-scope="scope">
                     {{dateformat(scope.row.addTimestamp)}}
@@ -24,12 +24,12 @@
                     <el-button size="mini" @click="handleShowReason(scope.row)" type="text" >查看详情</el-button>
                 </template>
             </el-table-column>
-            <el-table-column align="center" width="160px" label="操作" >
+            <el-table-column align="center" width="170" label="操作" >
                 <template slot-scope="scope" >
                     <Operation :handleEdit="handleEdit" :scope="scope" type="schoolId" :action="actions" ></Operation>
                 </template>
             </el-table-column>
-            <el-table-column align="center" width="240px" label="冻结操作" >
+            <el-table-column align="center" width="230" label="冻结操作" >
                 <template slot-scope="scope">
                     <Suspend :scope="scope" ></Suspend>
                 </template>
@@ -52,6 +52,7 @@ import {
 } from '@comp/lib/api_maps.js';
 
 import Table from '@layout/table.vue';
+import Search from '@layout/search.vue';
 import Suspend from '@layout/suspend.vue';
 import Pagination from '@layout/pagination.vue';
 import Operation from '@layout/operation.vue';
@@ -97,7 +98,8 @@ export default {
         Suspend,
         Table,
         EditSchool,
-        Operation
+        Operation,
+        Search
     },
     computed: {
         ...mapState({

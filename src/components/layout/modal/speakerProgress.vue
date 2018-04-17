@@ -1,40 +1,40 @@
 <template>
-    <el-popover class="offer-step" :ref="ref" trigger="click">
-        <el-steps direction="vertical" class="admin-step" :active="active">
-            <el-step @click.native="handleSetStatus(1)" title="待开课通知"></el-step>
-            <el-step @click.native="handleSetStatus(2)" title="待上课"></el-step>
-            <el-step @click.native="handleSetStatus(100)" title="完成"></el-step>
-        </el-steps>
-    </el-popover>
+    <div>
+        <el-button type="text" v-popover:speakerpopover >
+            {{attrs['speakerStatus'][scope.row.speakerStatus]}}
+        </el-button>
+        <el-popover class="offer-step" ref="speakerpopover">
+            <el-steps direction="vertical" class="admin-step" :active="+scope.row.speakerStatus">
+               <el-step @click.native="handleSetStatus(1)" title="待开课通知"></el-step>
+                <el-step @click.native="handleSetStatus(2)" title="待上课"></el-step>
+                <el-step @click.native="handleSetStatus(100)" title="完成"></el-step>
+            </el-steps>
+        </el-popover>
+    </div>
 </template>
 <script>
 import { mapState, mapMutations } from 'vuex';
+import { attrs } from '@comp/lib/api_maps.js';
 
 export default {
-    props: {
-        active: {
-            type: Number,
-            default: 0
-        },
-        ref: {
-            type: String,
-            default: 'schoolpopover'
-        }
+    data() {
+        return {
+            attrs
+        };
     },
-    computed: {
-        ...mapState({
-            schoolProgress: state => state.progress.schoolProgress,
-            speakerProgress: state => state.progress.speakerProgress
-        })
+    props: {
+        scope: {
+            type: Object
+        }
     },
     methods: {
         ...mapMutations(['changeStatus']),
         /* 设置状态 */
-        handleSetStatus() {
+        handleSetStatus(value) {
             this.changeStatus({
                 act: 'modifyAppointmentProgressStatus',
-                schoolStatus: this.schoolProgress,
-                speakerStatus: this.speakerProgress,
+                schoolStatus: +this.scope.row.schoolStatus,
+                speakerStatus: +this.scope.row.speakerStatus,
                 isMessage: true,
                 successText: '邀约状态修改成功'
             });

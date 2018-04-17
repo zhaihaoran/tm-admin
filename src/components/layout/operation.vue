@@ -8,6 +8,7 @@
         <el-dialog
             :visible.sync="modal.agree"
             width="30%"
+            class="agree-modal"
             >
             <h3 class="text-center modal-title" >你确定通过邀约？</h3>
             <span slot="footer" class="tm-modal-footer">
@@ -64,10 +65,14 @@ export default {
         ...mapMutations(['Ok', 'refuse']),
         handleOk(obj) {
             this.modal.agree = false;
-            this.Ok({
+            const mm = this.type;
+            console.log(mm);
+            let cfg = {
                 act: this.action.Ok,
-                [this.type]: this.scope.row[this.type]
-            });
+                mm: this.scope.row[mm]
+            };
+            console.log(cfg);
+            // this.Ok(cfg);
         },
         handleRefuse(obj) {
             this.modal.refuse = false;
@@ -80,4 +85,10 @@ export default {
     }
 };
 </script>
+<style lang="scss" scoped>
+.agree-modal .el-dialog__body {
+    padding: 10px;
+}
+</style>
+
 

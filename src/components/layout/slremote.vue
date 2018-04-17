@@ -1,36 +1,29 @@
 <template>
-    <el-select
-        class="modal-select mt-10"
-        v-model="id"
-        filterable
-        remote
-        @change="handleSelect"
-        :remote-method="remoteMethod"
-        :loading="loading"
-        :placeholder="placeholder">
-        <el-option
-            class="sl_option"
-            v-for="item in options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-            >
-            <!-- value 控制选择色 -->
-            <div class="sl_image">
-                <img :src="item.url" class="img-fluid" alt="">
+    <v-select :placeholder="placeholder" :filterable="false" :options="options" :onChange="handleChange"  @search="onSearch">
+        <template slot="no-options">
+            <div class="empty" >
+                暂无数据
             </div>
-            <div class="sl_body">
-                <h4 class="sl_title">{{item.label}}</h4>
-                <h5 class="sl_info">{{item.info}}</h5>
-                <p class="sl_p">{{item.context}}</p>
+        </template>
+        <template slot="option" slot-scope="option">
+            <slot :option="option"></slot>
+        </template>
+        <template slot="selected-option" slot-scope="option">
+            <div class="selected d-center">
+                {{option.name}}
             </div>
-        </el-option>
-    </el-select>
+        </template>
+    </v-select>
 </template>
 <script>
 import { mapState, mapMutations } from 'vuex';
-// 远程查询学校名称
 export default {
+    data() {
+        return {
+            options: [],
+            loading: false
+        };
+    },
     props: {
         id: {
             type: String
@@ -43,97 +36,64 @@ export default {
             type: String
         }
     },
-    data() {
-        return {
-            loading: false
-        };
-    },
-    computed: {
-        ...mapState({
-            options: state => state.common.selectOptions,
-            counts: state => state.common.optionsCounts
-        })
-    },
     methods: {
-        ...mapMutations(['getSelectOptions', 'clearOptions']),
-        remoteMethod(query) {
-            if (query !== '') {
-                this.loading = true;
-                setTimeout(() => {
-                    this.loading = false;
-                    this.list = this.schools.filter(item => {
-                        return (
-                            item.label
-                                .toLowerCase()
-                                .indexOf(query.toLowerCase()) > -1
-                        );
-                    });
-                }, 200);
-            } else {
-                this.clearOptions();
-            }
+        ...mapMutations(['getOptions', 'clearOptions']),
+        onSearch(search) {
+            this.search(search, this);
         },
-        // 获取远程数据
-        getListData(query) {
-            if (query !== '') {
-                this.loading = true;
-                setTimeout(() => {
-                    this.getSelectOptions({
-                        act: this.action,
-                        searchText: query,
-                        onSuccess: res => {
-                            this.loading = false;
-                        }
-                    });
-                }, 200);
-            } else {
-                this.clearOptions();
-            }
+        search(search, vm) {
+            clearTimeout(this.timeout);
+            this.timeout = setTimeout(() => {
+                this.getOptions({
+                    act: this.action,
+                    searchText: search,
+                    onSuccess: res => {
+                        vm.options = res.data.data.data;
+                    }
+                });
+            }, 350);
         },
-        // 选中数据
-        handleSelect(value) {
-            this.$emit('id', value);
-            console.log(value);
+        handleChange(val) {
+            this.$emit('id', val);
         }
     }
 };
 </script>
 <style lang="scss" scoped>
-.modal-select {
+img {
+    height: auto;
+    max-width: 2.5rem;
+    margin-right: 1rem;
+}
+
+.d-center {
+    display: flex;
+    align-items: center;
+}
+
+.selected img {
+    width: auto;
+    max-height: 23px;
+    margin-right: 0.5rem;
+}
+
+.v-select .dropdown li {
+    border-bottom: 1px solid rgba(112, 128, 144, 0.1);
+}
+
+.v-select .dropdown li:last-child {
+    border-bottom: none;
+}
+
+.v-select .dropdown li a {
+    padding: 10px 20px;
     width: 100%;
-    .sl_option {
-        display: flex;
-        height: 110px;
-        width: 600px;
-        padding: 0;
-        .sl_image {
-            max-width: 80px;
-            margin-left: 10px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-        .sl_body {
-            flex: 1;
-            max-width: 475px;
-            display: flex;
-            flex-direction: column;
-            padding: 10px 15px;
-            .sl_title {
-                line-height: 26px;
-                margin: 0;
-            }
-            .sl_info {
-                margin: 0;
-            }
-            .sl_p {
-                margin: 0;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                line-height: 26px;
-            }
-        }
-    }
+    font-size: 1.25em;
+    color: #3c3c3c;
+}
+
+.empty {
+    padding: 20px;
 }
 </style>
 

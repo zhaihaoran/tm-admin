@@ -1,33 +1,8 @@
 <template>
     <div>
-        <div class="tm-card">
-            <el-form class="sr-wrapper" label-width="40px" :model="searchForm" >
-                <div class="sr-item">
-                    <el-form-item label-width="0" >
-                        <el-input v-model="searchForm.speakTitle" placeholder="标题" ></el-input>
-                    </el-form-item>
-                </div>
-                <div class="sr-item">
-                    <el-form-item label-width="0" >
-                        <el-input placeholder="学校名称" v-model="searchForm.schoolName" suffix-icon="el-icon-search" ></el-input>
-                    </el-form-item>
-                </div>
-                <div class="sr-item">
-                    <el-form-item label-width="0" >
-                        <el-input placeholder="演讲者名称" v-model="searchForm.speakerName" suffix-icon="el-icon-search" ></el-input>
-                    </el-form-item>
-                </div>
-                <el-button type="primary" @click="handleSearch" class="sr-search-btn" >检索</el-button>
-            </el-form>
-            <div class="sr-radio" >
-                <el-radio-group @change="handleSearch" v-model="searchForm.orderType" class="radio-group" >
-                    <el-radio-button label="0">综合排序</el-radio-button>
-                    <el-radio-button label="1">最近演讲</el-radio-button>
-                    <el-radio-button label="2">最近上传</el-radio-button>
-                </el-radio-group>
-            </div>
-            <el-form-item label="分类" >
-                <el-select v-model="searchForm.videoTypeId" placeholder="全部分类" >
+        <Search :cfg="searchCfg" >
+            <template slot-scope="props" >
+                <el-select class="search-input" v-model="searchCfg.videoTypeId" placeholder="全部分类" >
                     <el-option
                         v-for="item in options"
                         :key="item.value"
@@ -35,19 +10,30 @@
                         :value="item.value">
                     </el-option>
                 </el-select>
-            </el-form-item>
-        </div>
+                <div class="sr-context">
+                    <div class="sr-input">
+                        <el-input v-model="searchCfg.speakTitle" placeholder="标题" ></el-input>
+                    </div>
+                    <div class="sr-input">
+                        <el-input placeholder="学校名称" v-model="searchCfg.schoolName" suffix-icon="el-icon-search" ></el-input>
+                    </div>
+                    <div class="sr-input">
+                        <el-input placeholder="演讲者名称" v-model="searchCfg.speakerName" suffix-icon="el-icon-search" ></el-input>
+                    </div>
+                </div>
+            </template>
+        </Search>
         <div class="tm-card">
             <div class="flex-end mb-20">
                 <el-button type="primary" @click="modal.addVideo = true" >添加</el-button>
             </div>
             <Table v-loading="tableLoading" :data="data" >
-                <el-table-column prop="previewUrl" label="预览图" align="center">
+                <el-table-column width="200" prop="previewUrl" label="预览图" align="center">
                     <template slot-scope="scope">
-                        <img :src="scope.row.previewUrl" class="img-fluid" :alt="scope.row.title">
+                        <img :src="scope.row.previewUrl" class="img-fluid" :alt="scope.row.videoTitle">
                     </template>
                 </el-table-column>
-                <el-table-column prop="title" label="标题" align="center"></el-table-column>
+                <el-table-column prop="videoTitle" label="标题" align="center"></el-table-column>
                 <el-table-column prop="schoolName" label="学校" align="center"></el-table-column>
                 <el-table-column prop="speakerName" label="演讲者" align="center"></el-table-column>
                 <el-table-column prop="speakTimestamp" width="140px" label="演讲时间" align="center">
@@ -55,14 +41,14 @@
                         {{dateformat(scope.row.speakTimestamp)}}
                     </template>
                 </el-table-column>
-                <el-table-column prop="addTimeStamp" width="140px" label="上传时间" align="center">
+                <el-table-column prop="addTimestamp" width="140px" label="上传时间" align="center">
                     <template slot-scope="scope">
-                        {{dateformat(scope.row.addTimeStamp)}}
+                        {{dateformat(scope.row.addTimestamp)}}
                     </template>
                 </el-table-column>
-                <el-table-column prop="category" label="分类" align="center"></el-table-column>
+                <el-table-column prop="videoTypeIdStr" label="分类" align="center"></el-table-column>
                 <el-table-column prop="intro" label="推荐位" align="center"></el-table-column>
-                <el-table-column prop="intro" label="启用" align="center">
+                <el-table-column prop="enable" label="启用" align="center">
                     <template slot-scope="scope">
                         <el-switch
                             v-model="scope.row.enable"
@@ -78,7 +64,7 @@
                     </template>
                 </el-table-column>
             </Table>
-            <Pagination :cfg="searchForm" :count="count" ></Pagination>
+            <Pagination :cfg="searchCfg" :count="count" ></Pagination>
 
             <!-- 添加视频 -->
             <VideoDialog v-on:modal="handleClose('addVideo')" title="添加视频" action="addVideo" :modal="modal.addVideo" ></VideoDialog>
@@ -109,6 +95,7 @@ import {
     commonPageInit
 } from '@comp/lib/api_maps.js';
 
+import Search from '@layout/search.vue';
 import Table from '@layout/table.vue';
 import Pagination from '@layout/pagination.vue';
 import SlRemote from '@layout/slremote.vue';
@@ -170,7 +157,7 @@ export default {
                     label: '北京烤鸭'
                 }
             ],
-            searchForm: {
+            searchCfg: {
                 act: 'getVideoList',
                 orderType: 0,
                 speakTitle: '',
@@ -192,7 +179,9 @@ export default {
         Table,
         VideoDialog,
         SlRemote,
-        Pagination
+        Search,
+        Pagination,
+        videoPlayer
     },
     computed: {
         ...mapState({
@@ -223,16 +212,20 @@ export default {
     },
     methods: {
         formatAttr,
+        dateformat,
+        ...mapMutations([
+            'updateValue',
+            'getPageData',
+            'formSubmit',
+            'showModal',
+            'getRejectDesc'
+        ]),
         handleUpdate(data) {
             const id = data.id;
             this.modal.editVideo = true;
         },
         handleClose(modalName) {
             this.modal[modalName] = false;
-        },
-        /* 查询 */
-        handleSearch() {
-            this.getPageData(this.searchForm);
         },
         /* 删除 */
         handleDelete(obj) {
@@ -253,6 +246,7 @@ export default {
         // 播放视频
         handlePlayVideo(videourl) {
             this.modal.video = true;
+            console.log('videoURL', videourl);
             this.playerOptions.sources[0].src = videourl;
         },
         handleVideoClose() {
@@ -264,20 +258,18 @@ export default {
 </script>
 <style lang="scss">
 @import '../../scss/variable/_video.scss';
-.sr-wrapper {
-    display: flex;
-    position: relative;
-    .sr-item {
-        width: 200px;
-        padding: 0 8px;
-        .el-form-item {
-            margin-bottom: 15px;
-        }
-    }
-    .sr-search-btn {
-        position: absolute;
-        right: 0;
-        top: 0;
+
+.search-btn {
+    position: absolute;
+    right: 20px;
+    top: 20px;
+}
+
+.sr-context {
+    margin-top: 10px;
+    .sr-input {
+        display: inline-block;
+        margin-right: 5px;
     }
 }
 </style>

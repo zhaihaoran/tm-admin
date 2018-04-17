@@ -10,13 +10,14 @@
         <div class="tm-card">
             <Table :loading="tableLoading" :data="data" >
                 <el-table-column
-                    prop="schoolName"
+                    prop="name"
                     align="center"
                     label="学校名称">
                 </el-table-column>
                 <el-table-column
                     prop="address"
                     align="center"
+                    show-overflow-tooltip
                     label="学校地址">
                 </el-table-column>
                 <el-table-column
@@ -45,13 +46,14 @@
                 </el-table-column>
                 <el-table-column
                     align="center"
-                    label="详细原因">
+                    width="110"
+                    label="详细信息">
                     <template slot-scope="scope">
                         <el-button type="text" @click="showReason(scope.row.reason)" >查看/修改</el-button>
                     </template>
                 </el-table-column>
                 <el-table-column
-                    min-width="90px"
+                    width="180px"
                     align="center"
                     label="操作">
                     <template slot-scope="scope">
@@ -68,6 +70,7 @@ import { mapState, mapMutations } from 'vuex';
 
 import { dateformat, commonPageInit } from '@comp/lib/api_maps.js';
 
+import Search from '@layout/search.vue';
 import Table from '@layout/table.vue';
 import Operation from '@layout/operation.vue';
 import Pagination from '@layout/pagination.vue';
@@ -82,9 +85,8 @@ export default {
                 authStatus: 0
             },
             actions: {
-                ok: '',
-                delete: '',
-                refuse: ''
+                ok: 'passSchoolApplication',
+                refuse: 'rejectSchoolApplication'
             }
         };
     },
@@ -105,7 +107,7 @@ export default {
             act: 'getSchoolApplicationList'
         });
     },
-    components: { Operation, Table, Pagination },
+    components: { Operation, Table, Pagination, Search },
     methods: {
         dateformat,
         ...mapMutations([
@@ -117,6 +119,9 @@ export default {
         ]),
         showReason(reason) {
             this.$alert(reason, '拒绝原因').catch(() => {});
+        },
+        handleEdit(index, row) {
+            this.showModal(row);
         }
     }
 };

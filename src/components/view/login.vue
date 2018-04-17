@@ -57,8 +57,9 @@ export default {
             this.login({
                 ...this.form,
                 onSuccess: res => {
-                    const path = this.$route.query.redirect || '/check/school';
-                    this.$router.push({ path });
+                    this.$router.push({
+                        path: this.$route.query.redirect || '/check/school'
+                    });
                 },
                 onError: res => {}
             });

@@ -5,9 +5,11 @@ const state = {
     help_sidebar: false, // 帮助侧边栏
     sidebar_toggle: false, // 侧边栏展开状态
     // sesson里取
-    isLogin: 0, // 登陆状态 0：未登录
     checkState: 0, // 审核状态
     menuList: {}, // 菜单列表
+    users: {
+        isLogin: 0
+    }, //用户信息
     selectOptions: [], // 远程select option
     optionsCounts: 0, // option count
 }
@@ -21,22 +23,18 @@ const mutations = {
         state.check_state = state.check_state ? 0 : 1
     },
     /**
-     * 远程获取select数据
+     * 远程获取数据
      *
      * @param {any} state
      * @param {any}
      */
-    getSelectOptions(state,{
+    getOptions(state, {
         onSuccess,
         ...cfg
     }) {
         Util.fetchPost({
             onSuccess,
-            cfg,
-            ActionSuccess: res => {
-                state.selectOptions = res.data.data.data;
-                state.optionsCounts = +res.data.data.count;
-            }
+            cfg
         })
     },
     /**
@@ -66,19 +64,23 @@ const mutations = {
      * @param {any}
      */
     getUserLogin(state, {
-        onError,
         onSuccess,
-        ...cfg
+        baseUrl
     }) {
+        const cfg = {
+            act: 'getUserLogin',
+        }
         Util.commonPost({
             url: "api/common/",
-            onError,
-            onSuccess,
             cfg,
-            ActionSuccess: res=> {
-                state.isLogin = +res.data.data.isLogin
-                sessionStorage.isLogin = +res.data.data.isLogin;
-            }
+            ActionSuccess: res => {
+                let cfg = res.data.data;
+                if (cfg && +cfg.isLogin > 0) {
+                    state.users = cfg
+                    sessionStorage.isLogin = 1;
+                }
+            },
+            onSuccess
         })
     },
 
@@ -94,8 +96,8 @@ const mutations = {
         }
         Util.fetchPost({
             cfg,
-            ActiveSuccess: res => {
-                state.menuList = res.data.data.menuList
+            ActionSuccess: res => {
+                state.menuList = res.data.data.menuList;
             }
         })
     },
@@ -161,20 +163,28 @@ const mutations = {
                 act: "adminLogin"
             }, param),
             ActionSuccess: res => {
-                state.isLogin = 1
+                debugger
+                state.users.isLogin = 1;
                 sessionStorage.isLogin = 1;
+                state.users.account = param.username;
+                state.users.userType = 3;
             }
         })
     },
-    signout(state) {
+    signout(state,{
+        onSuccess,
+    }) {
         Util.commonPost({
             url: "api/common/",
             cfg: {
                 act: "logout"
             },
+            onSuccess,
             ActionSuccess: res => {
+                state.users = {
+                    isLogin: 0
+                };
                 sessionStorage.clear();
-                state.isLogin = 0;
             }
         })
     },

@@ -3,13 +3,15 @@
         <Search :cfg="searchCfg" >
             <template slot-scope="props" >
                 <div class="search-input">
-                    <el-input placeholder="学校名称" v-model="schoolName" suffix-icon="el-icon-search" ></el-input>
-                </div>
-                <div class="search-input">
-                    <el-input placeholder="演讲者名称" v-model="speakerName" suffix-icon="el-icon-search" ></el-input>
-                </div>
-                <div class="search-input">
                     <Timerange></Timerange>
+                </div>
+                <div class="sr-context" >
+                    <div class="sr-input">
+                        <el-input placeholder="学校名称" v-model="searchCfg.schoolName" suffix-icon="el-icon-search" ></el-input>
+                    </div>
+                    <div class="sr-input">
+                        <el-input placeholder="演讲者名称" v-model="searchCfg.speakerName" suffix-icon="el-icon-search" ></el-input>
+                    </div>
                 </div>
             </template>
         </Search>
@@ -45,7 +47,7 @@
                 <el-table-column
                     prop="speakTimestamp"
                     align="center"
-                    show-overflow-tooltip
+                    width="140"
                     label="演讲时间">
                     <template slot-scope="scope">
                         {{dateformat(scope.row.speakTimestamp)}}
@@ -59,7 +61,7 @@
                 </el-table-column>
                 <el-table-column
                     prop="addTimestamp"
-                    width="140px"
+                    width="140"
                     align="center"
                     label="发起邀约时间">
                     <template slot-scope="scope">
@@ -69,6 +71,7 @@
                 <el-table-column
                     prop="schoolStatus"
                     align="center"
+                    width="140"
                     label="学校进展">
                     <template slot-scope="scope">
                         <el-popover class="offer-step" ref="schoolpopover" trigger="click">
@@ -88,6 +91,7 @@
                 <el-table-column
                     prop="speakerStatus"
                     align="center"
+                    width="120"
                     label="演讲者进展">
                     <template slot-scope="scope">
                         <el-popover ref="speakerpopover" trigger="click">
@@ -125,6 +129,7 @@
                     </template>
                 </el-table-column>
             </Table>
+            {{status}}
 
             <Pagination :cfg="searchCfg" :count="count" ></Pagination>
 
@@ -146,7 +151,7 @@ import {
 } from '@comp/lib/api_maps.js';
 // comp
 import Pagination from '@layout/pagination.vue';
-import Operation from '@layout/operation.vue';
+import Operation from '@layout/invite_operation.vue';
 import EditInvite from '@layout/modal/editInvite.vue';
 import Timerange from '@layout/timerange.vue';
 import Search from '@layout/search.vue';
@@ -163,16 +168,28 @@ export default {
                 act: 'getAppointmentList',
                 orderType: this.orderType,
                 speakTimestampStart: undefined,
-                speakTimestampEnd: undefined
+                speakTimestampEnd: undefined,
+                status: 2,
+                schoolName: '',
+                speakerName: ''
             },
-            schoolName: '',
-            speakerName: 'asdasd',
             modal: {
                 edit: false,
                 response: false
             },
             photos: []
         };
+    },
+    computed: {
+        ...mapState({
+            orderType: state => state.search.orderType,
+            timerange: state => state.search.timerange,
+            data: state => state.search.data,
+            count: state => state.search.count,
+            tableLoading: state => state.search.tableLoading,
+            perPage: state => state.search.perPage,
+            status: state => state.search.status
+        })
     },
     components: {
         Search,
@@ -185,14 +202,13 @@ export default {
         ResponseDialog
     },
     mounted() {
-        commonPageInit(
-            this,
-            { status: 0 },
-            {
-                act: 'getAppointmentList',
-                status: 0
-            }
-        );
+        commonPageInit(this, {
+            act: 'getAppointmentList',
+            status: 2
+        });
+        this.updateValue({
+            status: 2
+        });
     },
     methods: {
         dateformat,
@@ -236,6 +252,13 @@ export default {
 .pagination {
     display: flex;
     justify-content: flex-end;
+}
+.sr-context {
+    margin-top: 10px;
+    .sr-input {
+        display: inline-block;
+        margin-right: 5px;
+    }
 }
 </style>
 

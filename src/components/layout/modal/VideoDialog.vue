@@ -18,26 +18,50 @@
                 <el-input v-model="form.title" ></el-input>
             </el-form-item>
             <el-form-item label="学校">
-                <el-radio-group v-model="form.schoolRadio" size="small" >
-                    <el-radio-button label="选择"></el-radio-button>
-                    <el-radio-button label="填写"></el-radio-button>
+                <el-radio-group v-model="schoolRadio" size="small" >
+                    <el-radio-button label="0">选择</el-radio-button>
+                    <el-radio-button label="1">填写</el-radio-button>
                 </el-radio-group>
                 <el-tooltip class="item" effect="dark" content="没有数据？请手动填写，手动填写的学校无法查看主页，无法对其发起邀约" placement="right">
                     <i class="el-icon-question md-qs"></i>
                 </el-tooltip>
-                <el-input placeholder="请输入学校名称" class="mt-10" v-show="form.schoolRadio === '填写' " v-model="form.schoolName" ></el-input>
-                <SlRemote placeholder="学校名称" v-on:id="handleUpdateSchoolId" :id="form.schoolId" action="getSelectOptions" ></SlRemote>
+                <el-input placeholder="请输入学校名称" class="mt-10" v-show="+schoolRadio ===1" v-model="form.schoolName" ></el-input>
+                <SlRemote v-show="+schoolRadio ===0" placeholder="学校名称" v-on:id="handleUpdateSchoolId" :id="form.schoolId" action="getSchoolListForInput" >
+                    <template slot-scope="scope" >
+                        <div class="d-center sl_option">
+                            <div class="sl_image">
+                                <img :src="scope.option.profilePhotoUrl" class="img-fluid" alt="">
+                            </div>
+                            <div class="sl_body">
+                                <h4 class="sl_title">{{scope.option.name}}</h4>
+                                <h5 class="sl_info">{{scope.option.schoolShortDesc}}</h5>
+                            </div>
+                        </div>
+                    </template>
+                </SlRemote>
             </el-form-item>
             <el-form-item label="演讲者">
-                <el-radio-group v-model="form.speakerRadio" size="small" >
-                    <el-radio-button label="选择"></el-radio-button>
-                    <el-radio-button label="填写"></el-radio-button>
+                <el-radio-group v-model="speakerRadio" size="small" >
+                    <el-radio-button label="0">选择</el-radio-button>
+                    <el-radio-button label="1">填写</el-radio-button>
                 </el-radio-group>
                 <el-tooltip class="item" effect="dark" content="没有数据？请手动填写，手动填写的学校无法查看主页，无法对其发起邀约" placement="right">
                     <i class="el-icon-question md-qs"></i>
                 </el-tooltip>
-                <el-input placeholder="请输入演讲者名称" class="mt-10" v-show="form.speakerRadio === '填写' " v-model="form.speakerName" ></el-input>
-                <SlRemote placeholder="演讲者名称" v-on:id="handleUpdateSpeakerId" :id="form.speakerId" action="getSelectOptions" ></SlRemote>
+                <el-input placeholder="请输入演讲者名称" class="mt-10" v-show="+speakerRadio === 1 " v-model="form.speakerName" ></el-input>
+                <SlRemote v-show="+speakerRadio === 0 " placeholder="演讲者名称" v-on:id="handleUpdateSpeakerId" :id="form.speakerId" action="getSpeakerListForInput" >
+                    <template slot-scope="scope" >
+                        <div class="d-center sl_option">
+                            <div class="sl_image">
+                                <img :src="scope.option.profilePhotoUrl" class="img-fluid" alt="">
+                            </div>
+                            <div class="sl_body">
+                                <h4 class="sl_title">{{scope.option.name}}</h4>
+                                <h5 class="sl_info">{{scope.option.speakerShortDesc}}</h5>
+                            </div>
+                        </div>
+                    </template>
+                </SlRemote>
             </el-form-item>
             <el-form-item label="演讲时间">
                 <el-date-picker
@@ -108,7 +132,9 @@ export default {
     name: 'modal_video_add',
     data() {
         return {
-            form: this.data,
+            schoolRadio: 0,
+            speakerRadio: 1,
+            form: {},
             categoryTabs: [
                 {
                     value: '选项1',
@@ -184,24 +210,6 @@ export default {
             type: String,
             default: '选择视频'
         },
-        data: {
-            type: Object,
-            default: () => {
-                return {
-                    title: '12121212',
-                    photoUrl: '1212',
-                    manCounts: 121212,
-                    playCounts: 1212,
-                    schoolRadio: '选择',
-                    schoolId: '121',
-                    speakerRadio: '填写',
-                    speakerId: '12',
-                    tabs: [1],
-                    category: [2],
-                    start: true
-                };
-            }
-        },
         action: {
             type: String
         }
@@ -223,12 +231,12 @@ export default {
             this.$emit('modal');
         },
 
-        handleUpdateSchoolId(value) {
-            this.form.schoolId = value;
+        handleUpdateSchoolId(cfg) {
+            this.form.schoolId = cfg.schoolId;
         },
 
-        handleUpdateSpeakerId(value) {
-            this.form.speakerId = value;
+        handleUpdateSpeakerId(cfg) {
+            this.form.speakerId = cfg.speakerId;
         }
     }
 };

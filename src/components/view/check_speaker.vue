@@ -22,6 +22,7 @@
                 <el-table-column
                     prop="company"
                     align="center"
+                    show-overflow-tooltip
                     label="公司">
                 </el-table-column>
                 <el-table-column
@@ -42,6 +43,7 @@
                 <el-table-column
                     prop="email"
                     align="center"
+                    show-overflow-tooltip
                     label="邮箱">
                 </el-table-column>
                 <el-table-column
@@ -55,13 +57,14 @@
                 </el-table-column>
                 <el-table-column
                     align="center"
+                    width="110"
                     label="详细信息">
                     <template slot-scope="scope">
-                        <el-button type="text" @click="showReason(scope.row.reason)" >查看/修改</el-button>
+                        <el-button type="text" @click="showReason(scope.row)" >查看/修改</el-button>
                     </template>
                 </el-table-column>
                 <el-table-column
-                min-width="120px"
+                    width="180px"
                     align="center"
                     label="操作">
                     <template slot-scope="scope">
@@ -79,6 +82,7 @@ import { mapState, mapMutations } from 'vuex';
 import { dateformat, commonPageInit } from '@comp/lib/api_maps.js';
 
 import Table from '@layout/table.vue';
+import Search from '@layout/search.vue';
 import Operation from '@layout/operation.vue';
 import Pagination from '@layout/pagination.vue';
 
@@ -92,9 +96,8 @@ export default {
                 authStatus: 0
             },
             actions: {
-                ok: '',
-                delete: '',
-                refuse: ''
+                ok: 'passSpeakerApplication',
+                refuse: 'rejectSpeakerApplication'
             }
         };
     },
@@ -115,7 +118,7 @@ export default {
             act: 'getSpeakerApplicationList'
         });
     },
-    components: { Operation, Table, Pagination },
+    components: { Operation, Table, Pagination, Search },
     methods: {
         dateformat,
         ...mapMutations([
@@ -127,6 +130,9 @@ export default {
         ]),
         showReason(reason) {
             this.$alert(reason, '拒绝原因').catch(() => {});
+        },
+        handleEdit(index, row) {
+            this.showModal(row);
         }
     }
 };

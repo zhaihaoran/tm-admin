@@ -1,11 +1,11 @@
 <template>
     <div>
-        <div v-show="+scope.row.suspend>0" >
+        <div v-if="scope.row.suspend && +scope.row.suspend > 0" >
             <span>已冻结</span>
-            <el-button size="mini" type="text" @click="showReason(scope.row.suspendDesc)" v-show="scope.row.suspend>0">查看原因</el-button>
-            <el-button size="mini" v-show="scope.row.suspend>0" class="tm-btn-border" @click="handleUnsuspend(scope.row)" >解冻</el-button>
+            <el-button size="mini" class="no-ml" type="text" @click="showReason(scope.row.suspendDesc)" >查看原因</el-button>
+            <el-button size="mini" class="tm-btn-border no-ml" @click="handleUnsuspend(scope.row)" >解冻</el-button>
         </div>
-        <el-button size="mini" v-show="+scope.row.suspend==0" type="primary" class="tm-btn" @click="modal.suspend = true" >冻结</el-button>
+        <el-button size="mini" v-else type="primary" class="tm-btn" @click="modal.suspend = true" >冻结</el-button>
         <el-dialog
             :visible.sync="modal.suspend"
             width="30%"
@@ -65,5 +65,11 @@ export default {
     }
 };
 </script>
+<style lang="scss">
+.no-ml {
+    margin-left: 0 !important;
+}
+</style>
+
 
 
