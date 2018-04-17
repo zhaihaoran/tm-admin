@@ -4,9 +4,13 @@ const state = {
     form: {
         speakTimestamp: new Date().getTime() / 1000,
         addTimestamp: new Date().getTime() / 1000,
+        speakerInfoType: 1,
+        schoolInfoType: 1
     },
+    videoTyleList: [],
     modal: false,
-    speakTimestamp: new Date().getTime() / 1000
+    speakTimestamp: new Date().getTime() / 1000,
+    tagstab: ""
 }
 
 const mutations = {
@@ -16,16 +20,25 @@ const mutations = {
         state.speakTimestamp = data.speakTimestamp
     },
     /* modal edit */
-    submit(state, {
+    getModalData(state, {
         onSuccess,
         ...cfg
     }) {
-        Util.fetchData({
+        Util.fetchPost({
             cfg,
             onSuccess,
-            isMessage: true,
-            successText: "修改成功",
-            errorText: "修改失败",
+            ActionSuccess: res => {
+                state.form = Object.assign(state.form, res.data.data.video)
+
+                state.speakTimestamp = state.form.speakTimestamp
+
+                let tag = state.form.tag || ""
+                state.tagstab = tag.split(',')
+                console.log(state.tagstab);
+                console.log(res.data.data.videoTyleList);
+
+                state.videoTyleList = Object.assign(state.videoTyleList, res.data.data.videoTyleList)
+            }
         })
     },
     closeModal(state, cfg) {
@@ -37,6 +50,9 @@ const mutations = {
     },
     setDateValue(state, payload) {
         state = Object.assign(state, payload)
+    },
+    changeTags(state, value) {
+        state.tagstab = value
     }
 }
 

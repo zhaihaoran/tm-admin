@@ -59,7 +59,7 @@
                 <el-table-column align="center" label="操作">
                     <template class="cubes" slot-scope="scope">
                         <el-button type="primary" @click="handlePlayVideo(scope.row.videoUrl)" >播放</el-button>
-                        <el-button @click="handleUpdate(scope.row)" type="text" >查看/修改</el-button>
+                        <el-button @click="handleGetVideoInfo(scope.row)" type="text" >查看/修改</el-button>
                         <el-button @click="handleDelete(scope.row)" class="tm-btn-border" type="primary" >删除</el-button>
                     </template>
                 </el-table-column>
@@ -216,13 +216,17 @@ export default {
         ...mapMutations([
             'updateValue',
             'getPageData',
-            'formSubmit',
             'showModal',
-            'getRejectDesc'
+            'getRejectDesc',
+            'getModalData'
         ]),
-        handleUpdate(data) {
-            const id = data.id;
+        /* 获取视频详情 */
+        handleGetVideoInfo(obj) {
             this.modal.editVideo = true;
+            this.getModalData({
+                act: 'getVideo',
+                videoId: obj.videoId
+            });
         },
         handleClose(modalName) {
             this.modal[modalName] = false;

@@ -5,7 +5,9 @@ const state = {
     classroomPhotoUrl: '',
     schoolPhotoShortPathFilename: '',
     schoolPhotoUrl: '',
+    videoShortPathFilename: "",
     pathfilename: '',
+    previewUrl: '',
     photoUrl: ''
 }
 

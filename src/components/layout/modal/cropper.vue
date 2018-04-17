@@ -47,8 +47,8 @@ export default {
             default: 'image/gif, image/jpeg, image/png, image/jpg'
         },
         aspectRatio: {
-            type: Number,
-            default: 1
+            type: String,
+            default: '1'
         },
         background: {
             type: Boolean,
@@ -76,6 +76,7 @@ export default {
         //初始化这个裁剪框
         var self = this;
         var image = document.getElementById('image');
+        console.log(this.aspectRatio);
         this.cropper = new Cropper(image, {
             aspectRatio: this.aspectRatio, // 比例1:1
             viewMode: 1,
