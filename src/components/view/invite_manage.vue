@@ -7,10 +7,34 @@
                 </div>
                 <div class="sr-context" >
                     <div class="sr-input">
-                        <el-input placeholder="学校名称" v-model="searchCfg.schoolName" suffix-icon="el-icon-search" ></el-input>
+                        <SlRemote placeholder="学校名称" v-on:id="handleUpdateSchoolId" action="getSchoolListForInput" >
+                            <template slot-scope="scope" >
+                                <div class="d-center sl_option">
+                                    <div class="sl_image">
+                                        <img :src="scope.option.profilePhotoUrl" class="img-fluid" alt="">
+                                    </div>
+                                    <div class="sl_body">
+                                        <h4 class="sl_title">{{scope.option.name}}</h4>
+                                        <h5 class="sl_info">{{scope.option.schoolShortDesc}}</h5>
+                                    </div>
+                                </div>
+                            </template>
+                        </SlRemote>
                     </div>
                     <div class="sr-input">
-                        <el-input placeholder="演讲者名称" v-model="searchCfg.speakerName" suffix-icon="el-icon-search" ></el-input>
+                        <SlRemote placeholder="演讲者名称" v-on:id="handleUpdateSpeakerId" :id="searchCfg.speakerId" action="getSpeakerListForInput" >
+                            <template slot-scope="scope" >
+                                <div class="d-center sl_option">
+                                    <div class="sl_image">
+                                        <img :src="scope.option.profilePhotoUrl" class="img-fluid" alt="">
+                                    </div>
+                                    <div class="sl_body">
+                                        <h4 class="sl_title">{{scope.option.name}}</h4>
+                                        <h5 class="sl_info">{{scope.option.speakerShortDesc}}</h5>
+                                    </div>
+                                </div>
+                            </template>
+                        </SlRemote>
                     </div>
                 </div>
             </template>
@@ -142,7 +166,6 @@
 </template>
 <script>
 import { mapState, mapMutations } from 'vuex';
-import axios from 'axios';
 import {
     attrs,
     formatAttr,
@@ -159,6 +182,8 @@ import Table from '@layout/table.vue';
 import MessageBox from '@layout/modal/message.vue';
 import ResponseDialog from '@layout/modal/response.vue';
 
+import SlRemote from '@layout/slremote.vue';
+
 export default {
     data() {
         return {
@@ -170,8 +195,8 @@ export default {
                 speakTimestampStart: undefined,
                 speakTimestampEnd: undefined,
                 status: 2,
-                schoolName: '',
-                speakerName: ''
+                schoolId: '',
+                speakerId: ''
             },
             modal: {
                 edit: false,
@@ -198,6 +223,7 @@ export default {
         EditInvite,
         Table,
         Timerange,
+        SlRemote,
         Pagination,
         ResponseDialog
     },
@@ -234,16 +260,16 @@ export default {
                 }
             });
         },
-        showResponse() {
-            axios.get('/admin/feedbacklist').then(res => {
-                const data = res.data.data.feedbackList;
-                console.log(data);
-                this.photos = data;
-            });
-            this.modal.response = true;
-        },
         handleClose() {
             this.modal.response = false;
+        },
+
+        handleUpdateSchoolId(cfg) {
+            this.searchCfg.schoolId = cfg ? cfg.schoolId : '';
+        },
+
+        handleUpdateSpeakerId(cfg) {
+            this.searchCfg.speakerId = cfg ? cfg.speakerId : '';
         }
     }
 };

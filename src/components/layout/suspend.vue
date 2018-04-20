@@ -11,7 +11,7 @@
             width="30%"
         >
             <h3 class="text-center modal-title" >确定冻结吗？</h3>
-            <span>请填写冻结原因</span>
+            <span class="mb-20" >请填写冻结原因</span>
             <el-form ref="form" >
                 <el-form-item class="no-margin" >
                     <el-input type="textarea" v-model="suspendDesc" class="tm-textarea"></el-input>
@@ -25,6 +25,8 @@
     </div>
 </template>
 <script>
+import { mapState, mapMutations } from 'vuex';
+
 export default {
     data() {
         return {
@@ -40,16 +42,25 @@ export default {
         }
     },
     methods: {
+        ...mapMutations(['formSubmit', 'updateRow']),
         showReason(reason) {
-            this.$alert(reason, '拒绝原因').catch(() => {});
+            this.$alert(reason, '冻结原因').catch(() => {});
         },
         /* 解冻 */
         handleUnsuspend(obj) {
             this.formSubmit({
-                act: 'unsuspendUser',
+                act: 'resumeUser',
                 userId: obj.schoolId || obj.speakerId,
                 isMessage: true,
-                successText: '冻结成功'
+                successText: '解冻成功',
+                onSuccess: res => {
+                    this.modal.suspend = false;
+                    this.updateRow({
+                        type: 'addTimestamp',
+                        value: obj.addTimestamp,
+                        suspend: 0
+                    });
+                }
             });
         },
         /* 冻结 */
@@ -59,7 +70,16 @@ export default {
                 userId: obj.schoolId || obj.speakerId,
                 suspendDesc: this.suspendDesc,
                 isMessage: true,
-                successText: '冻结成功'
+                successText: '冻结成功',
+                onSuccess: res => {
+                    this.modal.suspend = false;
+                    this.updateRow({
+                        type: 'addTimestamp',
+                        value: obj.addTimestamp,
+                        suspend: 1,
+                        suspendDesc: this.suspendDesc
+                    });
+                }
             });
         }
     }
@@ -68,6 +88,10 @@ export default {
 <style lang="scss">
 .no-ml {
     margin-left: 0 !important;
+}
+.mb-20 {
+    margin-bottom: 15px;
+    display: inline-block;
 }
 </style>
 

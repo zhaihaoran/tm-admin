@@ -1,5 +1,5 @@
 <template>
-    <v-select :placeholder="placeholder" :filterable="false" :options="options" :onChange="handleChange"  @search="onSearch">
+    <v-select :value="defaultOption" :placeholder="placeholder" :filterable="false" :options="options" :onChange="handleChange"  @search="onSearch">
         <template slot="no-options">
             <div class="empty" >
                 暂无数据
@@ -20,13 +20,42 @@ import { mapState, mapMutations } from 'vuex';
 export default {
     data() {
         return {
-            options: [],
+            defaultOption: {
+                name: this.defaults
+            },
+            options: [
+                {
+                    name: this.defaults
+                }
+            ],
             loading: false
         };
     },
+    watch: {
+        defaults(val) {
+            if (!val) {
+                this.defaultOption = undefined;
+                this.options = [];
+                return;
+            }
+            this.defaultOption = {
+                name: val
+            };
+            this.options = [this.defaultOption];
+        }
+    },
+    mounted() {
+        console.log(this.defaults);
+        if (!this.defaults) {
+            console.log('haha');
+            this.defaultOption = undefined;
+            this.options = [];
+        }
+    },
     props: {
-        id: {
-            type: String
+        defaults: {
+            type: String,
+            default: ''
         },
         placeholder: {
             type: String,
@@ -38,6 +67,9 @@ export default {
     },
     methods: {
         ...mapMutations(['getOptions', 'clearOptions']),
+        handleDefaultValue() {
+            return !this.defaults ? this.defaultOption : undefined;
+        },
         onSearch(search) {
             this.search(search, this);
         },

@@ -5,9 +5,11 @@ const state = {
     classroomPhotoUrl: '',
     schoolPhotoShortPathFilename: '',
     schoolPhotoUrl: '',
-    videoShortPathFilename: "",
+    videoShortPathFilename: "1",
     pathfilename: '',
+    previewShortPathFilename: '',
     previewUrl: '',
+    originFilename: '',
     photoUrl: ''
 }
 
@@ -23,6 +25,7 @@ const mutations = {
         formCfg
     }) {
         formCfg.append('act', 'upload');
+        formCfg.append('generateThumb', 1);
         Util.uploadPost({
             url: "api/common/",
             cfg: formCfg,
@@ -32,6 +35,7 @@ const mutations = {
             ActionSuccess: res => {
                 state[previewname] = res.data.data.fileUrl
                 state[filepathname] = res.data.data.shortPathFilename
+                state.originFilename = res.data.data.originFilename
             }
         })
     },

@@ -62,24 +62,34 @@ export default {
         }
     },
     methods: {
-        ...mapMutations(['Ok', 'refuse']),
+        ...mapMutations(['Ok', 'refuse', 'deleteRow']),
         handleOk(obj) {
             this.modal.agree = false;
-            const mm = this.type;
-            console.log(mm);
-            let cfg = {
-                act: this.action.Ok,
-                mm: this.scope.row[mm]
-            };
-            console.log(cfg);
-            // this.Ok(cfg);
+            const type = this.type;
+            this.Ok({
+                act: this.action.ok,
+                [type]: this.scope.row[type],
+                onSuccess: res => {
+                    this.deleteRow({
+                        value: this.scope.row[type],
+                        type: type
+                    });
+                }
+            });
         },
         handleRefuse(obj) {
             this.modal.refuse = false;
+            const type = this.type;
             this.refuse({
                 act: this.action.refuse,
-                [this.type]: this.scope.row[this.type],
-                rejectDesc: this.rejectDesc
+                [type]: this.scope.row[type],
+                rejectDesc: this.rejectDesc,
+                onSuccess: res => {
+                    this.deleteRow({
+                        value: this.scope.row[type],
+                        type: type
+                    });
+                }
             });
         }
     }

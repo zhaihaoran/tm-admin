@@ -36,6 +36,9 @@
                 <template slot-scope="scope">
                     <el-switch
                         v-model="scope.row.enable"
+                        disabled
+                        active-value="1"
+                        inactive-value="0"
                     >
                     </el-switch>
                 </template>
@@ -51,7 +54,7 @@
             </el-table-column>
         </Table>
         <!-- 修改分类 -->
-        <el-dialog title="修改分类" :visible.sync="modal.edit" >
+        <el-dialog title="修改分类" width="400px" :visible.sync="modal.edit" >
             <el-form label-width="80px" :model="submitForm" >
                 <el-form-item label="分类名称" >
                     <el-input v-model="submitForm.name" ></el-input>
@@ -61,18 +64,21 @@
                 </el-form-item>
                 <el-form-item label="启用">
                     <el-switch
-                        v-model="submitForm.enable"
+                        v-model="enable"
+                        @change="handleChange"
+                        active-value="1"
+                        inactive-value="0"
                     >
                     </el-switch>
                 </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="modal.edit = false">取 消</el-button>
-                <el-button @click="modal.edit = false" type="primary" >保存</el-button>
+                <el-button @click="handleEditVideoType" type="primary" >保存</el-button>
             </span>
         </el-dialog>
         <!-- 新增分类 -->
-        <el-dialog title="新增分类" :visible.sync="modal.add" >
+        <el-dialog title="新增分类" width="400px" :visible.sync="modal.add" >
             <el-form label-width="80px" :model="addForm" >
                 <el-form-item label="分类名称" >
                     <el-input v-model="addForm.name" ></el-input>
@@ -83,6 +89,8 @@
                 <el-form-item label="启用">
                     <el-switch
                         v-model="addForm.enable"
+                        active-value="1"
+                        inactive-value="0"
                     >
                     </el-switch>
                 </el-form-item>
@@ -96,11 +104,12 @@
 </template>
 <script>
 import { mapState, mapMutations } from 'vuex';
-import { formatAttr, dateformat, commonPageInit } from '@comp/lib/api_maps.js';
+import { formatAttr, dateformat } from '@comp/lib/api_maps.js';
 import Table from '@layout/table.vue';
 export default {
     data() {
         return {
+            enable: '0',
             loading: false,
             modal: {
                 edit: false,
@@ -111,7 +120,7 @@ export default {
         };
     },
     mounted() {
-        commonPageInit(this, {
+        this.getVideoTypeData({
             act: 'getVideoTypeList'
         });
     },
@@ -125,10 +134,16 @@ export default {
         Table
     },
     methods: {
-        ...mapMutations(['updateValue', 'getPageData', 'formSubmit']),
+        ...mapMutations([
+            'getVideoTypeData',
+            'updateRow',
+            'addRow',
+            'deleteRow',
+            'formSubmit'
+        ]),
         handleEdit(data) {
-            console.log(data);
             this.submitForm = Object.assign(this.submitForm, data);
+            this.enable = this.submitForm.enable;
             this.modal.edit = true;
         },
         handleDelete(obj) {
@@ -141,7 +156,13 @@ export default {
                     this.formSubmit({
                         act: 'removeVideoType',
                         videoTypeId: obj.videoTypeId,
-                        successText: '删除成功'
+                        successText: '删除成功',
+                        onSuccess: res => {
+                            this.deleteRow({
+                                type: 'videoTypeId',
+                                value: obj.videoTypeId
+                            });
+                        }
                     });
                 })
                 .catch(() => {});
@@ -150,10 +171,16 @@ export default {
         handleAddVideoType() {
             this.formSubmit({
                 act: 'addVideoType',
-                name: this.submitForm.name,
-                orderNum: this.submitForm.orderNum,
-                enable: this.submitForm.enable,
-                successText: '添加成功'
+                name: this.addForm.name,
+                orderNum: this.addForm.orderNum,
+                enable: this.addForm.enable,
+                successText: '添加成功',
+                onSuccess: res => {
+                    this.getVideoTypeData({
+                        act: 'getVideoTypeList'
+                    });
+                    this.modal.add = false;
+                }
             });
         },
         /* 修改分类 */
@@ -164,8 +191,22 @@ export default {
                 name: this.submitForm.name,
                 orderNum: this.submitForm.orderNum,
                 enable: this.submitForm.enable,
-                successText: '修改成功'
+                successText: '修改成功',
+                onSuccess: res => {
+                    this.updateRow({
+                        type: 'videoTypeId',
+                        value: this.submitForm.videoTypeId,
+                        name: this.submitForm.name,
+                        orderNum: this.submitForm.orderNum,
+                        enable: this.submitForm.enable
+                    });
+                    this.modal.edit = false;
+                }
             });
+        },
+        /* change */
+        handleChange(val) {
+            this.submitForm.enable = val;
         }
     }
 };

@@ -4,15 +4,15 @@
             <template slot-scope="props" >
                 <el-select class="search-input" v-model="searchCfg.videoTypeId" placeholder="全部分类" >
                     <el-option
-                        v-for="item in options"
-                        :key="item.value"
-                        :label="item.label"
-                        :value="item.value">
+                        v-for="item in videoTypeList"
+                        :key="item.videoTypeId"
+                        :label="item.name"
+                        :value="item.videoTypeId">
                     </el-option>
                 </el-select>
                 <div class="sr-context">
                     <div class="sr-input">
-                        <el-input v-model="searchCfg.speakTitle" placeholder="标题" ></el-input>
+                        <el-input v-model="searchCfg.videoTitle" placeholder="标题" ></el-input>
                     </div>
                     <div class="sr-input">
                         <el-input placeholder="学校名称" v-model="searchCfg.schoolName" suffix-icon="el-icon-search" ></el-input>
@@ -25,7 +25,7 @@
         </Search>
         <div class="tm-card">
             <div class="flex-end mb-20">
-                <el-button type="primary" @click="modal.addVideo = true" >添加</el-button>
+                <el-button type="primary" @click="handleAddVideo" >添加</el-button>
             </div>
             <Table v-loading="tableLoading" :data="data" >
                 <el-table-column width="200" prop="previewUrl" label="预览图" align="center">
@@ -46,8 +46,11 @@
                         {{dateformat(scope.row.addTimestamp)}}
                     </template>
                 </el-table-column>
-                <el-table-column prop="videoTypeIdStr" label="分类" align="center"></el-table-column>
-                <el-table-column prop="intro" label="推荐位" align="center"></el-table-column>
+                <el-table-column prop="videoTypeIdStr" label="分类" align="center">
+                    <template slot-scope="scope">
+                        {{handleFormatter(scope.row.videoTypeIdStr)}}
+                    </template>
+                </el-table-column>
                 <el-table-column prop="enable" label="启用" align="center">
                     <template slot-scope="scope">
                         <el-switch
@@ -69,11 +72,12 @@
             <!-- 添加视频 -->
             <VideoDialog v-on:modal="handleClose('addVideo')" title="添加视频" action="addVideo" :modal="modal.addVideo" ></VideoDialog>
             <!-- 修改视频 -->
-            <VideoDialog :data="formData" v-on:modal="handleClose('editVideo')" action="modifyVideo"  title="修改信息" :modal="modal.editVideo" ></VideoDialog>
+            <VideoDialog v-on:modal="handleClose('editVideo')" action="modifyVideo"  title="修改信息" :modal="modal.editVideo" ></VideoDialog>
             <!-- 视频播放弹窗 -->
             <el-dialog width="1200px" :visible.sync="modal.video" :before-close="handleVideoClose" >
                 <div class="video-player">
                     <video-player
+                        width="1200px"
                         class="vjs-custom-skin"
                         ref="videoPlayer"
                         :options="playerOptions"
@@ -104,8 +108,6 @@ import VideoDialog from '@layout/modal/VideoDialog.vue';
 import { videoPlayer } from 'vue-video-player';
 import 'video.js/dist/video-js.css';
 
-import image from '../../assets/image/logo/tsinghua.png';
-
 export default {
     name: 'video_manage',
     data() {
@@ -121,42 +123,7 @@ export default {
                 notSupportedMessage: '此视频暂无法播放，请稍后再试',
                 poster: '' //封面
             },
-            formData: {
-                title: 'as',
-                photoUrl:
-                    'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100',
-                manCounts: 1,
-                playCounts: 1,
-                schoolRadio: '选择',
-                schoolId: '',
-                speakerRadio: '填写',
-                speakerId: '',
-                tabs: [],
-                category: [],
-                start: false
-            },
-            options: [
-                {
-                    value: '选项1',
-                    label: '黄金糕'
-                },
-                {
-                    value: '选项2',
-                    label: '双皮奶'
-                },
-                {
-                    value: '选项3',
-                    label: '蚵仔煎'
-                },
-                {
-                    value: '选项4',
-                    label: '龙须面'
-                },
-                {
-                    value: '选项5',
-                    label: '北京烤鸭'
-                }
-            ],
+            videoTypeList: [],
             searchCfg: {
                 act: 'getVideoList',
                 orderType: 0,
@@ -164,9 +131,7 @@ export default {
                 schoolName: '',
                 speakerName: '',
                 videoTypeId: '', //视频类型id
-                speakerName: '',
-                enable: 0,
-                recommend: 0
+                speakerName: ''
             },
             modal: {
                 editVideo: false,
@@ -209,6 +174,7 @@ export default {
         commonPageInit(this, {
             act: 'getVideoList'
         });
+        this.handleGetVideoTypes();
     },
     methods: {
         formatAttr,
@@ -218,14 +184,56 @@ export default {
             'getPageData',
             'showModal',
             'getRejectDesc',
-            'getModalData'
+            'getModalData',
+            'getArrayData',
+            'deleteSubmit',
+            'update',
+            'clearForm'
         ]),
+        /* 添加视频 */
+        handleAddVideo() {
+            this.clearForm();
+            this.modal.addVideo = true;
+        },
+        /* 获取视频分类信息 */
+        handleGetVideoTypes() {
+            this.getArrayData({
+                act: 'getVideoTypeList',
+                onSuccess: res => {
+                    this.videoTypeList = res.data.data.videoTypeList;
+                }
+            });
+        },
+        /* 格式化表单 -- 视频分类信息展示 */
+        handleFormatter(idStr = '') {
+            return idStr
+                .split(',')
+                .map(el => {
+                    let formater =
+                        this.videoTypeList.find(
+                            item => item.videoTypeId == el
+                        ) || {};
+                    return formater ? formater['name'] : 'hh';
+                })
+                .join(',');
+        },
         /* 获取视频详情 */
         handleGetVideoInfo(obj) {
             this.modal.editVideo = true;
             this.getModalData({
                 act: 'getVideo',
-                videoId: obj.videoId
+                videoId: obj.videoId,
+                onSuccess: res => {
+                    /* 更新图片state */
+                    this.update({
+                        previewUrl: res.data.data.video.previewUrl,
+                        videoShortPathFilename:
+                            res.data.data.video.videoShortPathFilename,
+                        previewShortPathFilename:
+                            res.data.data.video.previewShortPathFilename,
+                        originFilename: res.data.data.video.videoOriginFilename
+                    });
+                }
             });
         },
         handleClose(modalName) {
@@ -239,9 +247,15 @@ export default {
                 type: 'warning'
             })
                 .then(() => {
-                    this.deleteSubmit({
+                    this.formSubmit({
                         act: 'removeVideo',
-                        videoId: obj.videoId
+                        videoId: obj.videoId,
+                        onSuccess: res => {
+                            this.deleteRow({
+                                type: 'videoId',
+                                value: obj.videoId
+                            });
+                        }
                     });
                 })
                 .catch(() => {});

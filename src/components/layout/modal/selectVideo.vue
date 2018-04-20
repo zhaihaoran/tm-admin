@@ -1,6 +1,6 @@
 <template>
     <el-dialog :title="title" :before-close="handleModalClose" :visible.sync="modal" width="80%" >
-        <el-input v-model="searchCfg.videoTitle" @change="handleSearch" placeholder="请输入" suffix-icon="el-icon-search" class="mb-20" ></el-input>
+        <el-input v-model="searchCfg.videoTitle" @change="handleSearch" placeholder="视频标题" suffix-icon="el-icon-search" class="mb-20" ></el-input>
         <Table :data="data" :loading="tableLoading" >
             <el-table-column
                 align="center"
@@ -12,7 +12,7 @@
             </el-table-column>
             <el-table-column
                 align="center"
-                prop="title"
+                prop="videoTitle"
                 label="标题"
                 >
             </el-table-column>
@@ -40,12 +40,12 @@
             </el-table-column>
             <el-table-column
                 align="center"
-                prop="addTimeStamp"
+                prop="addTimestamp"
                 width="140px"
                 label="上传时间"
                 >
                 <template slot-scope="scope">
-                    {{dateformat(scope.row.addTimeStamp)}}
+                    {{dateformat(scope.row.addTimestamp)}}
                 </template>
             </el-table-column>
             <el-table-column
@@ -56,6 +56,9 @@
                 <template slot-scope="scope">
                     <el-switch
                         v-model="scope.row.enable"
+                        active-value="1"
+                        inactive-value="0"
+                        disabled
                     >
                     </el-switch>
                 </template>
@@ -78,20 +81,36 @@
 </template>
 <script>
 import { mapState, mapMutations } from 'vuex';
-import { dateformat } from '@comp/lib/api_maps.js';
+import {
+    attrs,
+    formatAttr,
+    dateformat,
+    commonPageInit
+} from '@comp/lib/api_maps.js';
 
 import image from 'assets/image/logo/tsinghua.png';
 
 import Table from '@layout/table.vue';
+import Pagination from '@layout/pagination.vue';
+
 export default {
     name: 'select_video_modal',
     data() {
         return {
             searchCfg: {
                 act: 'getVideoList',
-                videoTitle: '11'
+                videoTypeId: '',
+                videoTitle: ''
             }
         };
+    },
+    /* qs: 如何确保props绑定到data中的数据能实时更新 */
+    /* as: 如何让data 和props 同步！ 如下！
+     通过watch监听props的值，然后赋值给searchCfg，直接在data里声明是不行的！ */
+    watch: {
+        videoTypeId(val) {
+            this.searchCfg.videoTypeId = val;
+        }
     },
     props: {
         title: {
@@ -101,10 +120,17 @@ export default {
         modal: {
             type: Boolean,
             default: false
+        },
+        videoId: {
+            type: String,
+            default: ''
+        },
+        videoTypeId: {
+            type: String,
+            default: ''
         }
     },
     computed: {
-        dateformat,
         ...mapState({
             data: state => state.search.data,
             count: state => state.search.count,
@@ -114,23 +140,20 @@ export default {
         })
     },
     components: {
-        Table
+        Table,
+        Pagination
     },
     methods: {
-        ...mapMutations(['getPageData', 'formSubmit']),
+        dateformat,
+        ...mapMutations(['getPageData']),
         /* 查询 */
         handleSearch() {
             this.getPageData(this.searchCfg);
         },
         /* 选择该视频 */
-        /* ???? */
         handleSelectVideo(obj) {
-            this.formSubmit({
-                act: 'modifyVideoTop',
-                videoIdStr: obj.videoId,
-                videoTypeId: obj.videoTypeIdStr,
-                successText: '替换成功'
-            });
+            this.$emit('selectVideoId', obj);
+            this.handleModalClose();
         },
         handleModalClose() {
             // 通过$emit 实现子组件与父组件进行沟通
@@ -144,10 +167,6 @@ export default {
     padding: 20px 30px 10px;
     .el-dialog__title {
         font-size: 16px;
-    }
-    .el-dialog__headerbtn {
-        top: 30px;
-        right: 30px;
     }
 }
 .avatar {

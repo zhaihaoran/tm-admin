@@ -49,7 +49,7 @@
                     width="110"
                     label="详细信息">
                     <template slot-scope="scope">
-                        <el-button type="text" @click="showReason(scope.row.reason)" >查看/修改</el-button>
+                        <el-button size="mini" @click="handleShowReason(scope.row)" type="text" >查看详情</el-button>
                     </template>
                 </el-table-column>
                 <el-table-column
@@ -61,6 +61,9 @@
                     </template>
                 </el-table-column>
             </Table>
+            <!-- 查看原因 -->
+            <EditSchool :data="form" v-on:modal="handleClose" title="修改信息" :modal="modal" ></EditSchool>
+            <!-- 分页 -->
             <Pagination :cfg="searchCfg" :count="count" ></Pagination>
         </div>
     </div>
@@ -71,6 +74,7 @@ import { mapState, mapMutations } from 'vuex';
 import { dateformat, commonPageInit } from '@comp/lib/api_maps.js';
 
 import Search from '@layout/search.vue';
+import EditSchool from '@layout/modal/editSchool.vue';
 import Table from '@layout/table.vue';
 import Operation from '@layout/operation.vue';
 import Pagination from '@layout/pagination.vue';
@@ -78,11 +82,13 @@ import Pagination from '@layout/pagination.vue';
 export default {
     data() {
         return {
+            modal: false,
+            form: {},
             searchCfg: {
                 act: 'getSchoolApplicationList',
+                authStatus: 2,
                 orderType: this.orderType,
-                searchText: '11',
-                authStatus: 0
+                searchText: '11'
             },
             actions: {
                 ok: 'passSchoolApplication',
@@ -104,10 +110,11 @@ export default {
     },
     mounted() {
         commonPageInit(this, {
-            act: 'getSchoolApplicationList'
+            act: 'getSchoolApplicationList',
+            authStatus: 2
         });
     },
-    components: { Operation, Table, Pagination, Search },
+    components: { Operation, Table, Pagination, Search, EditSchool },
     methods: {
         dateformat,
         ...mapMutations([
@@ -115,13 +122,33 @@ export default {
             'getPageData',
             'formSubmit',
             'showModal',
-            'getRejectDesc'
+            'update',
+            'getFormData'
         ]),
-        showReason(reason) {
-            this.$alert(reason, '拒绝原因').catch(() => {});
+        handleShowReason(obj) {
+            this.modal = true;
+            this.getFormData({
+                act: 'getSchoolApplication',
+                schoolId: obj.schoolId,
+                onSuccess: res => {
+                    this.form = res.data.data;
+                    this.form.schoolId = obj.schoolId;
+                    this.update({
+                        classroomPhotoShortPathFilename: this.form
+                            .classroomPhotoShortPathFilename,
+                        classroomPhotoUrl: this.form.classroomPhotoUrl,
+                        schoolPhotoShortPathFilename: this.form
+                            .schoolPhotoShortPathFilename,
+                        schoolPhotoUrl: this.form.schoolPhotoUrl
+                    });
+                }
+            });
         },
         handleEdit(index, row) {
             this.showModal(row);
+        },
+        handleClose() {
+            this.modal = false;
         }
     }
 };

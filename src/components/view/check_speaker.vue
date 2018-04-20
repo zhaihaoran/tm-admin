@@ -60,7 +60,7 @@
                     width="110"
                     label="详细信息">
                     <template slot-scope="scope">
-                        <el-button type="text" @click="showReason(scope.row)" >查看/修改</el-button>
+                        <el-button size="mini" @click="handleShowReason(scope.row)" type="text" >查看详情</el-button>
                     </template>
                 </el-table-column>
                 <el-table-column
@@ -73,6 +73,8 @@
                 </el-table-column>
             </Table>
             <Pagination :cfg="searchCfg" :count="count" ></Pagination>
+            <!-- 查看详情 -->
+            <EditSpeaker :data="form" v-on:modal="handleClose" title="修改信息" :modal="modal" ></EditSpeaker>
         </div>
     </div>
 </template>
@@ -85,15 +87,18 @@ import Table from '@layout/table.vue';
 import Search from '@layout/search.vue';
 import Operation from '@layout/operation.vue';
 import Pagination from '@layout/pagination.vue';
+import EditSpeaker from '@layout/modal/editSpeaker.vue';
 
 export default {
     data() {
         return {
+            modal: false,
+            form: {},
             searchCfg: {
                 act: 'getSpeakerApplicationList',
+                authStatus: 2,
                 orderType: this.orderType,
-                searchText: '11',
-                authStatus: 0
+                searchText: '11'
             },
             actions: {
                 ok: 'passSpeakerApplication',
@@ -115,10 +120,11 @@ export default {
     },
     mounted() {
         commonPageInit(this, {
-            act: 'getSpeakerApplicationList'
+            act: 'getSpeakerApplicationList',
+            authStatus: 2
         });
     },
-    components: { Operation, Table, Pagination, Search },
+    components: { Operation, Table, Pagination, Search, EditSpeaker },
     methods: {
         dateformat,
         ...mapMutations([
@@ -126,13 +132,31 @@ export default {
             'getPageData',
             'formSubmit',
             'showModal',
+            'update',
+            'getFormData',
             'getRejectDesc'
         ]),
-        showReason(reason) {
-            this.$alert(reason, '拒绝原因').catch(() => {});
+        handleShowReason(obj) {
+            this.modal = true;
+            this.getFormData({
+                act: 'getSpeakerApplication',
+                speakerId: obj.speakerId,
+                onSuccess: res => {
+                    debugger;
+                    this.form = res.data.data;
+                    this.form.speakerId = obj.speakerId;
+                    this.update({
+                        photoUrl: this.form.photoUrl,
+                        photoShortPathFilename: this.form.photoShortPathFilename
+                    });
+                }
+            });
         },
         handleEdit(index, row) {
             this.showModal(row);
+        },
+        handleClose() {
+            this.modal = false;
         }
     }
 };

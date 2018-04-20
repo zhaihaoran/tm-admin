@@ -216,7 +216,7 @@ const attrs = {
         },
         30404: {
             name: "首页推荐视频设置",
-            path: "/video/setting/top",
+            path: "/video/setting/hot",
             icon: "el-icon-document"
         }
     },
@@ -336,5 +336,9 @@ module.exports = {
     /* getPageDate */
     commonPageInit(context, cfg) {
         context.getPageData(cfg);
+    },
+    /* 时间格式化 */
+    formatDuration(sec = 0) {
+        return Math.floor(sec / 60) + ':' + Math.floor(sec % 60)
     }
 }

@@ -4,42 +4,42 @@
     :before-close="handleModalClose"
     width="800px"
      :title="title" >
-        <el-form class="tm-form" :model="form" label-width="120px">
+        <el-form class="tm-form" :model="data" label-width="120px">
             <h3 class="info-h3" >学校基本信息（必填）</h3>
             <el-form-item label="学校名称">
-                <el-input v-model="form.name"></el-input>
+                <el-input v-model="data.name"></el-input>
             </el-form-item>
             <el-form-item label="学校地址">
-                <el-input v-model="form.address"></el-input>
+                <el-input v-model="data.address"></el-input>
             </el-form-item>
             <el-form-item label="责任老师">
-                <el-input v-model="form.teacher"></el-input>
+                <el-input v-model="data.teacher"></el-input>
             </el-form-item>
             <el-form-item
                 align="center"
                 label="联系电话">
-                <el-input v-model="form.teacherPhone"></el-input>
+                <el-input v-model="data.teacherPhone"></el-input>
             </el-form-item>
             <el-form-item label="学校图片" >
-                <Upload action="/admin/logout" :previewUrl="form.pic1" ></Upload>
+                <Upload filepathname="schoolPhotoShortPathFilename" previewname="schoolPhotoUrl" action="asd" :preview="schoolPhotoUrl" ></Upload>
                 <div class="pic-info">
                     <h3>请拍摄学校的外景，尽量包含学校的名字</h3>
                     <p class="info-p">图片类型：JPG、PNG</p>
                     <p class="info-p">图片大小：不超过5M</p>
                     <h3 class="mm">样例</h3>
-                    <img src="/static/image/banner.png" class="img-fluid" alt="demo">
+                    <img :src="schoolDemo" class="img-fluid" alt="demo">
                 </div>
             </el-form-item>
             <el-form-item label="开课教室图片" >
-                <Upload action="/admin/logout" :previewUrl="form.pic2" ></Upload>
+                <Upload filepathname="classroomPhotoShortPathFilename" previewname="classroomPhotoUrl" action="as"  :preview="classroomPhotoUrl" ></Upload>
             </el-form-item>
             <div class="individar"></div>
             <h3 class="info-h3" >贫困学校申请</h3>
             <p class="info-p">普通学校可以享受6次免费演讲分享，之后将收取费用用于公益事业</p>
             <p class="info-p">贫困学校可以完全享受免费的演讲分享</p>
             <p class="info-p">如果您的学校符合贫困条件，请填写相关信息</p>
-            <el-form-item prop="freeinfo" label-width="0" >
-                <el-input type="textarea" :rows="row" class="info-textarea" v-model="form.freeinfo"></el-input>
+            <el-form-item prop="poorDesc" label-width="0" >
+                <el-input type="textarea" :rows="row" class="info-textarea" v-model="data.poorDesc"></el-input>
             </el-form-item>
             <div class="individar"></div>
             <h3>附加信息（选填）</h3>
@@ -60,67 +60,69 @@
                     <div class="info-table-col">
                         <div class="cube">
                             <p>1.电脑</p>
-                            <el-radio-group v-model="form.radios">
-                                <el-radio :label="3">是</el-radio>
-                                <el-radio :label="6">否</el-radio>
-                                <el-radio :label="9">不确定</el-radio>
+                            <el-radio-group v-model="data.havePC">
+                                <el-radio label="0">是</el-radio>
+                                <el-radio label="1">否</el-radio>
+                                <el-radio label="2">不确定</el-radio>
                             </el-radio-group>
                         </div>
                         <div class="cube">
                             <p>2.网络</p>
-                            <el-radio-group v-model="form.radios">
-                                <el-radio :label="3">是</el-radio>
-                                <el-radio :label="6">否</el-radio>
-                                <el-radio :label="9">不确定</el-radio>
+                            <el-radio-group v-model="data.haveNet">
+                                <el-radio label="0">是</el-radio>
+                                <el-radio label="1">否</el-radio>
+                                <el-radio label="2">不确定</el-radio>
                             </el-radio-group>
                         </div>
                         <div class="cube">
                             <p>3.多媒体教师（有投影或显示设备）</p>
-                            <el-radio-group v-model="form.radios">
-                                <el-radio :label="3">是</el-radio>
-                                <el-radio :label="6">否</el-radio>
-                                <el-radio :label="9">不确定</el-radio>
+                            <el-radio-group v-model="data.haveMultimediaClassroom">
+                                <el-radio label="0">是</el-radio>
+                                <el-radio label="1">否</el-radio>
+                                <el-radio label="2">不确定</el-radio>
                             </el-radio-group>
                         </div>
                         <div class="cube">
                             <p>4.摄像头</p>
-                            <el-radio-group v-model="form.radios">
-                                <el-radio :label="3">是</el-radio>
-                                <el-radio :label="6">否</el-radio>
-                                <el-radio :label="9">不确定</el-radio>
+                            <el-radio-group v-model="data.haveCamera">
+                                <el-radio label="0">是</el-radio>
+                                <el-radio label="1">否</el-radio>
+                                <el-radio label="2">不确定</el-radio>
                             </el-radio-group>
                         </div>
                         <div class="cube">
                             <p>5.麦克风</p>
-                            <el-radio-group v-model="form.radios">
-                                <el-radio :label="3">是</el-radio>
-                                <el-radio :label="6">否</el-radio>
-                                <el-radio :label="9">不确定</el-radio>
+                            <el-radio-group v-model="data.haveMic">
+                                <el-radio label="0">是</el-radio>
+                                <el-radio label="1">否</el-radio>
+                                <el-radio label="2">不确定</el-radio>
                             </el-radio-group>
                         </div>
                     </div>
                 </div>
                 <h5 class="info-h5">学生情况</h5>
-                <el-form-item prop="freeinfo"  label-width="0" >
-                    <el-input type="textarea" :rows="row" class="info-textarea"  v-model="form.freeinfo"></el-input>
+                <el-form-item prop="studentStatus"  label-width="0" >
+                    <el-input type="textarea" :rows="row" class="info-textarea"  v-model="data.studentStatus"></el-input>
                 </el-form-item>
                 <h5 class="info-h5">为什么选择途梦？希望途梦为学生带来什么</h5>
-                <el-form-item prop="freeinfo"  label-width="0" >
-                    <el-input type="textarea" :rows="row" class="info-textarea" v-model="form.freeinfo"></el-input>
+                <el-form-item prop="whyChooseUs"  label-width="0" >
+                    <el-input type="textarea" :rows="row" class="info-textarea" v-model="data.whyChooseUs"></el-input>
                 </el-form-item>
             <el-form-item label="课程剩余">
-                <el-input v-model="form.remainCount"></el-input>
+                <el-input v-model="data.classQuantity"></el-input>
             </el-form-item>
         </el-form>
         <span slot="footer" class="dialog-footer center">
-            <el-button type="primary" @click="submitForm">提 交</el-button>
-            <el-button @click="handleModalClose">取 消</el-button>
+            <el-button type="primary" @click="submitForm">保存</el-button>
         </span>
     </el-dialog>
 </template>
 <script>
+import { mapState, mapMutations } from 'vuex';
+
 import Upload from '@layout/upload.vue';
 import img_class from '@image/admin/class.png';
+import schoolDemo from '@image/admin/school.png';
 import img_pc from '@image/admin/pc.png';
 import img_camera from '@image/admin/camera.png';
 
@@ -128,25 +130,11 @@ export default {
     name: 'setting_edit',
     data() {
         return {
-            mm: {
-                radios: 3,
-                name: '',
-                address: '',
-                teacher: '',
-                teacherPhone: '',
-                pic1: '',
-                pic2: '',
-                delivery: false,
-                type: [],
-                resource: '',
-                freeinfo: '',
-                radio: true
-            },
             row: 8,
             img_class,
             img_pc,
             img_camera,
-            form: this.data
+            schoolDemo
         };
     },
     props: {
@@ -162,16 +150,38 @@ export default {
             type: Object
         }
     },
+    computed: {
+        ...mapState({
+            schoolPhotoUrl: state => state.upload.schoolPhotoUrl,
+            classroomPhotoUrl: state => state.upload.classroomPhotoUrl,
+            classroomPhotoShortPathFilename: state =>
+                state.upload.classroomPhotoShortPathFilename,
+            schoolPhotoShortPathFilename: state =>
+                state.upload.schoolPhotoShortPathFilename
+        })
+    },
     components: {
         Upload
     },
     methods: {
+        ...mapMutations(['formSubmit']),
         handleModalClose() {
-            // 通过$emit 实现子组件与父组件进行沟通
             this.$emit('modal');
         },
         submitForm() {
-            console.log('object');
+            const cfg = Object.assign(this.data, {
+                schoolPhotoShortPathFilename: this.schoolPhotoShortPathFilename,
+                classroomPhotoShortPathFilename: this
+                    .classroomPhotoShortPathFilename
+            });
+            const data = {
+                act: 'modifySchoolApplication',
+                ...cfg,
+                onSuccess: res => {
+                    this.handleModalClose();
+                }
+            };
+            this.formSubmit(data);
         }
     }
 };

@@ -2,7 +2,14 @@
     <el-dialog :title="title" :visible.sync="modal" :before-close="handleModalClose" >
         <el-form :model="form" ref="form" label-width="80px" class="modal-form" >
             <el-form-item label="视频文件">
-                <Upload liststyle="" :previewname="videoShortPathFilename" ></Upload>
+                <Upload
+                    v-on:uploading="handleUploading"
+                    :disabled="uploadState"
+                    v-on:end="handleUploadEnd"
+                    liststyle="" filepathname="videoShortPathFilename" ></Upload>
+                <el-input type="number" v-model="form.duration" placeholder="视频时长"  >
+                    <template slot="append">秒</template>
+                </el-input>
             </el-form-item>
             <el-form-item label="预览图片" >
                 <Cropper
@@ -18,6 +25,8 @@
             <el-form-item label="标题">
                 <el-input v-model="form.videoTitle" ></el-input>
             </el-form-item>
+
+            <!-- 学校 -->
             <el-form-item label="学校">
                 <el-radio-group v-model="form.schoolInfoType" size="small" >
                     <el-radio-button label="1">选择</el-radio-button>
@@ -27,7 +36,7 @@
                     <i class="el-icon-question md-qs"></i>
                 </el-tooltip>
                 <el-input placeholder="请输入学校名称" class="mt-10" v-show="form.schoolInfoType == 2" v-model="form.schoolName" ></el-input>
-                <SlRemote v-show="form.schoolInfoType == 1" placeholder="学校名称" v-on:id="handleUpdateSchoolId" :id="form.schoolId" action="getSchoolListForInput" >
+                <SlRemote :defaults="form.schoolName" v-show="form.schoolInfoType == 1" placeholder="学校名称" v-on:id="handleUpdateSchoolId"  action="getSchoolListForInput" >
                     <template slot-scope="scope" >
                         <div class="d-center sl_option">
                             <div class="sl_image">
@@ -41,6 +50,7 @@
                     </template>
                 </SlRemote>
             </el-form-item>
+            <!-- 演讲者 -->
             <el-form-item label="演讲者">
                 <el-radio-group v-model="form.speakerInfoType" size="small" >
                     <el-radio-button label="1">选择</el-radio-button>
@@ -50,7 +60,8 @@
                     <i class="el-icon-question md-qs"></i>
                 </el-tooltip>
                 <el-input placeholder="请输入演讲者名称" class="mt-10" v-show="form.speakerInfoType == 2 " v-model="form.speakerName" ></el-input>
-                <SlRemote v-show="form.speakerInfoType == 1" placeholder="演讲者名称" v-on:id="handleUpdateSpeakerId" :id="form.speakerId" action="getSpeakerListForInput" >
+
+                <SlRemote :defaults="form.speakerName" v-show="form.speakerInfoType == 1" placeholder="演讲者名称" v-on:id="handleUpdateSpeakerId"  action="getSpeakerListForInput" >
                     <template slot-scope="scope" >
                         <div class="d-center sl_option">
                             <div class="sl_image">
@@ -63,13 +74,13 @@
                         </div>
                     </template>
                 </SlRemote>
+
             </el-form-item>
             <el-form-item label="演讲时间">
                 <el-date-picker
                     v-model="speakTimestamp"
                     type="datetime"
                     value-format="timestamp"
-                    format="yyyy 年 MM 月 dd 日 HH:mm:ss"
                     placeholder="选择日期时间"
                 >
                 </el-date-picker>
@@ -77,15 +88,14 @@
             <el-form-item label="视频详情">
                 <el-input v-model="form.videoDesc" type="textarea"></el-input>
             </el-form-item>
-            {{form.videoTypeIdStr}}
-            {{videoTyleList}}
+
             <el-form-item label="分类">
-                <el-select v-model="form.videoTypeIdStr" multiple placeholder="请选择">
+                <el-select v-model="category" multiple placeholder="请选择">
                     <el-option
-                    v-for="item in videoTyleList"
+                    v-for="item in videoTypeList"
                     :key="item.videoTypeId"
-                    :label="item.videoTypeId"
-                    :value="item.name">
+                    :label="item.name"
+                    :value="item.videoTypeId">
                     </el-option>
                 </el-select>
             </el-form-item>
@@ -96,7 +106,6 @@
                 <el-input v-model="form.playTimes" type="number" ></el-input>
             </el-form-item>
             <el-form-item label="标签">
-                {{tab}}
                 <el-select
                     v-model="tab"
                     multiple
@@ -116,8 +125,8 @@
             </el-form-item>
         </el-form>
         <span slot="footer" class="center dialog-footer">
-            <el-button @click="modal = false">取 消</el-button>
-            <el-button width="200px" type="primary" placeholder="请输入关键词查询" @click="submitVideo">确 定</el-button>
+            <el-button @click="handleModalClose">取 消</el-button>
+            <el-button :disabled="uploadState" width="200px" type="primary" placeholder="请输入关键词查询" @click="submitVideo">确 定</el-button>
         </span>
     </el-dialog>
 </template>
@@ -134,6 +143,8 @@ export default {
     name: 'modal_video_add',
     data() {
         return {
+            uploadState: false, //上传状态
+            videoTypeList: [],
             loading: false,
             pickerOptions1: {
                 shortcuts: [
@@ -160,8 +171,14 @@ export default {
                         }
                     }
                 ]
-            }
+            },
+            category: []
         };
+    },
+    watch: {
+        videoTypeIdStr(val) {
+            this.category = val.split(',');
+        }
     },
     props: {
         modal: {
@@ -176,14 +193,20 @@ export default {
             type: String
         }
     },
+    mounted() {
+        this.handleGetVideoTypes();
+    },
     computed: {
         ...mapState({
             pathfilename: state => state.upload.pathfilename,
             previewUrl: state => state.upload.previewUrl,
+            originFilename: state => state.upload.originFilename,
+            previewShortPathFilename: state =>
+                state.upload.previewShortPathFilename,
             videoShortPathFilename: state =>
                 state.upload.videoShortPathFilename,
-            videoTyleList: state => state.modal.videoTyleList,
             tagstab: state => state.modal.tagstab,
+            videoTypeIdStr: state => state.modal.videoTypeIdStr,
             form: state => state.modal.form
         }),
         speakTimestamp: {
@@ -211,11 +234,56 @@ export default {
         Cropper
     },
     methods: {
-        ...mapMutations(['formSubmit', 'setDateValue']),
+        ...mapMutations([
+            'formSubmit',
+            'getArrayData',
+            'setDateValue',
+            'updateFormValue'
+        ]),
         submitVideo() {
-            this.formSubmit({
+            let cfg = {
                 act: this.action,
-                ...this.form
+                videoId: this.form.videoId,
+                videoShortPathFilename: this.videoShortPathFilename,
+                videoOriginFilename: this.originFilename,
+                previewShortPathFilename: this.previewShortPathFilename,
+                videoTitle: this.form.videoTitle,
+                speakerInfoType: this.form.speakerInfoType,
+                speakerId: this.form.speakerId,
+                speakerName: this.form.speakerName,
+                schoolInfoType: this.form.schoolInfoType,
+                schoolId: this.form.schoolId,
+                schoolName: this.form.schoolName,
+                duration: this.form.duration,
+                speakTimestamp: Math.floor(this.speakTimestamp / 1000),
+                videoDesc: this.form.videoDesc,
+                videoTypeIdStr: this.category.join(','),
+                benefitPeopleTimes: this.form.benefitPeopleTimes,
+                playTimes: this.form.playTimes,
+                tag: this.tab.join(','),
+                enable: this.form.enable,
+                duration: this.form.duration
+            };
+            console.log(cfg);
+            if (!this.form.videoId) {
+                delete cfg.videoId;
+            }
+            this.formSubmit({
+                ...cfg,
+                isMessage: true,
+                successText: '成功',
+                onSuccess: res => {
+                    this.handleModalClose();
+                }
+            });
+        },
+        /* 获取视频分类信息 */
+        handleGetVideoTypes() {
+            this.getArrayData({
+                act: 'getVideoTypeList',
+                onSuccess: res => {
+                    this.videoTypeList = res.data.data.videoTypeList;
+                }
             });
         },
         handleModalClose() {
@@ -224,11 +292,17 @@ export default {
         },
 
         handleUpdateSchoolId(cfg) {
-            this.form.schoolId = cfg.schoolId;
+            this.updateFormValue({
+                type: 'schoolId',
+                value: cfg ? cfg.schoolId : ''
+            });
         },
 
         handleUpdateSpeakerId(cfg) {
-            this.form.speakerId = cfg.speakerId;
+            this.updateFormValue({
+                type: 'speakerId',
+                value: cfg ? cfg.speakerId : ''
+            });
         },
         /* 设置cropperUrl */
         handleUpdateCropperUrl(obj) {
@@ -249,12 +323,17 @@ export default {
                 }
             });
         },
-        /* 满后 */
-        handleExceed(files, fileList) {
-            this.$message.warning(
-                `当前限制选择 10 个文件，共选择了 ${files.length +
-                    fileList.length} 个文件`
-            );
+
+        /* 上传中，禁用按钮 */
+        handleUploading() {
+            this.uploadState = true;
+            this.$message('上传中');
+        },
+
+        /* 上传中，禁用按钮 */
+        handleUploadEnd() {
+            this.uploadState = false;
+            this.$message({ type: 'success', message: '上传成功' });
         }
     }
 };

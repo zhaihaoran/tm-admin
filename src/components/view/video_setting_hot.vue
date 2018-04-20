@@ -3,21 +3,24 @@
         <div slot="header" class="clearfix">
             <span>选择热门视频</span>
         </div>
-        <el-row :gutter="10" class="video-wrapper" >
-            <el-col :lg="16" >
-                <div class="video-item" @mouseenter="handleHoverEnter($event)" @mouseleave="handleHoverLeave($event)" >
-                    <img class="img-height" :src="videoList[0].previewUrl" >
+        <el-row :gutter="3" class="video-wrapper" >
+            <el-col :lg="16" class="index-video" >
+                <div class="big-item"
+                    @mouseenter="handleHoverEnter($event)"
+                    @mouseleave="handleHoverLeave($event)"
+                >
+                    <div class="cover-image" :style="{ backgroundImage: 'url(' + videoRecommend[0].previewUrl + ')'}" ></div>
                     <div class="video-mask index-video">
-                        <h2 class="text-truncate">{{videoList[0].videoTitle}}</h2>
-                        <p>{{videoList[0].speakerName}}</p>
+                        <h2 class="text-truncate">{{videoRecommend[0].videoTitle}}</h2>
+                        <p>{{videoRecommend[0].speakerName}}</p>
                     </div>
-                    <div class="vd-events">
+                    <div :class="op_class">
                         <div class="e-box">
-                            <div @click="handleChangeVideo" class="e-cube">
+                            <div @click="handleChangeVideo(0,videoRecommend[0].videoId)" class="e-cube">
                                 <i class="icon iconfont icon-changeVideo"></i>
                                 <span>替换热门视频</span>
                             </div>
-                            <div @click="handlePlayVideo(videoList[0].videoUrl)" class="e-cube border-left">
+                            <div @click="handlePlayVideo(videoRecommend[0].videoUrl)" class="e-cube border-left">
                                 <i class="icon iconfont icon-play"></i>
                                 <span>播放</span>
                             </div>
@@ -25,66 +28,74 @@
                     </div>
                 </div>
             </el-col>
-            <!-- 视频播放弹窗 -->
-            <el-dialog width="1200px" :visible.sync="modal.video" :before-close="handleVideoClose" >
-                <div class="video-player">
-                    <video-player
-                        class="vjs-custom-skin"
-                        ref="videoPlayer"
-                        :options="playerOptions"
-                        :playsinline="true"
-                    >
-                    </video-player>
-                </div>
-            </el-dialog>
-            <!--  -->
-            <el-col :lg="8" class="video-col" >
+
+            <el-col :lg="8" class="extra-video" >
                 <div class="video-item" @mouseenter="handleHoverEnter($event)" @mouseleave="handleHoverLeave($event)" >
-                    <img class="img-height" :src="videoList[1].previewUrl" >
+                    <div class="cover-image" :style="{backgroundImage: 'url(' + videoRecommend[1].previewUrl + ')'}" ></div>
                     <div class="video-mask extra-video">
-                        <h2 class="text-truncate">{{videoList[1].videoTitle}}</h2>
-                        <p>{{videoList[1].speakerName}}</p>
+                        <h2 class="text-truncate">{{videoRecommend[1].videoTitle}}</h2>
+                        <p>{{videoRecommend[1].speakerName}}</p>
                     </div>
-                    <div class="vd-events">
+                    <div :class="op_class">
                         <div class="e-box">
-                            <div @click="handleChangeVideo" class="e-cube">
+                            <div @click="handleChangeVideo(1,videoRecommend[1].videoId)" class="e-cube">
                                 <i class="icon iconfont icon-changeVideo"></i>
                                 <span>替换热门视频</span>
                             </div>
-                            <div @click="handlePlayVideo(videoList[1].videoUrl)" class="e-cube border-left">
+                            <div @click="handlePlayVideo(videoRecommend[1].videoUrl)" class="e-cube border-left">
                                 <i class="icon iconfont icon-play"></i>
                                 <span>播放</span>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="video-item" @mouseenter="handleHoverEnter($event)" @mouseleave="handleHoverLeave($event)" >
-                    <img class="img-height" :src="videoList[2].previewUrl" >
+                <div class="video-item mt-col" @mouseenter="handleHoverEnter($event)" @mouseleave="handleHoverLeave($event)" >
+                    <div class="cover-image" :style="{backgroundImage: 'url(' + videoRecommend[2].previewUrl + ')'}" ></div>
                     <div class="video-mask extra-video">
-                        <h2 class="text-truncate">{{videoList[2].videoTitle}}</h2>
-                        <p>{{videoList[2].speakerName}}</p>
+                        <h2 class="text-truncate">{{videoRecommend[2].videoTitle}}</h2>
+                        <p>{{videoRecommend[2].speakerName}}</p>
                     </div>
-                    <div class="vd-events">
+                    <div :class="op_class">
                         <div class="e-box">
-                            <div @click="handleChangeVideo" class="e-cube">
+                            <div @click="handleChangeVideo(2,videoRecommend[2].videoId)" class="e-cube">
                                 <i class="icon iconfont icon-changeVideo"></i>
                                 <span>替换热门视频</span>
                             </div>
-                            <div @click="handlePlayVideo(videoList[2].videoUrl)" class="e-cube border-left">
+                            <div @click="handlePlayVideo(videoRecommend[2].videoUrl)" class="e-cube border-left">
                                 <i class="icon iconfont icon-play"></i>
                                 <span>播放</span>
                             </div>
                         </div>
                     </div>
                 </div>
-                <SelectVideo v-on:modal="handleClose" title="查看详情" :modal="modal.selectVideo" ></SelectVideo>
             </el-col>
         </el-row>
+        <!-- 视频播放弹窗 -->
+        <el-dialog width="1200px" :visible.sync="modal.video" :before-close="handleVideoClose" >
+            <div class="video-player">
+                <video-player
+                    class="vjs-custom-skin"
+                    ref="videoPlayer"
+                    :options="playerOptions"
+                    :playsinline="true"
+                >
+                </video-player>
+            </div>
+        </el-dialog>
+        <!-- 替换视频 -->
+        <SelectVideo :videoId="videoId" v-on:selectVideoId="handleModifyVideoRecommend" v-on:modal="handleClose" title="查看详情" :modal="modal.selectVideo" ></SelectVideo>
     </el-card>
 </template>
 <script>
 import { mapState, mapMutations } from 'vuex';
-import $ from 'jquery';
+
+import {
+    attrs,
+    formatAttr,
+    dateformat,
+    commonPageInit
+} from '@comp/lib/api_maps.js';
+
 import index_video from 'assets/image/video_bg.png';
 import SelectVideo from '@layout/modal/selectVideo.vue';
 
@@ -98,49 +109,22 @@ import 'video.js/dist/video-js.css';
 export default {
     data() {
         return {
-            videoList: [
+            videoId: '', //  中间值 - 选中的id
+            pos: 1, //  中间值 - 选中的位置
+            videoIdStr: [], // 接口所需的参数配置
+            op_class: {
+                'vd-events': true,
+                active: false
+            },
+            videoRecommend: [
                 {
-                    videoTypeId: '1',
-                    recommendPos: 0,
-                    previewUrl: index_video,
-                    videoTitle: '知识改变命运',
-                    speakerName: 'Franscisco',
-                    schoolName: '', // 学校名字，用于自定义文本信息类型
-                    speakTimestamp: 123, // 演讲时间戳
-                    publishTimestamp: 123, // 发布时间戳
-                    videoTypeIdStr: '', // 分类字符串，逗号分隔
-                    videoUrl: 'http://vjs.zencdn.net/v/oceans.mp4', // 视频文件地址，不包含域名等不确定前缀
-                    enable: 1, // 启用：0=否；1=是
-                    recommendPos: 0 // 推荐位置：0=没有;
+                    previewUrl: ''
                 },
                 {
-                    videoTypeId: '2',
-                    recommendPos: 1,
-                    previewUrl: video_1,
-                    videoTitle: '知识改变命运',
-                    speakerName: 'Franscisco',
-                    schoolName: '', // 学校名字，用于自定义文本信息类型
-                    speakTimestamp: 123, // 演讲时间戳
-                    publishTimestamp: 123, // 发布时间戳
-                    videoTypeIdStr: '', // 分类字符串，逗号分隔
-                    videoUrl:
-                        'http://7xkwa7.media1.z0.glb.clouddn.com/sample_video_L', // 视频文件地址，不包含域名等不确定前缀
-                    enable: 1, // 启用：0=否；1=是
-                    recommendPos: 0 // 推荐位置：0=没有;
+                    previewUrl: ''
                 },
                 {
-                    videoTypeId: '3',
-                    recommendPos: 2,
-                    previewUrl: video_2,
-                    videoTitle: '知识改变命运',
-                    speakerName: 'Franscisco',
-                    schoolName: '', // 学校名字，用于自定义文本信息类型
-                    speakTimestamp: 123, // 演讲时间戳
-                    publishTimestamp: 123, // 发布时间戳
-                    videoTypeIdStr: '', // 分类字符串，逗号分隔
-                    videoUrl: 'http://vjs.zencdn.net/v/oceans.mp4', // 视频文件地址，不包含域名等不确定前缀
-                    enable: 1, // 启用：0=否；1=是
-                    recommendPos: 0 // 推荐位置：0=没有;
+                    previewUrl: ''
                 }
             ],
             modal: {
@@ -161,8 +145,46 @@ export default {
             }
         };
     },
+    mounted() {
+        this.init();
+    },
+    computed: {
+        ...mapState({
+            orderType: state => state.search.orderType,
+            timerange: state => state.search.timerange,
+            data: state => state.search.data,
+            count: state => state.search.count,
+            tableLoading: state => state.search.tableLoading,
+            page: state => state.search.page,
+            perPage: state => state.search.perPage,
+            feedList: state => state.search.feedList,
+            schoolProgress: state => state.progress.schoolProgress,
+            speakerProgress: state => state.progress.speakerProgress
+        })
+    },
     methods: {
-        ...mapMutations(['getPageData']),
+        ...mapMutations(['getPageData', 'getArrayData', 'formSubmit']),
+        /* 页面初始化 */
+        init() {
+            this.getArrayData({
+                act: 'getVideoRecommend',
+                onSuccess: res => {
+                    /* 如果为空，要做判断处理 */
+                    /* map 是返回新数组！ */
+                    this.videoRecommend = this.videoRecommend.map(
+                        (el, index) => {
+                            return res.data.data.videoRecommend[index] || {};
+                        }
+                    );
+                    this.videoIdStr = [
+                        this.videoRecommend[0].videoId,
+                        this.videoRecommend[1].videoId,
+                        this.videoRecommend[2].videoId
+                    ];
+                    console.log(this.videoRecommend);
+                }
+            });
+        },
         handleHoverEnter(event) {
             const $target = $(event.target);
             $target.find('.vd-events').addClass('active');
@@ -183,11 +205,27 @@ export default {
             this.modal.selectVideo = false;
         },
         /* 当点击替换视频时，就去拿视频列表 */
-        handleChangeVideo(id) {
+        /* pos 代表替换的是哪个位置的视频 */
+        handleChangeVideo(pos, videoId) {
             this.modal.selectVideo = true;
-
+            this.videoId = videoId;
+            this.pos = pos;
+            /* 渲染内部视频列表 */
             this.getPageData({
                 act: 'getVideoList'
+            });
+        },
+        /* 提交修改过后的推荐视频列表 */
+        handleModifyVideoRecommend(obj) {
+            this.videoIdStr[this.pos] = obj.videoId;
+            const cfg = this.videoIdStr.join(',');
+            this.formSubmit({
+                act: 'modifyVideoRecommend',
+                videoIdStr: cfg,
+                successText: '替换成功',
+                onSuccess: res => {
+                    this.init();
+                }
             });
         }
     },
@@ -226,48 +264,44 @@ export default {
 .video-wrapper {
     display: flex;
     max-width: 950px;
-    .video-col {
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-    }
+
     .video-item {
         position: relative;
         overflow: hidden;
+    }
 
-        .vd-events {
-            display: none;
-            top: 0;
-            position: absolute;
-            transition: all 0.3s ease;
-            background: rgba(0, 0, 0, 0.7);
-            width: 100%;
-            height: 100%;
-            z-index: 10;
-            justify-content: center;
-            align-items: center;
-            &.active {
+    .vd-events {
+        display: none;
+        top: 0;
+        position: absolute;
+        transition: all 0.3s ease;
+        background: rgba(0, 0, 0, 0.7);
+        width: 100%;
+        height: 100%;
+        z-index: 10;
+        justify-content: center;
+        align-items: center;
+        &.active {
+            display: flex;
+        }
+        .e-box {
+            display: flex;
+            text-align: center;
+            color: #fff;
+            .e-cube {
+                cursor: pointer;
+                padding: 0 40px;
                 display: flex;
-            }
-            .e-box {
-                display: flex;
-                text-align: center;
-                color: #fff;
-                .e-cube {
-                    cursor: pointer;
-                    padding: 0 40px;
-                    display: flex;
-                    flex-direction: column;
-                    &.border-left {
-                        border-left: 1px solid;
-                    }
-                    i {
-                        font-size: 40px;
-                    }
-                    span {
-                        font-size: 16px;
-                        line-height: 40px;
-                    }
+                flex-direction: column;
+                &.border-left {
+                    border-left: 1px solid;
+                }
+                i {
+                    font-size: 40px;
+                }
+                span {
+                    font-size: 16px;
+                    line-height: 40px;
                 }
             }
         }
@@ -308,5 +342,8 @@ export default {
             margin: 10px 0;
         }
     }
+}
+.mt-col {
+    margin-top: 3px;
 }
 </style>

@@ -7,10 +7,34 @@
                 </div>
                 <div class="sr-context" >
                     <div class="sr-input">
-                        <el-input placeholder="学校名称" v-model="searchCfg.schoolName" suffix-icon="el-icon-search" ></el-input>
+                        <SlRemote placeholder="学校名称" v-on:id="handleUpdateSchoolId" :id="searchCfg.schoolId" action="getSchoolListForInput" >
+                            <template slot-scope="scope" >
+                                <div class="d-center sl_option">
+                                    <div class="sl_image">
+                                        <img :src="scope.option.profilePhotoUrl" class="img-fluid" alt="">
+                                    </div>
+                                    <div class="sl_body">
+                                        <h4 class="sl_title">{{scope.option.name}}</h4>
+                                        <h5 class="sl_info">{{scope.option.schoolShortDesc}}</h5>
+                                    </div>
+                                </div>
+                            </template>
+                        </SlRemote>
                     </div>
                     <div class="sr-input">
-                        <el-input placeholder="演讲者名称" v-model="searchCfg.speakerName" suffix-icon="el-icon-search" ></el-input>
+                        <SlRemote placeholder="演讲者名称" v-on:id="handleUpdateSpeakerId" :id="searchCfg.speakerId" action="getSpeakerListForInput" >
+                            <template slot-scope="scope" >
+                                <div class="d-center sl_option">
+                                    <div class="sl_image">
+                                        <img :src="scope.option.profilePhotoUrl" class="img-fluid" alt="">
+                                    </div>
+                                    <div class="sl_body">
+                                        <h4 class="sl_title">{{scope.option.name}}</h4>
+                                        <h5 class="sl_info">{{scope.option.speakerShortDesc}}</h5>
+                                    </div>
+                                </div>
+                            </template>
+                        </SlRemote>
                     </div>
                 </div>
             </template>
@@ -29,9 +53,9 @@
                     label="状态">
                     <template slot-scope="scope">
                         <el-tag
-                        :type="attrs['status'][scope.row.status+''+scope.row.fromSide].tags"
+                        :type="handleRendorState(scope.row,'tags')"
                         close-transition>
-                        {{attrs["status"][scope.row.status+''+scope.row.fromSide].text}}</el-tag>
+                        {{handleRendorState(scope.row,'text')}}</el-tag>
                     </template>
                 </el-table-column>
                 <el-table-column
@@ -144,6 +168,7 @@ import {
     dateformat,
     commonPageInit
 } from '@comp/lib/api_maps.js';
+
 import ScProgress from '@layout/modal/schoolProgress.vue';
 import SpProgress from '@layout/modal/speakerProgress.vue';
 import Pagination from '@layout/pagination.vue';
@@ -155,9 +180,8 @@ import Timerange from '@layout/timerange.vue';
 import Search from '@layout/search.vue';
 import MessageBox from '@layout/modal/message.vue';
 
-import axios from 'axios';
-
 import ResponseDialog from '@layout/modal/response.vue';
+import SlRemote from '@layout/slremote.vue';
 
 export default {
     data() {
@@ -197,6 +221,7 @@ export default {
         ScProgress,
         SpProgress,
         Operation,
+        SlRemote,
         MessageBox,
         EditInvite,
         Table,
@@ -223,6 +248,12 @@ export default {
             'showModal',
             'getRejectDesc'
         ]),
+
+        /* 渲染状态 */
+        handleRendorState(obj, type) {
+            let state = (obj.status || '1') + (obj.fromSide || '1');
+            return this.attrs['status'][state][type];
+        },
 
         handleEdit(index, row) {
             this.showModal(row);
@@ -251,6 +282,13 @@ export default {
         },
         handleClose() {
             this.modal.response = false;
+        },
+        handleUpdateSchoolId(cfg) {
+            this.searchCfg.schoolId = cfg.schoolId;
+        },
+
+        handleUpdateSpeakerId(cfg) {
+            this.searchCfg.speakerId = cfg.speakerId;
         }
     }
 };

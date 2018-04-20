@@ -39,7 +39,7 @@
         </Table>
         <Pagination :cfg="searchCfg" :count="count" ></Pagination>
         <!-- 查看原因 -->
-        <EditSpeaker :data="form" v-on:modal="handleClose('showReason')" title="修改信息" :modal="modal.showReason" ></EditSpeaker>
+        <EditSpeaker :data="form" v-on:modal="handleClose" title="修改信息" :modal="modal" ></EditSpeaker>
     </el-card>
 </div>
 </template>
@@ -69,30 +69,8 @@ export default {
                 searchText: '11',
                 authStatus: 0
             },
-            modal: {
-                showReason: false,
-                reject: false
-            },
-            form: {
-                speakerId: '',
-                name: 'zhaihr',
-                sex: 1,
-                company: 'zhaihr',
-                title: 'zhaihr',
-                wechat: 'zhaihr',
-                phone: 'zhaihr',
-                address: 'zhaihr',
-                idleTimeDesc: 'zhaihr',
-                showVideoOnSite: 1,
-                photoUrl:
-                    'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100',
-                educationBackground: 'zhaihr',
-                inviter: 'zhaihr',
-                whyChooseUs: 'zhaihr',
-                rejectDesc: 'zhaihr',
-                suspendDesc: 'zhaihr',
-                benefitPeopleTimesAdd: 1
-            },
+            modal: false,
+            form: {},
             actions: {
                 ok: 'passSpeakerApplication',
                 refuse: 'rejectSpeakerApplication'
@@ -132,17 +110,31 @@ export default {
             'getPageData',
             'formSubmit',
             'showModal',
+            'update',
+            'getFormData',
             'getRejectDesc'
         ]),
         handleEdit(index, row) {
             this.showModal(row);
         },
-        handleShowReason(data) {
-            const id = '3';
-            this.modal.showReason = true;
+        handleShowReason(obj) {
+            this.modal = true;
+            this.getFormData({
+                act: 'getSpeakerApplication',
+                speakerId: obj.speakerId,
+                onSuccess: res => {
+                    debugger;
+                    this.form = res.data.data;
+                    this.form.speakerId = obj.speakerId;
+                    this.update({
+                        photoUrl: this.form.photoUrl,
+                        photoShortPathFilename: this.form.photoShortPathFilename
+                    });
+                }
+            });
         },
-        handleClose(modalName) {
-            this.modal[modalName] = false;
+        handleClose() {
+            this.modal = false;
         }
     }
 };

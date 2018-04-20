@@ -36,9 +36,8 @@
             </el-table-column>
         </Table>
         <Pagination :cfg="searchCfg" :count="count" ></Pagination>
-
         <!-- 查看原因 -->
-        <EditSchool :data="form" v-on:modal="handleClose('showReason')" title="修改信息" :modal="modal.showReason" ></EditSchool>
+        <EditSchool :data="form" v-on:modal="handleClose" title="修改信息" :modal="modal" ></EditSchool>
     </el-card>
 </div>
 </template>
@@ -68,25 +67,8 @@ export default {
                 searchText: '11',
                 authStatus: 0
             },
-            modal: {
-                showReason: false,
-                reject: false
-            },
-            form: {
-                radios: 3,
-                name: '',
-                address: '',
-                teacher: '',
-                teacherPhone: '',
-                pic1: '',
-                pic2: '',
-                delivery: false,
-                type: [],
-                resource: '',
-                freeinfo: '',
-                radio: true,
-                remainCount: 12
-            },
+            modal: false,
+            form: {},
             actions: {
                 ok: 'passSchoolApplication',
                 refuse: 'rejectSchoolApplication'
@@ -126,19 +108,35 @@ export default {
             'getPageData',
             'formSubmit',
             'showModal',
+            'update',
+            'getFormData',
             'getRejectDesc'
         ]),
         handleEdit(index, row) {
             this.showModal(row);
         },
 
-        handleShowReason(data) {
-            const id = '3';
-            console.log(this.rowData);
-            this.modal.showReason = true;
+        handleShowReason(obj) {
+            this.modal = true;
+            this.getFormData({
+                act: 'getSchoolApplication',
+                schoolId: obj.schoolId,
+                onSuccess: res => {
+                    this.form = res.data.data;
+                    this.form.schoolId = obj.schoolId;
+                    this.update({
+                        classroomPhotoShortPathFilename: this.form
+                            .classroomPhotoShortPathFilename,
+                        classroomPhotoUrl: this.form.classroomPhotoUrl,
+                        schoolPhotoShortPathFilename: this.form
+                            .schoolPhotoShortPathFilename,
+                        schoolPhotoUrl: this.form.schoolPhotoUrl
+                    });
+                }
+            });
         },
-        handleClose(modalName) {
-            this.modal[modalName] = false;
+        handleClose() {
+            this.modal = false;
         }
     }
 };

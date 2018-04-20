@@ -7,7 +7,8 @@ const state = {
         speakerInfoType: 1,
         schoolInfoType: 1
     },
-    videoTyleList: [],
+    videoTypeList: [], // 视频类型列表
+    videoTypeIdStr: [],
     modal: false,
     speakTimestamp: new Date().getTime() / 1000,
     tagstab: ""
@@ -31,13 +32,13 @@ const mutations = {
                 state.form = Object.assign(state.form, res.data.data.video)
 
                 state.speakTimestamp = state.form.speakTimestamp
-
+                console.table(state.form)
                 let tag = state.form.tag || ""
                 state.tagstab = tag.split(',')
-                console.log(state.tagstab);
-                console.log(res.data.data.videoTyleList);
 
-                state.videoTyleList = Object.assign(state.videoTyleList, res.data.data.videoTyleList)
+                state.videoTypeList = Object.assign(state.videoTypeList, res.data.data.videoTypeList)
+
+                state.videoTypeIdStr = state.form.videoTypeIdStr
             }
         })
     },
@@ -53,6 +54,21 @@ const mutations = {
     },
     changeTags(state, value) {
         state.tagstab = value
+    },
+    updateFormValue(state, {
+        type,
+        value
+    }) {
+        state.form[type] = value
+    },
+    clearForm(state) {
+        state.form = {
+            schoolInfoType: 1,
+            speakerInfoType: 1,
+        };
+    },
+    changeCategory(state, value) {
+        state.videoTypeIdStr = value
     }
 }
 

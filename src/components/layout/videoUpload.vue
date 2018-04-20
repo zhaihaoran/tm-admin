@@ -4,6 +4,7 @@
         class="avatar-uploader"
         :action="action"
         :disabled="disabled"
+        :limit="1"
         :list-type="liststyle"
         :with-credentials="true"
         :auto-upload="false"
@@ -38,17 +39,28 @@ export default {
         previewname: {
             type: String,
             default: ''
+        },
+        filepathname: {
+            type: String,
+            default: ''
         }
     },
     methods: {
         ...mapMutations(['update', 'commonUpload']),
         handlePicChange(file, fileList) {
+            /* 禁用按钮，并给提示 */
+            this.$emit('uploading');
             let formCfg = new FormData();
             formCfg.append('file', file.raw);
             // 上传
+            console.log(this.previewname);
             this.commonUpload({
                 formCfg,
-                previewname: this.previewname
+                previewname: this.previewname,
+                filepathname: this.filepathname,
+                onSuccess: res => {
+                    this.$emit('end');
+                }
             });
         }
     }
