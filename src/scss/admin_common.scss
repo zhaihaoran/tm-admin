@@ -7,13 +7,13 @@ $btn_hover: #e05162;
 $btn_active: #990e1f;
 
 $header_bg: #403434;
-$sider_bg: #f4f4f4;
+$sider_bg: #fff;
 $sider_active: #f3f3f3;
 $sider_font: #303133;
 $sider_font_hover: #333;
 $sider_submenu_active: #bbb;
 $sider_submenu_bg: #efefef;
-$sider_item_active: #e0e0e0;
+$sider_item_active: #f5f5f5;
 $context_bg: #f6f6f6;
 // shadow
 
@@ -59,6 +59,14 @@ a {
     line-height: 250px;
     overflow: hidden;
 }
+
+.avatar .el-upload--picture-card {
+    width: 160px;
+    height: 160px;
+    line-height: 160px;
+    overflow: hidden;
+}
+
 .card-uploader .el-upload--picture-card {
     width: 300px;
     height: 200px;
@@ -192,6 +200,9 @@ a {
 
 .admin-context {
     height: calc(100vh - 70px);
+    &.login {
+        height: 100vh;
+    }
 }
 
 .admin-aside {
@@ -266,13 +277,17 @@ a {
             align-items: center;
             padding: 0 20px;
             color: #fff;
+            &.active {
+                background: #ac2030;
+            }
             a {
                 color: #fff;
             }
         }
         .user-logo {
             img {
-                height: 50px;
+                height: 40px;
+                border-radius: 30px;
             }
         }
     }
@@ -639,4 +654,15 @@ input::-webkit-input-placeholder {
 
 .el-card {
     width: 100%;
+}
+
+.normal-a {
+    display: block;
+    color: #409eff;
+    cursor: pointer;
+}
+
+.mb-20 {
+    margin-bottom: 15px;
+    display: inline-block;
 }

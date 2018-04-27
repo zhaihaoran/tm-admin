@@ -10,7 +10,7 @@ const state = {
     videoTypeList: [], // 视频类型列表
     videoTypeIdStr: [],
     modal: false,
-    speakTimestamp: new Date().getTime() / 1000,
+    speakTimestamp: '',
     tagstab: ""
 }
 
@@ -44,13 +44,7 @@ const mutations = {
     },
     closeModal(state, cfg) {
         state.modal = false;
-        state.form = {
-            speakTimestamp: new Date().getTime() / 1000,
-            addTimestamp: 0
-        };
-    },
-    setDateValue(state, payload) {
-        state = Object.assign(state, payload)
+        state.form = {};
     },
     changeTags(state, value) {
         state.tagstab = value

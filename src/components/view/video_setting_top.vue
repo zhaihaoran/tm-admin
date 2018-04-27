@@ -35,7 +35,7 @@
         </el-card>
         <!-- 选择视频 -->
         <!-- point: 组件双向绑定！.sync -->
-        <SelectVideo :videoTypeId.sync="selectTypeId" v-on:selectVideoId="handleSaveVideo" v-on:modal="handleClose" title="查看详情" :modal="modal.selectVideo"  ></SelectVideo>
+        <SelectVideo :videoTypeId.sync="selectTypeId" v-on:selectVideoId="handleSaveVideo" v-on:modal="handleClose" title="查看/修改" :modal="modal.selectVideo"  ></SelectVideo>
     </div>
 </template>
 <script>

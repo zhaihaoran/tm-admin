@@ -49,7 +49,7 @@
                     width="110"
                     label="详细信息">
                     <template slot-scope="scope">
-                        <el-button size="mini" @click="handleShowReason(scope.row)" type="text" >查看详情</el-button>
+                        <el-button size="mini" @click="handleShowReason(scope.row)" type="text" >查看/修改</el-button>
                     </template>
                 </el-table-column>
                 <el-table-column
@@ -73,7 +73,7 @@ import { mapState, mapMutations } from 'vuex';
 
 import { dateformat, commonPageInit } from '@comp/lib/api_maps.js';
 
-import Search from '@layout/search.vue';
+import Search from '@layout/apply_search.vue';
 import EditSchool from '@layout/modal/editSchool.vue';
 import Table from '@layout/table.vue';
 import Operation from '@layout/operation.vue';
@@ -88,7 +88,7 @@ export default {
                 act: 'getSchoolApplicationList',
                 authStatus: 2,
                 orderType: this.orderType,
-                searchText: '11'
+                searchText: ''
             },
             actions: {
                 ok: 'passSchoolApplication',

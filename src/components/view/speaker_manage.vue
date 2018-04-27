@@ -11,6 +11,7 @@
         <Table :loading="tableLoading" :data="data" >
             <el-table-column width="100" :formatter="formatAttr" align="center" prop="authStatus" label="认证状态" ></el-table-column>
             <el-table-column align="center" prop="name" label="姓名" ></el-table-column>
+            <el-table-column align="center" prop="sex" :formatter="formatAttr" label="性别" ></el-table-column>
             <el-table-column align="center" prop="company" show-overflow-tooltip  label="公司" ></el-table-column>
             <el-table-column align="center" prop="title" label="岗位" ></el-table-column>
             <el-table-column show-overflow-tooltip align="center" prop="wechat" label="微信号" ></el-table-column>
@@ -23,7 +24,7 @@
             </el-table-column>
             <el-table-column align="center" width="100px"  label="详细信息" >
                 <template slot-scope="scope">
-                    <el-button size="mini" @click="handleShowReason(scope.row)" type="text" >查看详情</el-button>
+                    <el-button size="mini" @click="handleShowReason(scope.row)" type="text" >查看/修改</el-button>
                 </template>
             </el-table-column>
             <el-table-column align="center" width="170" label="操作" >
@@ -53,7 +54,7 @@ import {
 } from '@comp/lib/api_maps.js';
 
 import Table from '@layout/table.vue';
-import Search from '@layout/search.vue';
+import Search from '@layout/apply_search.vue';
 import Suspend from '@layout/suspend.vue';
 import Pagination from '@layout/pagination.vue';
 import Operation from '@layout/operation.vue';
@@ -66,7 +67,7 @@ export default {
             searchCfg: {
                 act: 'getSchoolApplicationList',
                 orderType: this.orderType,
-                searchText: '11',
+                searchText: '',
                 authStatus: 0
             },
             modal: false,
@@ -123,7 +124,6 @@ export default {
                 act: 'getSpeakerApplication',
                 speakerId: obj.speakerId,
                 onSuccess: res => {
-                    debugger;
                     this.form = res.data.data;
                     this.form.speakerId = obj.speakerId;
                     this.update({

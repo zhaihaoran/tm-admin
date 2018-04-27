@@ -97,8 +97,11 @@
                 <el-table-column
                     prop="speakDuration"
                     align="center"
-                    label="演讲时长（分钟）" width="80"
+                    label="演讲时长" width="80"
                     >
+                    <template slot-scope="scope">
+                        {{secToMin(scope.row.speakDuration)}}
+                    </template>
                 </el-table-column>
                 <el-table-column
                     prop="addTimestamp"
@@ -112,17 +115,16 @@
                 <el-table-column
                     prop="schoolStatus"
                     align="center"
-                    width="110"
+                    width="150"
                     label="学校进展">
                     <template slot-scope="scope">
-                        <!-- 学校进度 popover -->
-                        <ScProgress :scope="scope"></ScProgress>
+                        <ScProgress v-on:feed="handleShowImage" :scope="scope"></ScProgress>
                     </template>
                 </el-table-column>
                 <el-table-column
                     prop="speakerStatus"
                     align="center"
-                    width="110"
+                    width="120"
                     label="演讲者进展">
                     <template slot-scope="scope">
                         <SpProgress :scope="scope"></SpProgress>
@@ -133,19 +135,20 @@
                     width="110"
                     label="学校反馈">
                     <template slot-scope="scope">
-                        <el-button v-show="scope.row.status == 4" type="text" @click="showReason(scope.row)" >查看/修改</el-button>
+                        <el-button v-show="scope.row.status == 4" type="text" @click="handleShowImage(scope.row)" >查看</el-button>
                     </template>
                 </el-table-column>
                 <el-table-column
                     align="center"
                     label="消息">
                     <template slot-scope="scope">
-                        <MessageBox :scope="scope" ></MessageBox>
+                        <MessageBox :canSend="+scope.row.status === 1" :scope="scope" ></MessageBox>
                     </template>
                 </el-table-column>
                 <el-table-column
                     align="center"
-                    width="180px"
+                    class="no-wrap"
+                    width="250px"
                     label="操作">
                     <template slot-scope="scope" >
                         <Operation :handleEdit="handleEdit" :scope="scope"></Operation>
@@ -156,7 +159,8 @@
             <!-- edit -->
             <EditInvite></EditInvite>
 
-            <ResponseDialog v-on:modal="handleClose" :modal="modal.response" title="哈哈哈" :photos="feedList" ></ResponseDialog>
+            <!-- 反馈 -->
+            <FeedList v-on:close="handleClose" :modal="modal.feed" :current-id="currentId" ></FeedList>
         </div>
     </div>
 </template>
@@ -166,7 +170,8 @@ import {
     attrs,
     formatAttr,
     dateformat,
-    commonPageInit
+    commonPageInit,
+    secToMin
 } from '@comp/lib/api_maps.js';
 
 import ScProgress from '@layout/modal/schoolProgress.vue';
@@ -179,14 +184,15 @@ import Table from '@layout/table.vue';
 import Timerange from '@layout/timerange.vue';
 import Search from '@layout/search.vue';
 import MessageBox from '@layout/modal/message.vue';
+import FeedList from '@layout/modal/feedlist.vue';
 
-import ResponseDialog from '@layout/modal/response.vue';
 import SlRemote from '@layout/slremote.vue';
 
 export default {
     data() {
         return {
             attrs,
+            currentId: '',
             form: {},
             searchCfg: {
                 act: 'getAppointmentList',
@@ -198,7 +204,8 @@ export default {
             },
             modal: {
                 response: false,
-                edit: false
+                edit: false,
+                feed: false
             }
         };
     },
@@ -226,8 +233,8 @@ export default {
         EditInvite,
         Table,
         Timerange,
-        Pagination,
-        ResponseDialog
+        FeedList,
+        Pagination
     },
     mounted() {
         commonPageInit(this, {
@@ -241,8 +248,10 @@ export default {
     methods: {
         formatAttr,
         dateformat,
+        secToMin,
         ...mapMutations([
             'updateValue',
+            'getFeedList',
             'getPageData',
             'formSubmit',
             'showModal',
@@ -251,7 +260,7 @@ export default {
 
         /* 渲染状态 */
         handleRendorState(obj, type) {
-            let state = (obj.status || '1') + (obj.fromSide || '1');
+            let state = obj.status || '1';
             return this.attrs['status'][state][type];
         },
 
@@ -271,17 +280,18 @@ export default {
             });
         },
 
-        getResponseList(obj) {
+        // 学校预览照片，并可以上传
+        handleShowImage(row) {
+            this.modal.feed = true;
+            this.currentId = row.appointmentId;
             this.getFeedList({
                 act: 'getFeedbackList',
-                appointmentId: obj.appointmentId,
-                onSuccess: res => {
-                    console.log(res);
-                }
+                appointmentId: row.appointmentId
             });
         },
+
         handleClose() {
-            this.modal.response = false;
+            this.modal.feed = false;
         },
         handleUpdateSchoolId(cfg) {
             this.searchCfg.schoolId = cfg.schoolId;

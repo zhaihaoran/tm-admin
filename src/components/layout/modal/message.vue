@@ -1,6 +1,6 @@
 <template>
     <div>
-        <el-button type="text" @click="handleChatList(scope.row)" class="tm-a" >对话<span v-if="scope.row.chatUnreadQuantity>0" > ({{scope.row.chatUnreadQuantity}})</span></el-button>
+        <el-button type="text" @click="handleChatList(scope.row)" class="tm-a" >留言<span v-if="scope.row.chatUnreadQuantity>0" > ({{scope.row.chatUnreadQuantity}})</span></el-button>
         <el-dialog
             :visible.sync="modal"
             class="message-modal"
@@ -15,25 +15,27 @@
                     <p class="no-margin"
                         :class="{school:item.senderType ==1,speaker:item.senderType ==2,tumeng:item.senderType ==3 }"
                     >
-                        <span class="name">{{item.senderName}}</span><span class="time"> {{dateformat(item.addTimestamp)}}</span>
+                        <span class="name">{{item.senderType == 3 ? "" : item.senderName}}</span><span class="time"> {{dateformat(item.addTimestamp)}}</span>
                     </p>
                     <p class="message">
                         {{item.message}}
                     </p>
                 </div>
             </div>
-            <el-form ref="modal_message" class="message-form">
+            <el-form ref="modal_message" v-if="canSend" class="message-form">
                 <el-form-item>
                     <el-input @keyup.native.ctrl.enter="sendMessage(scope.row)" class="tm-textarea" type="textarea" v-model="message" placeholder="ctrl + enter 快捷发送" ></el-input>
                 </el-form-item>
             </el-form>
-            <span slot="footer">
+            <span slot="footer" v-if="canSend" >
                 <el-button class="tm-btn" type="primary" @click="sendMessage(scope.row)">发送</el-button>
             </span>
+            <div v-else class="msg-bottom" ></div>
         </el-dialog>
     </div>
 </template>
 <script>
+import Vue from 'vue';
 import { dateformat } from '@comp/lib/api_maps';
 import { mapState, mapMutations } from 'vuex';
 
@@ -42,7 +44,7 @@ export default {
         return {
             senderType: {
                 1: '学校',
-                2: '演讲者',
+                2: '梦享家',
                 3: '途梦管理员'
             },
             loading: false,
@@ -55,19 +57,33 @@ export default {
             chatList: state => state.search.chatList
         })
     },
-    props: ['scope'],
+    props: {
+        scope: {
+            type: Object
+        },
+        canSend: {
+            type: Boolean,
+            default: true
+        }
+    },
     methods: {
         dateformat,
-        ...mapMutations(['getChatList', 'sendChatMsg']),
+        ...mapMutations(['getChatList', 'sendChatMsg', 'updatelist']),
         handleChatList(row) {
             this.loading = true;
             this.modal = true;
+            row['chatUnreadQuantity'] = 0;
+            this.updatelist(row);
 
             this.getChatList({
                 act: 'getChatMessageList',
                 appointmentId: row.appointmentId,
                 onSuccess: res => {
                     this.loading = false;
+                    /**
+                     * 由于拿到数据后还没渲染呢,需要通过异步更新队列来实现滚动条置底的功能点
+                     * nextTick 在dom更新循环结束之后执行延迟回调，获取更新后的dom,这正是我想要的！
+                     */
                     this.$nextTick(function() {
                         this.$refs.mesbox.scrollTop = this.$refs.mesbox.scrollHeight;
                     });
@@ -157,6 +173,9 @@ export default {
     font-weight: normal;
     font-size: 18px;
     margin: 0 0 15px;
+}
+.msg-bottom {
+    height: 50px;
 }
 </style>
 

@@ -20,8 +20,8 @@
             :visible.sync="modal.refuse"
             width="30%"
         >
-            <h3 class="text-center modal-title" >确定驳回邀约吗？</h3>
-            <span>请填写驳回原因，用于告知邀请者</span>
+            <h3 class="text-center modal-title" >确定驳回申请吗？</h3>
+            <span class="mb-20">请填写驳回原因，用于告知邀请者</span>
             <el-form ref="form" >
                 <el-form-item class="no-margin" >
                     <el-input type="textarea" v-model="rejectDesc" class="tm-textarea"></el-input>
@@ -62,7 +62,7 @@ export default {
         }
     },
     methods: {
-        ...mapMutations(['Ok', 'refuse', 'deleteRow']),
+        ...mapMutations(['Ok', 'refuse', 'updatelist']),
         handleOk(obj) {
             this.modal.agree = false;
             const type = this.type;
@@ -70,10 +70,11 @@ export default {
                 act: this.action.ok,
                 [type]: this.scope.row[type],
                 onSuccess: res => {
-                    this.deleteRow({
-                        value: this.scope.row[type],
-                        type: type
-                    });
+                    this.updatelist(
+                        Object.assign(this.scope.row, {
+                            authStatus: 3
+                        })
+                    );
                 }
             });
         },
@@ -85,10 +86,11 @@ export default {
                 [type]: this.scope.row[type],
                 rejectDesc: this.rejectDesc,
                 onSuccess: res => {
-                    this.deleteRow({
-                        value: this.scope.row[type],
-                        type: type
-                    });
+                    this.updatelist(
+                        Object.assign(this.scope.row, {
+                            authStatus: 4
+                        })
+                    );
                 }
             });
         }

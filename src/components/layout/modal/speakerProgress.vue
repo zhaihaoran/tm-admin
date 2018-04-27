@@ -28,15 +28,22 @@ export default {
         }
     },
     methods: {
-        ...mapMutations(['changeStatus']),
+        ...mapMutations(['changeStatus', 'updatelist']),
         /* 设置状态 */
         handleSetStatus(value) {
             this.changeStatus({
                 act: 'modifyAppointmentProgressStatus',
-                schoolStatus: +this.scope.row.schoolStatus,
-                speakerStatus: +this.scope.row.speakerStatus,
+                appointmentId: this.scope.row.appointmentId,
+                schoolStatus: this.scope.row.schoolStatus,
+                speakerStatus: value,
                 isMessage: true,
-                successText: '邀约状态修改成功'
+                successText: '邀约状态修改成功',
+                onSuccess: res => {
+                    let newRow = Object.assign(this.scope.row, {
+                        speakerStatus: value
+                    });
+                    this.updatelist(newRow);
+                }
             });
         }
     }

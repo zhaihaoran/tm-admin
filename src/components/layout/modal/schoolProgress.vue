@@ -36,16 +36,27 @@ export default {
         })
     },
     methods: {
-        ...mapMutations(['changeStatus']),
+        ...mapMutations(['changeStatus', 'updatelist']),
         /* 设置状态 */
         handleSetStatus(value) {
             this.changeStatus({
                 act: 'modifyAppointmentProgressStatus',
-                schoolStatus: +this.scope.row.schoolStatus,
-                speakerStatus: +this.scope.row.speakerStatus,
+                appointmentId: this.scope.row.appointmentId,
+                schoolStatus: value,
+                speakerStatus: this.scope.row.speakerStatus,
                 isMessage: true,
-                successText: '邀约状态修改成功'
+                successText: '邀约状态修改成功',
+                onSuccess: res => {
+                    let newRow = Object.assign(this.scope.row, {
+                        schoolStatus: value
+                    });
+                    this.updatelist(newRow);
+                }
             });
+        },
+
+        handleShowImage(row) {
+            this.$emit('feed', row);
         }
     }
 };

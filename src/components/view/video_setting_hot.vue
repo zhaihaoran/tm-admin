@@ -83,7 +83,7 @@
             </div>
         </el-dialog>
         <!-- 替换视频 -->
-        <SelectVideo :videoId="videoId" v-on:selectVideoId="handleModifyVideoRecommend" v-on:modal="handleClose" title="查看详情" :modal="modal.selectVideo" ></SelectVideo>
+        <SelectVideo :videoId="videoId" v-on:selectVideoId="handleModifyVideoRecommend" v-on:modal="handleClose" title="查看/修改" :modal="modal.selectVideo" ></SelectVideo>
     </el-card>
 </template>
 <script>

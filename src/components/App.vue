@@ -1,8 +1,8 @@
 <template>
     <el-container class="admin-layout">
-        <Header />
-        <el-container class="admin-context" >
-            <Sidebar v-if="+users.isLogin>0" />
+        <Header v-if="login" />
+        <el-container :class="[classes,{login:!login}]" >
+            <Sidebar v-if="login" />
             <el-main class="admin-wrapper" >
                 <router-view/>
             </el-main>
@@ -13,14 +13,26 @@
 <script>
 import Sidebar from '@layout/sidebar.vue';
 import Header from '@layout/header.vue';
+import { baseURL } from '@comp/lib/api_maps';
 import { mapState, mapMutations } from 'vuex';
 
 export default {
     name: 'App',
     components: { Sidebar, Header },
+    data: function() {
+        return {
+            classes: 'admin-context'
+        };
+    },
+    mounted() {
+        this.getUserLogin();
+    },
     computed: mapState({
-        users: state => state.common.users
-    })
+        login: state => state.common.login
+    }),
+    methods: {
+        ...mapMutations(['getUserLogin'])
+    }
 };
 </script>
 

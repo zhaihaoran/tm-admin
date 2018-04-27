@@ -4,29 +4,27 @@
             <router-link to="/" ><img :src="logo" alt="logo"></router-link>
         </div>
         <ul class="header-right">
-            <li class="nav-header-item">
-                <router-link to="/" > <span>管理中心</span> </router-link>
+            <li class="nav-header-item flex-right left" >
+                <a target="_blank" :href="baseURL">网站首页</a>
             </li>
-            <li class="nav-header-item">
-                <a :href="baseURL">网站首页</a>
+            <li :class="[navClass]">
+                <router-link to="/" >涂梦管理中心</router-link>
             </li>
+
             <!-- 未登录 -->
-            <li v-show="+users.isLogin < 1" class="nav-header-item"  >
+            <li v-show="!login" class="nav-header-item"  >
                 <router-link to="/login" >  请登陆</router-link>
             </li>
             <!-- 已登录 -->
-            <li v-show="+users.isLogin > 0" class="nav-header-item user-logo">
+            <li v-show="login" class="nav-header-item user-logo">
                 <el-dropdown trigger="click" type="primary">
                     <span class="el-dropdown-link">
-                        <img :src="users.profilePhotoUrl"  alt="user">
+                        <img :src="handleAvatar(users.profilePhotoUrl)"  alt="user">
                     </span>
                     <el-dropdown-menu slot="dropdown" >
-                        <el-dropdown-item disabled >账号</el-dropdown-item>
-                        <el-dropdown-item>{{users.account}}</el-dropdown-item>
-                        <el-dropdown-item disabled >身份</el-dropdown-item>
-                        <el-dropdown-item>{{attrs["userType"][users.userType]}}</el-dropdown-item>
+                        <el-dropdown-item disabled>账号：{{users.account}}</el-dropdown-item>
                         <el-dropdown-item @click.native="handleSignout" divided>
-                            <a class="tm-link" href="#">登出</a>
+                            <a @click="handleSignout" class="tm-color" href="#">登出</a>
                         </el-dropdown-item>
                     </el-dropdown-menu>
                 </el-dropdown>
@@ -37,6 +35,7 @@
 
 <script>
 import logo from '@image/logo/logo_white.png';
+import avatar from '@image/avatar.png';
 import { baseURL, attrs } from '@comp/lib/api_maps';
 import { mapState, mapMutations } from 'vuex';
 
@@ -46,30 +45,35 @@ export default {
         return {
             logo,
             attrs,
-            baseURL
+            baseURL,
+            navClass: 'nav-header-item'
         };
     },
     // 方便 属性使用 mapState
     computed: mapState({
-        users: state => state.common.users
+        users: state => state.common.users,
+        login: state => state.common.login
     }),
-    mounted() {
-        this.getUserLogin({ baseURL });
-    },
     methods: {
-        ...mapMutations(['getUserLogin', 'signout']),
+        ...mapMutations(['signout']),
         handleSignout() {
             this.signout({
                 onSuccess: res => {
                     this.$router.push({ path: '/login' });
                 }
             });
+        },
+        handleAvatar(url) {
+            return url || avatar;
         }
     }
 };
 </script>
-<style scoped >
+<style lang="scss" scoped>
 .el-dropdown-menu__item {
     text-align: center;
+}
+.flex-right {
+    margin-right: auto;
 }
 </style>

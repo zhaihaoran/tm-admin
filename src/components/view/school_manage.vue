@@ -21,7 +21,7 @@
             </el-table-column>
             <el-table-column align="center" width="100px" label="详细信息" >
                 <template slot-scope="scope">
-                    <el-button size="mini" @click="handleShowReason(scope.row)" type="text" >查看详情</el-button>
+                    <el-button size="mini" @click="handleShowReason(scope.row)" type="text" >查看/修改</el-button>
                 </template>
             </el-table-column>
             <el-table-column align="center" width="170" label="操作" >
@@ -51,7 +51,7 @@ import {
 } from '@comp/lib/api_maps.js';
 
 import Table from '@layout/table.vue';
-import Search from '@layout/search.vue';
+import Search from '@layout/apply_search.vue';
 import Suspend from '@layout/suspend.vue';
 import Pagination from '@layout/pagination.vue';
 import Operation from '@layout/operation.vue';
@@ -64,7 +64,7 @@ export default {
             searchCfg: {
                 act: 'getSchoolApplicationList',
                 orderType: this.orderType,
-                searchText: '11',
+                searchText: '',
                 authStatus: 0
             },
             modal: false,

@@ -46,23 +46,26 @@
                         {{dateformat(scope.row.addTimestamp)}}
                     </template>
                 </el-table-column>
-                <el-table-column prop="videoTypeIdStr" label="分类" align="center">
+                <el-table-column width="100" prop="videoTypeIdStr" label="分类" align="center">
                     <template slot-scope="scope">
-                        {{handleFormatter(scope.row.videoTypeIdStr)}}
+                        <span class="item" v-for="item in handleFormatter(scope.row.videoTypeIdStr)" :key="item.$index" >{{item}}</span>
                     </template>
                 </el-table-column>
                 <el-table-column prop="enable" label="启用" align="center">
                     <template slot-scope="scope">
                         <el-switch
                             v-model="scope.row.enable"
+                            disabled
+                            active-value="1"
+                            inactive-value="0"
                         >
                         </el-switch>
                     </template>
                 </el-table-column>
-                <el-table-column align="center" label="操作">
+                <el-table-column align="center" label="操作" width="120" >
                     <template class="cubes" slot-scope="scope">
                         <el-button type="primary" @click="handlePlayVideo(scope.row.videoUrl)" >播放</el-button>
-                        <el-button @click="handleGetVideoInfo(scope.row)" type="text" >查看/修改</el-button>
+                        <el-button class="no-margin" @click="handleGetVideoInfo(scope.row)" type="text" >查看/修改</el-button>
                         <el-button @click="handleDelete(scope.row)" class="tm-btn-border" type="primary" >删除</el-button>
                     </template>
                 </el-table-column>
@@ -187,6 +190,8 @@ export default {
             'getModalData',
             'getArrayData',
             'deleteSubmit',
+            'formSubmit',
+            'deleteRow',
             'update',
             'clearForm'
         ]),
@@ -206,16 +211,12 @@ export default {
         },
         /* 格式化表单 -- 视频分类信息展示 */
         handleFormatter(idStr = '') {
-            return idStr
-                .split(',')
-                .map(el => {
-                    let formater =
-                        this.videoTypeList.find(
-                            item => item.videoTypeId == el
-                        ) || {};
-                    return formater ? formater['name'] : 'hh';
-                })
-                .join(',');
+            return idStr.split(',').map(el => {
+                let formater =
+                    this.videoTypeList.find(item => item.videoTypeId == el) ||
+                    {};
+                return formater ? `${formater['name']}` : 'hh';
+            });
         },
         /* 获取视频详情 */
         handleGetVideoInfo(obj) {
@@ -289,6 +290,11 @@ export default {
         display: inline-block;
         margin-right: 5px;
     }
+}
+
+.item {
+    display: inline-block;
+    padding: 4px;
 }
 </style>
 

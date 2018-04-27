@@ -2,23 +2,11 @@
 const attrs = {
     // 邀约状态
     "status": {
-        11: {
+        1: {
             text: "已发起",
             tags: "primary"
         },
-        12: {
-            text: "已收到",
-            tags: "primary"
-        },
         2: {
-            text: "进行中",
-            tags: "warning"
-        },
-        21: {
-            text: "进行中",
-            tags: "warning"
-        },
-        22: {
             text: "进行中",
             tags: "warning"
         },
@@ -26,20 +14,8 @@ const attrs = {
             text: "已完成",
             tags: "success"
         },
-        31: {
-            text: "已完成",
-            tags: "success"
-        },
-        32: {
-            text: "已完成",
-            tags: "success"
-        },
-        41: {
-            text: "被拒绝",
-            tags: "danger"
-        },
-        42: {
-            text: "我拒绝",
+        4: {
+            text: "已拒绝",
             tags: "danger"
         },
     },
@@ -278,7 +254,7 @@ const attrs = {
         1: "学校",
         2: "演讲者",
         3: "管理员"
-    }
+    },
 }
 
 const baseURL = 'http://10.0.0.148';
@@ -337,8 +313,15 @@ module.exports = {
     commonPageInit(context, cfg) {
         context.getPageData(cfg);
     },
-    /* 时间格式化 */
+    /* 时间格式化   sec 转 min */
     formatDuration(sec = 0) {
         return Math.floor(sec / 60) + ':' + Math.floor(sec % 60)
+    },
+    /* sec to min  */
+    secToMin(sec) {
+        return Math.floor(sec / 60)
+    },
+    MinToSec(min) {
+        return min * 60
     }
 }

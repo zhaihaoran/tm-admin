@@ -16,6 +16,7 @@
                 </el-table-column>
                 <el-table-column
                     prop="sex"
+                    :formatter="formatAttr"
                     align="center"
                     label="性别">
                 </el-table-column>
@@ -60,7 +61,7 @@
                     width="110"
                     label="详细信息">
                     <template slot-scope="scope">
-                        <el-button size="mini" @click="handleShowReason(scope.row)" type="text" >查看详情</el-button>
+                        <el-button size="mini" @click="handleShowReason(scope.row)" type="text" >查看/修改</el-button>
                     </template>
                 </el-table-column>
                 <el-table-column
@@ -73,7 +74,7 @@
                 </el-table-column>
             </Table>
             <Pagination :cfg="searchCfg" :count="count" ></Pagination>
-            <!-- 查看详情 -->
+            <!-- 查看/修改 -->
             <EditSpeaker :data="form" v-on:modal="handleClose" title="修改信息" :modal="modal" ></EditSpeaker>
         </div>
     </div>
@@ -81,10 +82,10 @@
 <script>
 import { mapState, mapMutations } from 'vuex';
 
-import { dateformat, commonPageInit } from '@comp/lib/api_maps.js';
+import { dateformat, commonPageInit, formatAttr } from '@comp/lib/api_maps.js';
 
 import Table from '@layout/table.vue';
-import Search from '@layout/search.vue';
+import Search from '@layout/apply_search.vue';
 import Operation from '@layout/operation.vue';
 import Pagination from '@layout/pagination.vue';
 import EditSpeaker from '@layout/modal/editSpeaker.vue';
@@ -98,7 +99,7 @@ export default {
                 act: 'getSpeakerApplicationList',
                 authStatus: 2,
                 orderType: this.orderType,
-                searchText: '11'
+                searchText: ''
             },
             actions: {
                 ok: 'passSpeakerApplication',
@@ -126,6 +127,7 @@ export default {
     },
     components: { Operation, Table, Pagination, Search, EditSpeaker },
     methods: {
+        formatAttr,
         dateformat,
         ...mapMutations([
             'updateValue',
@@ -142,7 +144,6 @@ export default {
                 act: 'getSpeakerApplication',
                 speakerId: obj.speakerId,
                 onSuccess: res => {
-                    debugger;
                     this.form = res.data.data;
                     this.form.speakerId = obj.speakerId;
                     this.update({

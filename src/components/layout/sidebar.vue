@@ -1,7 +1,7 @@
 <template>
    <el-aside class="admin-aside" width="200px">
         <!-- 主视图 -->
-        <el-menu router :default-active.sync="path" :default-openeds="['/invite']" class="admin-sider-menu" >
+        <el-menu router :default-active.sync="$route.path" :default-openeds="['/invite']" class="admin-sider-menu" >
             <router-link v-for="menu in menuList" :key="menu.$index" :to="sidebarRender(menu,'path')" >
                 <el-menu-item class="sider-menu-item"
                     :index="sidebarRender(menu,'path')" >
@@ -23,7 +23,6 @@ import { mapState, mapMutations } from 'vuex';
 export default {
     data() {
         return {
-            path: this.$route.path,
             iconfont: 'icon iconfont sd-icon'
         };
     },
@@ -33,6 +32,7 @@ export default {
     // 可以将模块的空间名称字符串作为第一个参数传递给函数
     computed: mapState({
         menuList: state => state.common.menuList,
+        main: state => state.common.common_sidebar,
         users: state => state.common.users
     }),
     methods: {

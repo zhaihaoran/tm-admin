@@ -10,7 +10,7 @@
             :visible.sync="modal.suspend"
             width="30%"
         >
-            <h3 class="text-center modal-title" >确定冻结吗？</h3>
+            <h3 class="text-center modal-title" >确定冻结账号吗？</h3>
             <span class="mb-20" >请填写冻结原因</span>
             <el-form ref="form" >
                 <el-form-item class="no-margin" >
@@ -48,20 +48,28 @@ export default {
         },
         /* 解冻 */
         handleUnsuspend(obj) {
-            this.formSubmit({
-                act: 'resumeUser',
-                userId: obj.schoolId || obj.speakerId,
-                isMessage: true,
-                successText: '解冻成功',
-                onSuccess: res => {
-                    this.modal.suspend = false;
-                    this.updateRow({
-                        type: 'addTimestamp',
-                        value: obj.addTimestamp,
-                        suspend: 0
+            this.$confirm('确认解冻', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            })
+                .then(() => {
+                    this.formSubmit({
+                        act: 'resumeUser',
+                        userId: obj.schoolId || obj.speakerId,
+                        isMessage: true,
+                        successText: '解冻成功',
+                        onSuccess: res => {
+                            this.modal.suspend = false;
+                            this.updateRow({
+                                type: 'addTimestamp',
+                                value: obj.addTimestamp,
+                                suspend: 0
+                            });
+                        }
                     });
-                }
-            });
+                })
+                .catch(() => {});
         },
         /* 冻结 */
         handleSuspend(obj) {
@@ -88,10 +96,6 @@ export default {
 <style lang="scss">
 .no-ml {
     margin-left: 0 !important;
-}
-.mb-20 {
-    margin-bottom: 15px;
-    display: inline-block;
 }
 </style>
 

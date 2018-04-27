@@ -4,8 +4,8 @@ const state = {
     common_sidebar: false, // 主体侧边栏状态
     help_sidebar: false, // 帮助侧边栏
     sidebar_toggle: false, // 侧边栏展开状态
-    // sesson里取
     checkState: 0, // 审核状态
+    login: false,
     menuList: {}, // 菜单列表
     users: {
         isLogin: 0
@@ -63,10 +63,7 @@ const mutations = {
      * @param {any} state
      * @param {any}
      */
-    getUserLogin(state, {
-        onSuccess,
-        baseUrl
-    }) {
+    getUserLogin(state) {
         const cfg = {
             act: 'getUserLogin',
         }
@@ -77,10 +74,9 @@ const mutations = {
                 let cfg = res.data.data;
                 if (cfg && +cfg.isLogin > 0) {
                     state.users = cfg
-                    sessionStorage.isLogin = 1;
+                    state.login = true;
                 }
             },
-            onSuccess
         })
     },
 
@@ -163,8 +159,8 @@ const mutations = {
                 act: "adminLogin"
             }, param),
             ActionSuccess: res => {
-                debugger
                 state.users.isLogin = 1;
+                state.login = true;
                 sessionStorage.isLogin = 1;
                 state.users.account = param.username;
                 state.users.userType = 3;
@@ -184,6 +180,7 @@ const mutations = {
                 state.users = {
                     isLogin: 0
                 };
+                state.login = false;
                 sessionStorage.clear();
             }
         })

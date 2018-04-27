@@ -7,7 +7,7 @@
                 label="预览图"
                 >
                 <template slot-scope="scope">
-                    <img :src="scope.row.previewUrl" class="avatar img-fluid" alt="">
+                    <img :src="scope.row.previewUrl" class="video-avatar img-fluid" alt="">
                 </template>
             </el-table-column>
             <el-table-column
@@ -169,7 +169,7 @@ export default {
         font-size: 16px;
     }
 }
-.avatar {
+.video-avatar {
     width: 70px;
     padding: 10px;
 }

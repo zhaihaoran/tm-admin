@@ -78,7 +78,8 @@
             </el-form-item>
             <el-form-item label="演讲时间">
                 <el-date-picker
-                    v-model="speakTimestamp"
+                    v-model="timestamp"
+                    format="yyyy-MM-dd HH:mm"
                     type="datetime"
                     value-format="timestamp"
                     placeholder="选择日期时间"
@@ -99,7 +100,7 @@
                     </el-option>
                 </el-select>
             </el-form-item>
-            <el-form-item label="受益人次">
+            <el-form-item label="受益人次附加值">
                 <el-input v-model="form.benefitPeopleTimes" type="number"></el-input>
             </el-form-item>
             <el-form-item label="播放次数">
@@ -172,13 +173,9 @@ export default {
                     }
                 ]
             },
-            category: []
+            category: [],
+            timestamp: ''
         };
-    },
-    watch: {
-        videoTypeIdStr(val) {
-            this.category = val.split(',');
-        }
     },
     props: {
         modal: {
@@ -196,6 +193,14 @@ export default {
     mounted() {
         this.handleGetVideoTypes();
     },
+    watch: {
+        speakTimestamp(val) {
+            this.timestamp = !!val ? new Date(+val * 1000) : '';
+        },
+        videoTypeIdStr(val) {
+            this.category = val.split(',');
+        }
+    },
     computed: {
         ...mapState({
             pathfilename: state => state.upload.pathfilename,
@@ -207,18 +212,9 @@ export default {
                 state.upload.videoShortPathFilename,
             tagstab: state => state.modal.tagstab,
             videoTypeIdStr: state => state.modal.videoTypeIdStr,
-            form: state => state.modal.form
+            form: state => state.modal.form,
+            speakTimestamp: state => state.modal.speakTimestamp
         }),
-        speakTimestamp: {
-            set(value) {
-                this.$store.commit('setDateValue', {
-                    speakTimestamp: value / 1000
-                });
-            },
-            get() {
-                return this.$store.state.modal.speakTimestamp * 1000;
-            }
-        },
         tab: {
             set(value) {
                 this.$store.commit('changeTags', value);
@@ -237,7 +233,7 @@ export default {
         ...mapMutations([
             'formSubmit',
             'getArrayData',
-            'setDateValue',
+            'updateRow',
             'updateFormValue'
         ]),
         submitVideo() {
@@ -255,16 +251,16 @@ export default {
                 schoolId: this.form.schoolId,
                 schoolName: this.form.schoolName,
                 duration: this.form.duration,
-                speakTimestamp: Math.floor(this.speakTimestamp / 1000),
+                speakTimestamp: Math.floor(
+                    new Date(this.timestamp).getTime() / 1000
+                ),
                 videoDesc: this.form.videoDesc,
                 videoTypeIdStr: this.category.join(','),
                 benefitPeopleTimes: this.form.benefitPeopleTimes,
                 playTimes: this.form.playTimes,
                 tag: this.tab.join(','),
-                enable: this.form.enable,
-                duration: this.form.duration
+                enable: this.form.enable
             };
-            console.log(cfg);
             if (!this.form.videoId) {
                 delete cfg.videoId;
             }
@@ -273,6 +269,11 @@ export default {
                 isMessage: true,
                 successText: '成功',
                 onSuccess: res => {
+                    this.updateRow({
+                        type: 'videoId',
+                        value: cfg.videoId,
+                        ...cfg
+                    });
                     this.handleModalClose();
                 }
             });

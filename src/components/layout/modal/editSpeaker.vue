@@ -21,6 +21,10 @@
             <el-form-item label="工作岗位">
                 <el-input v-model="data.title"></el-input>
             </el-form-item>
+            <el-form-item
+                label="联系电话">
+                <el-input v-model="data.phone"></el-input>
+            </el-form-item>
             <el-form-item label="微信号">
                 <el-input v-model="data.wechat"></el-input>
             </el-form-item>
@@ -44,11 +48,11 @@
                 <span class="left-info" >是否愿意将演讲视频在途梦平台上公开展示</span>
             </el-form-item>
             <el-form-item label="您的照片" >
-                <Upload filepathname="photoShortPathFilename" previewname="photoUrl" action="a" :preview="photoUrl" ></Upload>
-                <div class="pic-info">
+                <Upload classes="avatar" filepathname="photoShortPathFilename" previewname="photoUrl" action="a" :preview="photoUrl" ></Upload>
+                <div class="sp-pic-info">
                     <h3>请拍摄能够清晰的看到正脸的照片</h3>
                     <p class="info-p">图片类型：JPG、PNG</p>
-                    <p class="info-p">图片大小：不超过5M</p>
+                    <p class="info-p">图片大小：不超过2M</p>
                     <h3 class="mm">样例</h3>
                     <img src="/static/image/banner.png" class="img-fluid" alt="demo">
                 </div>
@@ -57,7 +61,7 @@
             <h2>附加信息（选填）</h2>
             <el-form-item label="教育背景">
                 <el-input class="tm-textarea" type="textarea" v-model="data.educationBackground"></el-input>
-                <span class="item-info" >请填写院校、专业、学业等</span>
+                <span class="item-info" >请填写院校、专业、学位等</span>
             </el-form-item>
             <el-form-item label="介绍人">
                 <el-input v-model="data.inviter"></el-input>
@@ -65,7 +69,7 @@
             <el-form-item class="why-label" label="为什么申请途梦演讲者">
                 <el-input type="textarea" v-model="data.whyChooseUs"></el-input>
             </el-form-item>
-            <el-form-item label="受益人次">
+            <el-form-item label="受益人次附加值">
                 <el-input v-model="data.benefitPeopleTimesAdd"></el-input>
             </el-form-item>
         </el-form>
@@ -106,7 +110,7 @@ export default {
         Upload
     },
     methods: {
-        ...mapMutations(['formSubmit']),
+        ...mapMutations(['formSubmit', 'updateRow']),
         handleModalClose() {
             this.$emit('modal');
         },
@@ -118,6 +122,11 @@ export default {
                 act: 'modifySpeakerApplication',
                 ...cfg,
                 onSuccess: res => {
+                    this.updateRow({
+                        type: 'speakerId',
+                        value: cfg.speakerId,
+                        ...cfg
+                    });
                     this.handleModalClose();
                 }
             };
@@ -146,25 +155,27 @@ export default {
 .left-info {
     margin-left: 10px;
 }
-.pic-info {
-    width: 150px;
+.sp-pic-info {
+    width: 220px;
+    height: 160px;
+    overflow: hidden;
     position: absolute;
     top: 0;
-    left: 400px;
+    left: 200px;
     h3 {
         margin: 0;
         color: #606266;
-        line-height: 24px;
+        line-height: 20px;
         font-size: 14px;
-        margin-bottom: 10px;
+        margin-bottom: 5px;
     }
     .mm {
-        margin-top: 10px;
+        margin-top: 5px;
     }
     .info-p {
         margin: 0;
         font-size: 14px;
-        line-height: 25px;
+        line-height: 20px;
         color: #606266;
     }
 }

@@ -3,10 +3,10 @@
         <div class="login-title">途梦后台登陆</div>
         <el-form :model="form" ref="form" :rules="formRules" label-width="100px" class="login-form" label-position="top" >
             <el-form-item label="用户名"  prop="username" >
-                <el-input placeholder="用户名" v-model="form.username"></el-input>
+                <el-input @keyup.native.enter="submit" placeholder="用户名" v-model="form.username"></el-input>
             </el-form-item>
             <el-form-item label="密码"  prop="password" >
-                <el-input placeholder="密码" type="password" v-model="form.password"></el-input>
+                <el-input @keyup.native.enter="submit" placeholder="密码" type="password" v-model="form.password"></el-input>
             </el-form-item>
             <el-button type="primary" @click="submit" >登录</el-button>
         </el-form>
@@ -71,7 +71,7 @@ export default {
 <style lang="scss">
 .login-box {
     position: absolute;
-    top: 50px;
+    top: 200px;
     right: 0;
     left: 0;
     margin: auto;
@@ -80,6 +80,9 @@ export default {
     height: 400px;
     display: flex;
     flex-direction: column;
+    .el-form-item__label {
+        line-height: 20px;
+    }
     .login-title {
         text-align: center;
         font-size: 30px;

@@ -1,7 +1,7 @@
 <template>
 <div>
     <el-upload
-        class="avatar-uploader"
+        :class="classes"
         :action="action"
         :disabled="disabled"
         list-type="picture-card"
@@ -26,6 +26,10 @@ export default {
         disabled: {
             type: Boolean,
             default: false
+        },
+        classes: {
+            type: String,
+            default: 'avatar-uploader'
         },
         preview: {
             type: String,
