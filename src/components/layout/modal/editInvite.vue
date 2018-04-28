@@ -3,7 +3,7 @@
         :visible.sync="modal"
         :title="title"
         :close-on-click-modal="false"
-        width="30%"
+        width="500px"
         :before-close="handleClose"
     >
         <el-form ref="form" :model="form" label-width="80px" >
@@ -22,7 +22,7 @@
                 </el-date-picker>
             </el-form-item>
             <el-form-item label="演讲时长" width="80" >
-                <el-input v-model="form.speakDuration" >
+                <el-input v-model="d_duration" >
                     <template slot="append">分钟</template>
                 </el-input>
             </el-form-item>
@@ -31,6 +31,7 @@
             </el-form-item>
         </el-form>
         <span slot="footer" class="tm-modal-footer">
+            <el-button class="tm-btn-border" @click="handleClose">取 消</el-button>
             <el-button class="tm-btn" type="primary" @click="handleSubmitForm">确 定</el-button>
         </span>
     </el-dialog>
@@ -47,7 +48,8 @@ import {
 export default {
     data() {
         return {
-            timestamp: ''
+            timestamp: '',
+            d_duration: ''
         };
     },
     props: {
@@ -59,12 +61,16 @@ export default {
     watch: {
         speakTimestamp(val) {
             this.timestamp = !!val ? new Date(+val * 1000) : '';
+        },
+        duration(val = 0) {
+            this.d_duration = val / 60;
         }
     },
     computed: {
         ...mapState({
             form: state => state.modal.form,
             modal: state => state.modal.modal,
+            duration: state => state.modal.duration,
             speakTimestamp: state => state.modal.speakTimestamp
         })
     },
@@ -78,7 +84,7 @@ export default {
                 speakTimestamp: Math.floor(
                     new Date(this.timestamp).getTime() / 1000
                 ),
-                speakDuration: this.form.speakDuration,
+                speakDuration: this.d_duration * 60,
                 addTimestamp: this.form.addTimestamp
             };
 

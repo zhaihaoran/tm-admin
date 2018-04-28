@@ -4,6 +4,7 @@
         value-format="timestamp"
         :default-time="now"
         type="datetimerange"
+        @change="handleSearch"
         :picker-options="pickerOptions"
         range-separator="至"
         :start-placeholder="startPlaceholder"
@@ -78,7 +79,10 @@ export default {
         }
     },
     methods: {
-        ...mapMutations(['setTimeRange'])
+        ...mapMutations(['setTimeRange']),
+        handleSearch() {
+            this.$parent.$parent.$refs.sr_component.handleSearch();
+        }
     }
 };
 </script>

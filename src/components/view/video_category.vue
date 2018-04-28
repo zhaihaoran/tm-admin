@@ -5,12 +5,6 @@
         </div>
         <Table :data="data" :loading="tableLoading" >
             <el-table-column
-                type="index"
-                align="center"
-                width="40"
-            >
-            </el-table-column>
-            <el-table-column
                 align="center"
                 prop="name"
                 label="分类名"
@@ -121,7 +115,10 @@ export default {
     },
     mounted() {
         this.getVideoTypeData({
-            act: 'getVideoTypeList'
+            act: 'getVideoTypeList',
+            onSuccess: res => {
+                this.sortData('orderNum');
+            }
         });
     },
     computed: {
@@ -136,6 +133,7 @@ export default {
     methods: {
         ...mapMutations([
             'getVideoTypeData',
+            'sortData',
             'updateRow',
             'addRow',
             'deleteRow',

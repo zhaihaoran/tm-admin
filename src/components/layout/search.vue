@@ -1,9 +1,9 @@
 <template>
     <div class="tm-card" >
         <el-radio-group  v-model="orderType" @change="handleSearch" >
-            <el-radio-button label="0">综合排序</el-radio-button>
-            <el-radio-button label="1">最近演讲</el-radio-button>
-            <el-radio-button label="2">最近邀约</el-radio-button>
+            <el-radio-button label="0">{{leftText}}</el-radio-button>
+            <el-radio-button label="1">{{centerText}}</el-radio-button>
+            <el-radio-button label="2">{{rightText}}</el-radio-button>
         </el-radio-group>
         <slot></slot>
         <el-button type="primary" @click="handleSearch" class="search-btn" >检索</el-button>
@@ -13,9 +13,20 @@
 import { mapState, mapMutations } from 'vuex';
 export default {
     props: {
-        // 查询参数对象
         cfg: {
             type: Object
+        },
+        leftText: {
+            type: String,
+            default: '综合排序'
+        },
+        centerText: {
+            type: String,
+            default: '最近演讲'
+        },
+        rightText: {
+            type: String,
+            default: '最近邀约'
         }
     },
     computed: {

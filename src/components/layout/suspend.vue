@@ -8,7 +8,7 @@
         <el-button size="mini" v-else type="primary" class="tm-btn" @click="modal.suspend = true" >冻结</el-button>
         <el-dialog
             :visible.sync="modal.suspend"
-            width="30%"
+            width="500px"
         >
             <h3 class="text-center modal-title" >确定冻结账号吗？</h3>
             <span class="mb-20" >请填写冻结原因</span>
@@ -19,7 +19,7 @@
             </el-form>
             <span slot="footer" class="tm-modal-footer">
                 <el-button class="tm-btn-border" @click="modal.suspend = false">取 消</el-button>
-                <el-button class="tm-btn" type="primary" @click="handleSuspend(scope.row)">确 定</el-button>
+                <el-button class="tm-btn" :disabled="suspendDesc.length == 0" type="primary" @click="handleSuspend(scope.row)">确 定</el-button>
             </span>
         </el-dialog>
     </div>

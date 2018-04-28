@@ -1,6 +1,6 @@
 <template>
     <div>
-        <Search :cfg="searchCfg" >
+        <Search :cfg="searchCfg" ref="sr_component" >
             <template slot-scope="props" >
                 <div class="search-input">
                     <Timerange></Timerange>
@@ -74,11 +74,17 @@
                     prop="schoolName"
                     align="center"
                     label="学校">
+                    <template slot-scope="scope">
+                        <a target="_black" class="tm-link" :href="toSchoolHome(scope.row.schoolId)">{{scope.row.schoolName}}</a>
+                    </template>
                 </el-table-column>
                 <el-table-column
                     prop="speakerName"
                     align="center"
                     label="演讲者">
+                    <template slot-scope="scope">
+                        <a target="_black" class="tm-link" :href="toSpeakerHome(scope.row.speakerId)">{{scope.row.speakerName}}</a>
+                    </template>
                 </el-table-column>
                 <el-table-column
                     prop="speakTitle"
@@ -170,6 +176,8 @@ import {
     attrs,
     formatAttr,
     dateformat,
+    toSpeakerHome,
+    toSchoolHome,
     commonPageInit,
     secToMin
 } from '@comp/lib/api_maps.js';
@@ -249,6 +257,8 @@ export default {
         formatAttr,
         dateformat,
         secToMin,
+        toSpeakerHome,
+        toSchoolHome,
         ...mapMutations([
             'updateValue',
             'getFeedList',

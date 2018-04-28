@@ -2,6 +2,7 @@
 <template>
     <el-dialog :visible.sync="modal"
     :before-close="handleModalClose"
+    :close-on-click-modal="false"
     width="800px"
      :title="title" >
         <el-form class="tm-form" :model="data" label-width="120px">
@@ -53,8 +54,9 @@
                     <h3>请拍摄能够清晰的看到正脸的照片</h3>
                     <p class="info-p">图片类型：JPG、PNG</p>
                     <p class="info-p">图片大小：不超过2M</p>
-                    <h3 class="mm">样例</h3>
-                    <img src="/static/image/banner.png" class="img-fluid" alt="demo">
+                </div>
+                <div class="sp-pic-info pp">
+                    <img :src="personDemo" class="demo" alt="demo">
                 </div>
             </el-form-item>
             <div class="individar"></div>
@@ -74,6 +76,7 @@
             </el-form-item>
         </el-form>
         <span slot="footer" class="dialog-footer center">
+            <el-button class="tm-btn-border" @click="handleModalClose">取消</el-button>
             <el-button type="primary" @click="submitForm">保存</el-button>
         </span>
     </el-dialog>
@@ -81,11 +84,14 @@
 <script>
 import { mapState, mapMutations } from 'vuex';
 import Upload from '@layout/upload.vue';
+import personDemo from '@image/guests/guest3.png';
 
 export default {
     name: 'setting_edit',
     data() {
-        return {};
+        return {
+            personDemo
+        };
     },
     props: {
         title: {
@@ -156,18 +162,18 @@ export default {
     margin-left: 10px;
 }
 .sp-pic-info {
-    width: 220px;
+    width: 150px;
     height: 160px;
     overflow: hidden;
     position: absolute;
     top: 0;
-    left: 200px;
+    left: 225px;
     h3 {
         margin: 0;
         color: #606266;
-        line-height: 20px;
+        line-height: 22px;
         font-size: 14px;
-        margin-bottom: 5px;
+        margin-bottom: 20px;
     }
     .mm {
         margin-top: 5px;
@@ -178,6 +184,13 @@ export default {
         line-height: 20px;
         color: #606266;
     }
+}
+.pp {
+    left: 380px;
+    width: auto;
+}
+.demo {
+    height: 130px;
 }
 </style>
 

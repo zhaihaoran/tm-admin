@@ -11,14 +11,40 @@ const state = {
     videoTypeIdStr: [],
     modal: false,
     speakTimestamp: '',
-    tagstab: ""
+    tagstab: "",
+    sc_option: undefined,
+    sp_option: undefined,
+
+    duration: "",
+    time_min: "",
+    time_sec: "",
 }
 
 const mutations = {
     showModal(state, data) {
         state.modal = true
         state.form = Object.assign(state.form, data)
-        state.speakTimestamp = data.speakTimestamp
+        state.speakTimestamp = data.speakTimestamp,
+        state.duration = state.form.speakDuration;
+    },
+    clearOption(state, type) {
+        state[type] = undefined;
+    },
+    setOption(state, payload) {
+        state.sc_option = {
+            name: payload.schoolName,
+            schoolId: payload.schoolId
+        };
+        state.sp_option = {
+            name: payload.speakerName,
+            speakerId: payload.speakerId
+        };
+    },
+    updateMin(state,value) {
+        state.time_min = value
+    },
+    updateSec(state,value) {
+        state.time_sec = value
     },
     /* modal edit */
     getModalData(state, {
@@ -32,13 +58,15 @@ const mutations = {
                 state.form = Object.assign(state.form, res.data.data.video)
 
                 state.speakTimestamp = state.form.speakTimestamp
-                console.table(state.form)
                 let tag = state.form.tag || ""
                 state.tagstab = tag.split(',')
 
                 state.videoTypeList = Object.assign(state.videoTypeList, res.data.data.videoTypeList)
 
                 state.videoTypeIdStr = state.form.videoTypeIdStr
+
+                state.time_min = Math.floor(res.data.data.video.duration / 60);
+                state.time_sec = Math.floor(res.data.data.video.duration % 60);
             }
         })
     },

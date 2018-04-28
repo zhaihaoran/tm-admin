@@ -82,6 +82,12 @@ const mutations = {
             return el;
         })
     },
+    /* 排序 , 根据data中的type字段进行排序 */
+    sortData(state,type) {
+        state.data = state.data.sort((a,b)=>{
+            return a[type] - b [type]
+        })
+    },
     /* 去除一行数据 */
     deleteRow(state, {
         value, // 学校id或者演讲者id

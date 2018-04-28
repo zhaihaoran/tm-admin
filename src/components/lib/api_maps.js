@@ -323,5 +323,11 @@ module.exports = {
     },
     MinToSec(min) {
         return min * 60
-    }
+    },
+    toSpeakerHome(id) {
+        return `/speaker/speakerId/${id}`
+    },
+    toSchoolHome(id) {
+        return `/school/schoolId/${id}`
+    },
 }

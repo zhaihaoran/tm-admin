@@ -1,9 +1,9 @@
 <template>
     <div>
-        <el-card v-for="item in videoTopList" :key="item.$index" class="mb-20" >
+        <el-card v-for="(item,i) in videoTopList" :key="i" class="mb-20" >
             <div slot="header" class="clearfix">
                 <span>{{item.name}}</span>
-                <el-button @click="handleSave(item)" class="card-header-save" >保存</el-button>
+                <el-button v-show="isShow[item.videoTypeId]" type="primary" @click="handleSave(item)" class="card-header-save" >保存</el-button>
             </div>
             <el-button class="mb-20" @click="handleSelectVideo(item)" type="primary" >选择视频</el-button>
             <el-row :gutter="10">
@@ -15,18 +15,18 @@
                     track-by="videoId"
                 >
                     <div :class="[videoClass]" >
-                        <a :href="video.linkUrl" class="card-image">
+                        <div @click="handlePlayVideo(video.videoUrl)" class="card-image">
                             <img class="img-fluid min-images" :src="video.previewUrl">
                             <span class="vd-times badge">{{formatDuration(video.duration)}}</span>
-                        </a>
-                        <div :href="video.linkUrl" class="card-content">
+                        </div>
+                        <div class="card-content">
                             <span class="card-title grey-333">{{video.videoTitle}}</span>
                             <div class="vd-extra">
                                 <span>演讲者：{{video.speakerName}}</span>
                                 <span>学校：{{video.schoolName}}</span>
                                 <span>{{dateformat(video.addTimestamp)}} <span class="text-right" >{{video.playTimes}} 次播放</span> </span>
                             </div>
-                            <span v-if="+video.enable < 0" class="bages">未激活</span>
+                            <span v-if="+video.enable < 1" class="bages">未激活</span>
                             <span class="delete-icon" @click="deleteVideo(item,index)" ><i class="el-icon-delete"></i></span>
                         </div>
                     </div>
@@ -36,6 +36,19 @@
         <!-- 选择视频 -->
         <!-- point: 组件双向绑定！.sync -->
         <SelectVideo :videoTypeId.sync="selectTypeId" v-on:selectVideoId="handleSaveVideo" v-on:modal="handleClose" title="查看/修改" :modal="modal.selectVideo"  ></SelectVideo>
+        <!-- 视频播放弹窗 -->
+        <el-dialog width="1200px" :visible.sync="modal.video" :before-close="handleVideoClose" >
+            <div class="video-player">
+                <video-player
+                    width="1200px"
+                    class="vjs-custom-skin"
+                    ref="videoPlayer"
+                    :options="playerOptions"
+                    :playsinline="true"
+                >
+                </video-player>
+            </div>
+        </el-dialog>
     </div>
 </template>
 <script>
@@ -48,6 +61,9 @@ import {
     commonPageInit
 } from '@comp/lib/api_maps.js';
 
+import { videoPlayer } from 'vue-video-player';
+import 'video.js/dist/video-js.css';
+
 import SelectVideo from '@layout/modal/selectVideo.vue';
 import VideoCard from '@layout/videoCard.vue';
 import Upload from '@layout/upload.vue';
@@ -56,6 +72,18 @@ import image from '../../assets/image/logo/tsinghua.png';
 export default {
     data() {
         return {
+            playerOptions: {
+                autoplay: true,
+                sources: [
+                    {
+                        type: 'video/mp4',
+                        src: ''
+                    }
+                ],
+                notSupportedMessage: '此视频暂无法播放，请稍后再试',
+                poster: '' //封面
+            },
+            isShow: {},
             videoTopList: [], // 分类置顶列表
             videoIdStr: [], // 修改视频置信息 videoIdstr -- 中间值
             selectTypeId: '', // 当前添加视频所在的分类 videoTypeId -- 中间值
@@ -66,135 +94,19 @@ export default {
                 hoverable: true
             }, // videoCard 样式
             videoIdOfRecommended: '',
-            schools: [
-                {
-                    value: '1',
-                    url: image,
-                    label: '清华大学',
-                    info: '简称清华，全国重点大学',
-                    context:
-                        'hahahahahahahahahahahahaahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahaha'
-                },
-                {
-                    value: '2',
-                    url: image,
-                    label: '湖南大学',
-                    info: '简称清华，全国重点大学',
-                    context:
-                        'hahahahahahaahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahahaha'
-                },
-                {
-                    value: '3',
-                    url: image,
-                    label: '北京大学',
-                    info: '简称清华，全国重点大学',
-                    context: 'hahahahahahahahahahahahahahaha'
-                }
-            ],
-            currentPage: 1,
             list: [],
-            categoryTabs: [
-                {
-                    value: '选项1',
-                    label: '黄金糕'
-                },
-                {
-                    value: '选项2',
-                    label: '双皮奶'
-                },
-                {
-                    value: '选项3',
-                    label: '蚵仔煎'
-                },
-                {
-                    value: '选项4',
-                    label: '龙须面'
-                },
-                {
-                    value: '选项5',
-                    label: '北京烤鸭'
-                }
-            ],
             modal: {
                 addVideo: false,
-                selectVideo: false
-            },
-            videos: [
-                {
-                    id: '1',
-                    time: '12:58',
-                    img: '/static/image/card.png',
-                    title: '成为更好的自己',
-                    author: '周程程',
-                    count: 9999,
-                    startTime: '2017-12-30',
-                    school: '华中师范大学附属中学',
-                    personalPageRecommend: 1
-                },
-                {
-                    id: '2',
-                    time: '12:58',
-                    img: '/static/image/card.png',
-                    title: 'haha1',
-                    author: '周程程',
-                    count: 9999,
-                    startTime: '2017-12-30',
-                    school: '华中师范大学附属中学',
-                    personalPageRecommend: 0
-                },
-                {
-                    id: '3',
-                    time: '12:58',
-                    img: '/static/image/card.png',
-                    title: 'haha2',
-                    author: '周程程',
-                    count: 9999,
-                    startTime: '2017-12-30',
-                    school: '华中师范大学附属中学',
-                    personalPageRecommend: 0
-                },
-                {
-                    id: '4',
-                    time: '12:58',
-                    img: '/static/image/card.png',
-                    title: 'haha3',
-                    author: '周程程',
-                    count: 9999,
-                    startTime: '2017-12-30',
-                    school: '华中师范大学附属中学',
-                    personalPageRecommend: 0
-                },
-                {
-                    id: '5',
-                    time: '12:58',
-                    img: '/static/image/card.png',
-                    title: 'haha4',
-                    author: '周程程',
-                    count: 9999,
-                    startTime: '2017-12-30',
-                    school: '华中师范大学附属中学',
-                    personalPageRecommend: 0
-                }
-            ],
-            addForm: {
-                title: '',
-                manCounts: 1,
-                playCounts: 1,
-                schoolRadio: '选择',
-                schoolId: '',
-                speakerRadio: '填写',
-                speakerId: '',
-                tabs: [],
-                category: [],
-                start: false,
-                rules: {}
+                selectVideo: false,
+                video: false
             }
         };
     },
     components: {
         VideoCard,
         Upload,
-        SelectVideo
+        SelectVideo,
+        videoPlayer
     },
 
     mounted() {
@@ -213,8 +125,20 @@ export default {
             this.getArrayData({
                 act: 'getVideoTopList',
                 onSuccess: res => {
-                    console.log(res.data.data);
-                    this.videoTopList = res.data.data.videoTopList;
+                    // 大块排序
+                    this.videoTopList = res.data.data.videoTopList.sort(
+                        (a, b) => {
+                            return a.orderNum > b.orderNum;
+                        }
+                    );
+                    this.videoTopList.forEach(el => {
+                        // 隐藏处理
+                        this.isShow[el.videoTypeId] = false;
+                        // 单行row 排序
+                        el.videoList.sort((a, b) => {
+                            return a.addTimestamp - b.addTimestamp;
+                        });
+                    });
                 }
             });
         },
@@ -245,21 +169,28 @@ export default {
             );
             /* 将取到的video数据放进去 */
             typeItem.videoList.push(obj);
-
-            // 提交
-            // this.handleSave(typeItem);
+            this.isShow[this.selectTypeId] = true;
         },
 
         /* 删除 */
         deleteVideo(item, index) {
             item.videoList.splice(index, 1);
             console.log(item.videoList);
-            // 提交
-            // this.handleSave(item);
+            this.isShow[item.videoTypeId] = true;
         },
         /* 唯一key 用于拖拽 */
         unique(typeId, id) {
             return `${typeId}_${id}`;
+        },
+
+        // 播放视频
+        handlePlayVideo(videourl) {
+            this.modal.video = true;
+            this.playerOptions.sources[0].src = videourl;
+        },
+        handleVideoClose() {
+            this.$refs.videoPlayer.player.pause();
+            this.modal.video = false;
         },
 
         /* 保存分类视频配置 */
@@ -274,8 +205,6 @@ export default {
                 videoTypeId: item.videoTypeId,
                 videoIdStr: this.videoIdStr.join(',') || '',
                 onSuccess: res => {
-                    // 成功之后重新取数据刷新;
-                    this.init();
                     // 一定要记得回收
                     this.videoIdStr = [];
                 }

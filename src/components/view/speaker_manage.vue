@@ -1,16 +1,23 @@
 <template>
 <div>
-    <Search :cfg="searchCfg" >
+    <Search :cfg="searchCfg" ref="sr_component" >
         <template slot-scope="props" >
             <div class="search-input">
-                <el-input placeholder="演讲者名称" v-model="searchCfg.searchText" suffix-icon="el-icon-search" ></el-input>
+                <el-input @keyup.native.enter="handleSearch" placeholder="演讲者名称" v-model="searchCfg.searchText" suffix-icon="el-icon-search" ></el-input>
             </div>
         </template>
     </Search>
     <el-card>
         <Table :loading="tableLoading" :data="data" >
             <el-table-column width="100" :formatter="formatAttr" align="center" prop="authStatus" label="认证状态" ></el-table-column>
-            <el-table-column align="center" prop="name" label="姓名" ></el-table-column>
+            <el-table-column
+                prop="name"
+                align="center"
+                label="演讲者">
+                <template slot-scope="scope">
+                    <a target="_black" class="tm-link" :href="toSpeakerHome(scope.row.speakerId)">{{scope.row.name}}</a>
+                </template>
+            </el-table-column>
             <el-table-column align="center" prop="sex" :formatter="formatAttr" label="性别" ></el-table-column>
             <el-table-column align="center" prop="company" show-overflow-tooltip  label="公司" ></el-table-column>
             <el-table-column align="center" prop="title" label="岗位" ></el-table-column>
@@ -49,6 +56,7 @@ import { mapState, mapMutations } from 'vuex';
 import {
     attrs,
     formatAttr,
+    toSpeakerHome,
     dateformat,
     commonPageInit
 } from '@comp/lib/api_maps.js';
@@ -106,6 +114,7 @@ export default {
     methods: {
         formatAttr,
         dateformat,
+        toSpeakerHome,
         ...mapMutations([
             'updateValue',
             'getPageData',
@@ -135,6 +144,9 @@ export default {
         },
         handleClose() {
             this.modal = false;
+        },
+        handleSearch() {
+            this.$refs.sr_component.handleSearch();
         }
     }
 };

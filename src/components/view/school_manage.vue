@@ -1,16 +1,23 @@
 <template>
 <div>
-    <Search :cfg="searchCfg" >
+    <Search :cfg="searchCfg" ref="sr_component" >
         <template slot-scope="props" >
             <div class="search-input">
-                <el-input placeholder="学校名称" v-model="searchCfg.searchText" suffix-icon="el-icon-search" ></el-input>
+                <el-input @keyup.native.enter="handleSearch" placeholder="学校名称" v-model="searchCfg.searchText" suffix-icon="el-icon-search" ></el-input>
             </div>
         </template>
     </Search>
     <el-card>
         <Table :loading="tableLoading" :data="data" >
             <el-table-column width="100" :formatter="formatAttr" align="center" prop="authStatus" label="认证状态" ></el-table-column>
-            <el-table-column align="center" prop="name" label="学校名称" ></el-table-column>
+            <el-table-column
+                prop="name"
+                align="center"
+                label="学校">
+                <template slot-scope="scope">
+                    <a target="_black" class="tm-link" :href="toSchoolHome(scope.row.schoolId)">{{scope.row.name}}</a>
+                </template>
+            </el-table-column>
             <el-table-column align="center" show-overflow-tooltip prop="address" label="学校地址" ></el-table-column>
             <el-table-column align="center" prop="teacher" label="责任老师" ></el-table-column>
             <el-table-column align="center" width="120" prop="teacherPhone" label="联系电话" ></el-table-column>
@@ -47,6 +54,7 @@ import {
     attrs,
     formatAttr,
     dateformat,
+    toSchoolHome,
     commonPageInit
 } from '@comp/lib/api_maps.js';
 
@@ -103,6 +111,7 @@ export default {
     methods: {
         formatAttr,
         dateformat,
+        toSchoolHome,
         ...mapMutations([
             'updateValue',
             'getPageData',
@@ -137,6 +146,9 @@ export default {
         },
         handleClose() {
             this.modal = false;
+        },
+        handleSearch() {
+            this.$refs.sr_component.handleSearch();
         }
     }
 };

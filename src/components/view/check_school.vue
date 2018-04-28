@@ -1,9 +1,9 @@
 <template>
     <div>
-        <Search :cfg="searchCfg" >
-            <template slot-scope="props" >
+        <Search :cfg="searchCfg" ref="sr_component" >
+            <template slot-scope="props"  >
                 <div class="search-input">
-                    <el-input placeholder="学校名称" v-model="searchCfg.searchText" suffix-icon="el-icon-search" ></el-input>
+                    <el-input @keyup.native.enter="handleSearch" placeholder="学校名称" v-model="searchCfg.searchText" suffix-icon="el-icon-search" ></el-input>
                 </div>
             </template>
         </Search>
@@ -13,6 +13,9 @@
                     prop="name"
                     align="center"
                     label="学校名称">
+                    <template slot-scope="scope">
+                        <a target="_black" class="tm-link" :href="toSchoolHome(scope.row.schoolId)">{{scope.row.name}}</a>
+                    </template>
                 </el-table-column>
                 <el-table-column
                     prop="address"
@@ -57,7 +60,7 @@
                     align="center"
                     label="操作">
                     <template slot-scope="scope">
-                        <Operation :handleEdit="handleEdit" :scope="scope" type="schoolId" :action="actions" ></Operation>
+                        <Operation :is-hidden="true" :handleEdit="handleEdit" :scope="scope" type="schoolId" :action="actions" ></Operation>
                     </template>
                 </el-table-column>
             </Table>
@@ -71,7 +74,11 @@
 <script>
 import { mapState, mapMutations } from 'vuex';
 
-import { dateformat, commonPageInit } from '@comp/lib/api_maps.js';
+import {
+    dateformat,
+    commonPageInit,
+    toSchoolHome
+} from '@comp/lib/api_maps.js';
 
 import Search from '@layout/apply_search.vue';
 import EditSchool from '@layout/modal/editSchool.vue';
@@ -117,6 +124,7 @@ export default {
     components: { Operation, Table, Pagination, Search, EditSchool },
     methods: {
         dateformat,
+        toSchoolHome,
         ...mapMutations([
             'updateValue',
             'getPageData',
@@ -149,6 +157,9 @@ export default {
         },
         handleClose() {
             this.modal = false;
+        },
+        handleSearch() {
+            this.$refs.sr_component.handleSearch();
         }
     }
 };

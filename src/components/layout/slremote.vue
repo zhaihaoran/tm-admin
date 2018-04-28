@@ -20,42 +20,33 @@ import { mapState, mapMutations } from 'vuex';
 export default {
     data() {
         return {
-            defaultOption: {
-                name: this.defaults
-            },
-            options: [
-                {
-                    name: this.defaults
-                }
-            ],
+            defaultOption: undefined,
+            options: [],
             loading: false
         };
     },
     watch: {
-        defaults(val) {
-            if (!val) {
+        /* 检测对象会有问题 */
+        dption(val) {
+            if (val && val.name) {
+                this.defaultOption = Object.assign(
+                    this.defaultOption || {},
+                    val
+                );
+                this.options = [this.defaultOption];
+            } else {
                 this.defaultOption = undefined;
                 this.options = [];
-                return;
             }
-            this.defaultOption = {
-                name: val
-            };
-            this.options = [this.defaultOption];
-        }
-    },
-    mounted() {
-        console.log(this.defaults);
-        if (!this.defaults) {
-            console.log('haha');
-            this.defaultOption = undefined;
-            this.options = [];
         }
     },
     props: {
         defaults: {
             type: String,
             default: ''
+        },
+        dption: {
+            type: Object
         },
         placeholder: {
             type: String,
@@ -67,9 +58,6 @@ export default {
     },
     methods: {
         ...mapMutations(['getOptions', 'clearOptions']),
-        handleDefaultValue() {
-            return !this.defaults ? this.defaultOption : undefined;
-        },
         onSearch(search) {
             this.search(search, this);
         },
@@ -86,7 +74,10 @@ export default {
             }, 350);
         },
         handleChange(val) {
-            this.$emit('id', val);
+            if (val) {
+                this.$emit('id', val);
+            }
+            this.options = [];
         }
     }
 };

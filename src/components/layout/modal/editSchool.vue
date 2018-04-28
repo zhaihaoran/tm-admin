@@ -2,6 +2,7 @@
 <template>
     <el-dialog :visible.sync="modal"
     :before-close="handleModalClose"
+    :close-on-click-modal="false"
     width="800px"
      :title="title" >
         <el-form class="tm-form" :model="data" label-width="120px">
@@ -33,11 +34,8 @@
             <el-form-item label="开课教室图片" >
                 <Upload filepathname="classroomPhotoShortPathFilename" previewname="classroomPhotoUrl" action="as"  :preview="classroomPhotoUrl" ></Upload>
                 <div class="pic-info">
-                    <h3>请拍摄学校的外景，尽量包含学校的名字</h3>
-                    <p class="info-p">图片类型：JPG、PNG</p>
-                    <p class="info-p">图片大小：不超过2M</p>
                     <h3 class="mm">样例</h3>
-                    <img :src="schoolDemo" class="img-fluid" alt="demo">
+                    <img :src="classlDemo" class="img-fluid" alt="demo">
                 </div>
             </el-form-item>
             <div class="individar"></div>
@@ -47,6 +45,14 @@
             <p class="info-p">如果您的学校符合贫困条件，请填写相关信息</p>
             <el-form-item prop="poorDesc" label-width="0" >
                 <el-input type="textarea" :rows="row" class="info-textarea" v-model="data.poorDesc"></el-input>
+            </el-form-item>
+            <el-form-item prop="isPoor" label="贫困用户认证" >
+                <el-switch
+                    v-model="data.isPoor"
+                    active-value="1"
+                    inactive-value="0"
+                >
+                </el-switch>
             </el-form-item>
             <div class="individar"></div>
             <h3>附加信息（选填）</h3>
@@ -120,6 +126,7 @@
             </el-form-item>
         </el-form>
         <span slot="footer" class="dialog-footer center">
+            <el-button class="tm-btn-border" @click="handleModalClose">取消</el-button>
             <el-button type="primary" @click="submitForm">保存</el-button>
         </span>
     </el-dialog>
@@ -130,6 +137,7 @@ import { mapState, mapMutations } from 'vuex';
 import Upload from '@layout/upload.vue';
 import img_class from '@image/admin/class.png';
 import schoolDemo from '@image/admin/school.png';
+import classlDemo from '@image/admin/class.png';
 import img_pc from '@image/admin/pc.png';
 import img_camera from '@image/admin/camera.png';
 
@@ -141,6 +149,7 @@ export default {
             img_class,
             img_pc,
             img_camera,
+            classlDemo,
             schoolDemo
         };
     },

@@ -242,25 +242,6 @@ export default {
     height: 100%;
 }
 
-// video 响应式
-.video-js {
-    width: 100%;
-    height: auto;
-    margin: 0 auto;
-}
-
-.video-js .vjs-tech {
-    //这行代码最为关键，这样视频播放器的外层容器都由视频内容本身撑大
-    position: relative;
-}
-
-.video-player {
-    width: 100%;
-    overflow: hidden;
-    position: relative;
-    top: 0;
-}
-
 .video-wrapper {
     display: flex;
     max-width: 950px;

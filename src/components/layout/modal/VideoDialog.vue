@@ -6,10 +6,14 @@
                     v-on:uploading="handleUploading"
                     :disabled="uploadState"
                     v-on:end="handleUploadEnd"
+                    :filename="form.videoOriginFilename"
                     liststyle="" filepathname="videoShortPathFilename" ></Upload>
-                <el-input type="number" v-model="form.duration" placeholder="视频时长"  >
+                <el-input-number class="dialog-duration-min" v-model="min" :controls="false" label="分钟" :min="0" :max="500">
+                    <template slot="append">分钟</template>
+                </el-input-number>
+                <el-input-number class="dialog-duration-sec" v-model="sec" :controls="false" label="秒" :min="0" :max="60">
                     <template slot="append">秒</template>
-                </el-input>
+                </el-input-number>
             </el-form-item>
             <el-form-item label="预览图片" >
                 <Cropper
@@ -28,7 +32,7 @@
 
             <!-- 学校 -->
             <el-form-item label="学校">
-                <el-radio-group v-model="form.schoolInfoType" size="small" >
+                <el-radio-group @change="handleChangeRadio('sc_option')" v-model="form.schoolInfoType" size="small" >
                     <el-radio-button label="1">选择</el-radio-button>
                     <el-radio-button label="2">填写</el-radio-button>
                 </el-radio-group>
@@ -36,7 +40,12 @@
                     <i class="el-icon-question md-qs"></i>
                 </el-tooltip>
                 <el-input placeholder="请输入学校名称" class="mt-10" v-show="form.schoolInfoType == 2" v-model="form.schoolName" ></el-input>
-                <SlRemote :defaults="form.schoolName" v-show="form.schoolInfoType == 1" placeholder="学校名称" v-on:id="handleUpdateSchoolId"  action="getSchoolListForInput" >
+                <SlRemote
+                    :dption="sc_option" v-show="form.schoolInfoType == 1"
+                    placeholder="学校名称"
+                    v-on:id="handleUpdateSchoolId"
+                    action="getSchoolListForInput"
+                >
                     <template slot-scope="scope" >
                         <div class="d-center sl_option">
                             <div class="sl_image">
@@ -52,7 +61,7 @@
             </el-form-item>
             <!-- 演讲者 -->
             <el-form-item label="演讲者">
-                <el-radio-group v-model="form.speakerInfoType" size="small" >
+                <el-radio-group @change="handleChangeRadio('sp_option')" v-model="form.speakerInfoType" size="small" >
                     <el-radio-button label="1">选择</el-radio-button>
                     <el-radio-button label="2">填写</el-radio-button>
                 </el-radio-group>
@@ -61,7 +70,13 @@
                 </el-tooltip>
                 <el-input placeholder="请输入演讲者名称" class="mt-10" v-show="form.speakerInfoType == 2 " v-model="form.speakerName" ></el-input>
 
-                <SlRemote :defaults="form.speakerName" v-show="form.speakerInfoType == 1" placeholder="演讲者名称" v-on:id="handleUpdateSpeakerId"  action="getSpeakerListForInput" >
+                <SlRemote
+                    :dption="sp_option"
+                    v-show="form.speakerInfoType == 1"
+                    placeholder="演讲者名称"
+                    v-on:id="handleUpdateSpeakerId"
+                    action="getSpeakerListForInput"
+                >
                     <template slot-scope="scope" >
                         <div class="d-center sl_option">
                             <div class="sl_image">
@@ -147,34 +162,11 @@ export default {
             uploadState: false, //上传状态
             videoTypeList: [],
             loading: false,
-            pickerOptions1: {
-                shortcuts: [
-                    {
-                        text: '今天',
-                        onClick(picker) {
-                            picker.$emit('pick', new Date());
-                        }
-                    },
-                    {
-                        text: '昨天',
-                        onClick(picker) {
-                            const date = new Date();
-                            date.setTime(date.getTime() - 3600 * 1000 * 24);
-                            picker.$emit('pick', date);
-                        }
-                    },
-                    {
-                        text: '一周前',
-                        onClick(picker) {
-                            const date = new Date();
-                            date.setTime(date.getTime() - 3600 * 1000 * 24 * 7);
-                            picker.$emit('pick', date);
-                        }
-                    }
-                ]
-            },
             category: [],
-            timestamp: ''
+            timestamp: '',
+            isClear: false,
+            min: '',
+            sec: ''
         };
     },
     props: {
@@ -199,6 +191,12 @@ export default {
         },
         videoTypeIdStr(val) {
             this.category = val.split(',');
+        },
+        time_min(val) {
+            this.min = val;
+        },
+        time_sec(val) {
+            this.sec = val;
         }
     },
     computed: {
@@ -211,9 +209,14 @@ export default {
             videoShortPathFilename: state =>
                 state.upload.videoShortPathFilename,
             tagstab: state => state.modal.tagstab,
+            sc_option: state => state.modal.sc_option,
+            sp_option: state => state.modal.sp_option,
             videoTypeIdStr: state => state.modal.videoTypeIdStr,
             form: state => state.modal.form,
-            speakTimestamp: state => state.modal.speakTimestamp
+            speakTimestamp: state => state.modal.speakTimestamp,
+            speakTimestamp: state => state.modal.speakTimestamp,
+            time_min: state => state.modal.time_min,
+            time_sec: state => state.modal.time_sec
         }),
         tab: {
             set(value) {
@@ -232,6 +235,7 @@ export default {
     methods: {
         ...mapMutations([
             'formSubmit',
+            'clearOption',
             'getArrayData',
             'updateRow',
             'updateFormValue'
@@ -241,7 +245,7 @@ export default {
                 act: this.action,
                 videoId: this.form.videoId,
                 videoShortPathFilename: this.videoShortPathFilename,
-                videoOriginFilename: this.originFilename,
+                videoOriginFilename: this.form.videoOriginFilename,
                 previewShortPathFilename: this.previewShortPathFilename,
                 videoTitle: this.form.videoTitle,
                 speakerInfoType: this.form.speakerInfoType,
@@ -250,7 +254,7 @@ export default {
                 schoolInfoType: this.form.schoolInfoType,
                 schoolId: this.form.schoolId,
                 schoolName: this.form.schoolName,
-                duration: this.form.duration,
+                duration: this.min * 60 + this.sec,
                 speakTimestamp: Math.floor(
                     new Date(this.timestamp).getTime() / 1000
                 ),
@@ -295,14 +299,14 @@ export default {
         handleUpdateSchoolId(cfg) {
             this.updateFormValue({
                 type: 'schoolId',
-                value: cfg ? cfg.schoolId : ''
+                value: cfg ? cfg.schoolId : this.form.schoolId
             });
         },
 
         handleUpdateSpeakerId(cfg) {
             this.updateFormValue({
                 type: 'speakerId',
-                value: cfg ? cfg.speakerId : ''
+                value: cfg ? cfg.speakerId : this.form.speakerId
             });
         },
         /* 设置cropperUrl */
@@ -319,9 +323,7 @@ export default {
                 formCfg,
                 filepathname: this.filepathname,
                 previewname: this.previewname,
-                onSuccess: res => {
-                    console.log(res);
-                }
+                onSuccess: res => {}
             });
         },
 
@@ -332,9 +334,17 @@ export default {
         },
 
         /* 上传中，禁用按钮 */
-        handleUploadEnd() {
+        handleUploadEnd(videofilename) {
             this.uploadState = false;
+            this.updateFormValue({
+                type: 'videoOriginFilename',
+                value: videofilename || this.form.videoOriginFilename
+            });
             this.$message({ type: 'success', message: '上传成功' });
+        },
+
+        handleChangeRadio(val) {
+            this.clearOption(val);
         }
     }
 };
@@ -348,6 +358,36 @@ export default {
 }
 .modal-form {
     width: 460px;
+}
+.dialog-duration-min {
+    width: 110px;
+    position: absolute;
+    top: 3px;
+    left: 100px;
+    .el-input.el-input-group {
+        display: inline-table;
+    }
+    .el-input__inner {
+        height: 36px;
+    }
+    .el-input-group__append {
+        padding: 0 10px;
+    }
+}
+.dialog-duration-sec {
+    width: 90px;
+    position: absolute;
+    top: 3px;
+    left: 220px;
+    .el-input.el-input-group {
+        display: inline-table;
+    }
+    .el-input__inner {
+        height: 36px;
+    }
+    .el-input-group__append {
+        padding: 0 10px;
+    }
 }
 </style>
 

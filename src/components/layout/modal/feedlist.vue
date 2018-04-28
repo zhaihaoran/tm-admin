@@ -1,24 +1,14 @@
-<template> 
+<template>
     <el-dialog :close-on-click-modal="false" :visible.sync="modal" :before-close="handleClose" title="查看反馈" >
-        <el-dialog append-to-body :visible.sync="preview" >
-            <img class="img-fluid" :src="imageUrl" alt="">
-        </el-dialog>
-        <el-upload
-            class="upload-box"
-            action=""
-            :on-change="handleChange"
-            :on-preview="handlePreview"
-            :on-remove="handleRemove"
-            :before-remove="beforeRemove"
-            :auto-upload="false"
-            disabled
-            list-type="picture-card"
-            :on-exceed="handleExceed"
-            :file-list="feedList">
-            <i class="el-icon-plus avatar-uploader-icon"></i>
-        </el-upload>
+        <div class="photos">
+            <el-row :gutter="10" >
+                <el-col class="img-box" :span="8" v-for="photo in feedList" :key="photo.$index" >
+                    <img :src="photo.photoUrl" class="img-fluid" alt="">
+                </el-col>
+            </el-row>
+        </div>
         <span slot="footer" class="dialog-footer center">
-            <!-- <el-button @click="handleSubmitFeedList" type="primary" >提交反馈</el-button> -->
+            <el-button class="tm-btn-border" @click="handleClose">取 消</el-button>
         </span>
     </el-dialog>
 </template>

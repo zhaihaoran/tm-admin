@@ -15,6 +15,7 @@ $sider_submenu_active: #bbb;
 $sider_submenu_bg: #efefef;
 $sider_item_active: #f5f5f5;
 $context_bg: #f6f6f6;
+
 // shadow
 
 .flow-step {
@@ -43,6 +44,25 @@ a {
     }
 }
 
+// video 响应式
+.video-js {
+    width: 100%;
+    height: auto;
+    margin: 0 auto;
+}
+
+.video-js .vjs-tech {
+    //这行代码最为关键，这样视频播放器的外层容器都由视频内容本身撑大
+    position: relative;
+}
+
+.video-player {
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+    top: 0;
+}
+
 .el-table__empty-block {
     min-height: 200px;
     padding: 80px 0;
@@ -61,9 +81,9 @@ a {
 }
 
 .avatar .el-upload--picture-card {
-    width: 160px;
-    height: 160px;
-    line-height: 160px;
+    width: 200px;
+    height: 200px;
+    line-height: 200px;
     overflow: hidden;
 }
 
@@ -311,6 +331,13 @@ a {
     background: #fff;
     box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
     color: #303133;
+}
+
+.tm-link {
+    color: $primary-color;
+    &:hover {
+        text-decoration: underline;
+    }
 }
 
 //

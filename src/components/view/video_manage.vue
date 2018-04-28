@@ -1,8 +1,8 @@
 <template>
     <div>
-        <Search :cfg="searchCfg" >
+        <Search center-text="演讲时间" right-text="上传时间" :cfg="searchCfg" ref="sr_component" >
             <template slot-scope="props" >
-                <el-select class="search-input" v-model="searchCfg.videoTypeId" placeholder="全部分类" >
+                <el-select @change="handleSearch" class="search-input" v-model="searchCfg.videoTypeId" placeholder="全部分类" >
                     <el-option
                         v-for="item in videoTypeList"
                         :key="item.videoTypeId"
@@ -10,15 +10,20 @@
                         :value="item.videoTypeId">
                     </el-option>
                 </el-select>
+                <el-radio-group class="search-input" @change="handleSearch" v-model="searchCfg.enable">
+                    <el-radio-button :label="undefined">全部</el-radio-button>
+                    <el-radio-button label="1">已启用</el-radio-button>
+                    <el-radio-button label="0">未启用</el-radio-button>
+                </el-radio-group>
                 <div class="sr-context">
                     <div class="sr-input">
-                        <el-input v-model="searchCfg.videoTitle" placeholder="标题" ></el-input>
+                        <el-input @keyup.native.enter="handleSearch" v-model="searchCfg.videoTitle" placeholder="标题" ></el-input>
                     </div>
                     <div class="sr-input">
-                        <el-input placeholder="学校名称" v-model="searchCfg.schoolName" suffix-icon="el-icon-search" ></el-input>
+                        <el-input @keyup.native.enter="handleSearch" placeholder="学校名称" v-model="searchCfg.schoolName" suffix-icon="el-icon-search" ></el-input>
                     </div>
                     <div class="sr-input">
-                        <el-input placeholder="演讲者名称" v-model="searchCfg.speakerName" suffix-icon="el-icon-search" ></el-input>
+                        <el-input @keyup.native.enter="handleSearch" placeholder="演讲者名称" v-model="searchCfg.speakerName" suffix-icon="el-icon-search" ></el-input>
                     </div>
                 </div>
             </template>
@@ -35,7 +40,22 @@
                 </el-table-column>
                 <el-table-column prop="videoTitle" label="标题" align="center"></el-table-column>
                 <el-table-column prop="schoolName" label="学校" align="center"></el-table-column>
-                <el-table-column prop="speakerName" label="演讲者" align="center"></el-table-column>
+                <el-table-column prop="speakerName" label="演讲者" align="center"></el-table-column><el-table-column
+                    prop="schoolName"
+                    align="center"
+                    label="学校">
+                    <template slot-scope="scope">
+                        <a target="_black" class="tm-link" :href="toSchoolHome(scope.row.schoolId)">{{scope.row.schoolName}}</a>
+                    </template>
+                </el-table-column>
+                <el-table-column
+                    prop="speakerName"
+                    align="center"
+                    label="演讲者">
+                    <template slot-scope="scope">
+                        <a target="_black" class="tm-link" :href="toSpeakerHome(scope.row.speakerId)">{{scope.row.speakerName}}</a>
+                    </template>
+                </el-table-column>
                 <el-table-column prop="speakTimestamp" width="140px" label="演讲时间" align="center">
                     <template slot-scope="scope">
                         {{dateformat(scope.row.speakTimestamp)}}
@@ -99,6 +119,8 @@ import {
     attrs,
     formatAttr,
     dateformat,
+    toSpeakerHome,
+    toSchoolHome,
     commonPageInit
 } from '@comp/lib/api_maps.js';
 
@@ -182,6 +204,8 @@ export default {
     methods: {
         formatAttr,
         dateformat,
+        toSpeakerHome,
+        toSchoolHome,
         ...mapMutations([
             'updateValue',
             'getPageData',
@@ -192,6 +216,7 @@ export default {
             'deleteSubmit',
             'formSubmit',
             'deleteRow',
+            'setOption',
             'update',
             'clearForm'
         ]),
@@ -234,6 +259,7 @@ export default {
                             res.data.data.video.previewShortPathFilename,
                         originFilename: res.data.data.video.videoOriginFilename
                     });
+                    this.setOption(res.data.data.video);
                 }
             });
         },
@@ -271,6 +297,9 @@ export default {
         handleVideoClose() {
             this.$refs.videoPlayer.player.pause();
             this.modal.video = false;
+        },
+        handleSearch() {
+            this.$refs.sr_component.handleSearch();
         }
     }
 };

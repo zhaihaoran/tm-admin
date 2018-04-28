@@ -7,10 +7,10 @@
         <!-- modal -->
         <el-dialog
             :visible.sync="modal.agree"
-            width="30%"
+            width="500px"
             class="agree-modal"
             >
-            <h3 class="text-center modal-title" >你确定通过邀约？</h3>
+            <h3 class="text-center modal-title" >确定通过审核吗？</h3>
             <span slot="footer" class="tm-modal-footer">
                 <el-button class="tm-btn-border" @click="modal.agree=false">取 消</el-button>
                 <el-button class="tm-btn" type="primary" @click="handleOk(scope.row)" >确 定</el-button>
@@ -18,10 +18,10 @@
         </el-dialog>
         <el-dialog
             :visible.sync="modal.refuse"
-            width="30%"
+            width="500px"
         >
             <h3 class="text-center modal-title" >确定驳回申请吗？</h3>
-            <span class="mb-20">请填写驳回原因，用于告知邀请者</span>
+            <span class="mb-20">请填写驳回原因</span>
             <el-form ref="form" >
                 <el-form-item class="no-margin" >
                     <el-input type="textarea" v-model="rejectDesc" class="tm-textarea"></el-input>
@@ -29,7 +29,7 @@
             </el-form>
             <span slot="footer" class="tm-modal-footer">
                 <el-button class="tm-btn-border" @click="modal.refuse = false">取 消</el-button>
-                <el-button class="tm-btn" type="primary" @click="handleRefuse(scope.row)">确 定</el-button>
+                <el-button class="tm-btn" :disabled="rejectDesc.length == 0" type="primary" @click="handleRefuse(scope.row)">确 定</el-button>
             </span>
         </el-dialog>
     </div>
@@ -59,10 +59,14 @@ export default {
         },
         type: {
             type: String
+        },
+        isHidden: {
+            type: Boolean,
+            default: false
         }
     },
     methods: {
-        ...mapMutations(['Ok', 'refuse', 'updatelist']),
+        ...mapMutations(['Ok', 'refuse', 'updatelist', 'deleteRow']),
         handleOk(obj) {
             this.modal.agree = false;
             const type = this.type;
@@ -70,11 +74,18 @@ export default {
                 act: this.action.ok,
                 [type]: this.scope.row[type],
                 onSuccess: res => {
-                    this.updatelist(
-                        Object.assign(this.scope.row, {
-                            authStatus: 3
-                        })
-                    );
+                    if (this.isHidden) {
+                        this.deleteRow({
+                            type: type,
+                            value: this.scope.row[type]
+                        });
+                    } else {
+                        this.updatelist(
+                            Object.assign(this.scope.row, {
+                                authStatus: 3
+                            })
+                        );
+                    }
                 }
             });
         },
@@ -86,11 +97,18 @@ export default {
                 [type]: this.scope.row[type],
                 rejectDesc: this.rejectDesc,
                 onSuccess: res => {
-                    this.updatelist(
-                        Object.assign(this.scope.row, {
-                            authStatus: 4
-                        })
-                    );
+                    if (this.isHidden) {
+                        this.deleteRow({
+                            type: type,
+                            value: this.scope.row[type]
+                        });
+                    } else {
+                        this.updatelist(
+                            Object.assign(this.scope.row, {
+                                authStatus: 4
+                            })
+                        );
+                    }
                 }
             });
         }
