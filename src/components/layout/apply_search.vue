@@ -42,7 +42,6 @@ export default {
                 speakTimestampStart: this.timerange[0],
                 speakTimestampEnd: this.timerange[1]
             });
-            console.log(param);
             this.getPageData(param);
         }
     }

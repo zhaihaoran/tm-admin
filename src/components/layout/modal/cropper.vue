@@ -76,7 +76,6 @@ export default {
         //初始化这个裁剪框
         var self = this;
         var image = document.getElementById('image');
-        console.log(this.aspectRatio);
         this.cropper = new Cropper(image, {
             aspectRatio: this.aspectRatio, // 比例1:1
             viewMode: 1,
@@ -192,8 +191,7 @@ export default {
         postImg() {
             let formCfg = new FormData();
             // this.blob = Object.assign(this.picValue, this.blob);
-            // console.log(this.picValue);
-            // console.log(this.blob);
+
             formCfg.append('file', this.blob, this.picValue.name);
 
             this.commonUpload({

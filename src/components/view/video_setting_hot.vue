@@ -181,7 +181,6 @@ export default {
                         this.videoRecommend[1].videoId,
                         this.videoRecommend[2].videoId
                     ];
-                    console.log(this.videoRecommend);
                 }
             });
         },

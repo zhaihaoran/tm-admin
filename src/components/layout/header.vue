@@ -8,7 +8,7 @@
                 <a target="_blank" :href="baseURL">网站首页</a>
             </li>
             <li :class="[navClass]">
-                <router-link to="/" >涂梦管理中心</router-link>
+                <router-link to="/" >途梦管理中心</router-link>
             </li>
 
             <!-- 未登录 -->

@@ -138,7 +138,7 @@ const attrs = {
             },
             icon: "icon-ziliao",
         },
-        // 涂梦端
+        // 途梦端
         30101: {
             name: "学校申请管理",
             path: "/check/school",

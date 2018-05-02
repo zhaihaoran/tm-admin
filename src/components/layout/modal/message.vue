@@ -5,7 +5,7 @@
             :visible.sync="modal"
             class="message-modal"
             width="500px"
-            title="聊天信息"
+            title="留言板"
         >
             <div ref="mesbox" v-loading="loading" class="message-box">
                 <div v-for="item in chatList"
@@ -35,7 +35,6 @@
     </div>
 </template>
 <script>
-import Vue from 'vue';
 import { dateformat } from '@comp/lib/api_maps';
 import { mapState, mapMutations } from 'vuex';
 
@@ -49,7 +48,8 @@ export default {
             },
             loading: false,
             modal: false,
-            message: ''
+            message: '',
+            polling: undefined
         };
     },
     computed: {
@@ -69,27 +69,40 @@ export default {
     methods: {
         dateformat,
         ...mapMutations(['getChatList', 'sendChatMsg', 'updatelist']),
+        pollingAjax(row) {
+            /* 15s 轮询一次 */
+            this.polling = setInterval(args => {
+                this.getChatList({
+                    act: 'getChatMessageList',
+                    appointmentId: row.appointmentId
+                });
+            }, 15000);
+        },
+        handleClearPolling() {
+            this.modal = false;
+            clearInterval(this.polling);
+        },
         handleChatList(row) {
-            this.loading = true;
             this.modal = true;
+            this.loading = true;
             row['chatUnreadQuantity'] = 0;
             this.updatelist(row);
 
+            /* 第一次拿取数据 */
             this.getChatList({
                 act: 'getChatMessageList',
                 appointmentId: row.appointmentId,
                 onSuccess: res => {
                     this.loading = false;
-                    /**
-                     * 由于拿到数据后还没渲染呢,需要通过异步更新队列来实现滚动条置底的功能点
-                     * nextTick 在dom更新循环结束之后执行延迟回调，获取更新后的dom,这正是我想要的！
-                     */
                     this.$nextTick(function() {
                         this.$refs.mesbox.scrollTop = this.$refs.mesbox.scrollHeight;
                     });
                 }
             });
+            /* 开始轮询 */
+            this.pollingAjax(row);
         },
+
         sendMessage(row) {
             if (!this.message) {
                 this.$message('消息不能为空');
@@ -99,7 +112,6 @@ export default {
                     appointmentId: row.appointmentId,
                     message: this.message,
                     onSuccess: res => {
-                        console.log(res);
                         // 将滚动条控制在最底部
                         this.$refs.mesbox.scrollTop = this.$refs.mesbox.scrollHeight;
                         // 清空内容

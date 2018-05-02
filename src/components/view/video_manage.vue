@@ -291,7 +291,6 @@ export default {
         // 播放视频
         handlePlayVideo(videourl) {
             this.modal.video = true;
-            console.log('videoURL', videourl);
             this.playerOptions.sources[0].src = videourl;
         },
         handleVideoClose() {

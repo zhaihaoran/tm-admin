@@ -133,7 +133,6 @@ Util.commonPost({
 
 // 拦截器
 router.beforeEach((to, from, next) => {
-    console.log(to.fullPath)
     // 如果跳转到其他网站，则404
     if (to.matched.length < 1) {
         next({

@@ -111,10 +111,7 @@ export default {
 
     mounted() {
         this.init();
-        this.$dragging.$on('dragged', ({ value }) => {
-            console.log(value.item);
-            console.log(value.list);
-        });
+        this.$dragging.$on('dragged', ({ value }) => {});
     },
     methods: {
         dateformat,
@@ -134,10 +131,6 @@ export default {
                     this.videoTopList.forEach(el => {
                         // 隐藏处理
                         this.isShow[el.videoTypeId] = false;
-                        // 单行row 排序
-                        el.videoList.sort((a, b) => {
-                            return a.addTimestamp - b.addTimestamp;
-                        });
                     });
                 }
             });
@@ -175,7 +168,6 @@ export default {
         /* 删除 */
         deleteVideo(item, index) {
             item.videoList.splice(index, 1);
-            console.log(item.videoList);
             this.isShow[item.videoTypeId] = true;
         },
         /* 唯一key 用于拖拽 */

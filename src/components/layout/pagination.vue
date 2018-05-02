@@ -42,15 +42,9 @@ export default {
     methods: {
         ...mapMutations(['getPageData']),
         pageCurrentChange(page) {
-            console.log(`当前页: ${page}`);
-
             this.getPageData({
                 page,
-                ...this.cfg,
-                onError: res => {},
-                onSuccess: res => {
-                    console.log(res);
-                }
+                ...this.cfg
             });
         }
     }

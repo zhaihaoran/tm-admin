@@ -142,7 +142,7 @@ const mutations = {
         }
     },
     /**
-     * 涂梦端登陆
+     * 途梦端登陆
      *
      * @param {any} state
      */

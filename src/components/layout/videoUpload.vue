@@ -58,7 +58,6 @@ export default {
     },
     watch: {
         filename(val) {
-            console.log(val);
             if (val) {
                 this.fileList = [
                     {
@@ -66,7 +65,6 @@ export default {
                         url: this.videoShortPathFilename
                     }
                 ];
-                console.log(this.fileList);
             }
         }
     },
@@ -83,7 +81,6 @@ export default {
             let formCfg = new FormData();
             formCfg.append('file', file.raw);
             // 上传
-            console.log(this.previewname);
             this.commonUpload({
                 formCfg,
                 previewname: this.previewname,
