@@ -23,6 +23,7 @@ const state = {
 const mutations = {
     showModal(state, data) {
         state.modal = true
+        state.form = {};
         state.form = Object.assign(state.form, data)
         state.speakTimestamp = data.speakTimestamp,
         state.duration = state.form.speakDuration;
@@ -72,7 +73,6 @@ const mutations = {
     },
     closeModal(state, cfg) {
         state.modal = false;
-        state.form = {};
     },
     changeTags(state, value) {
         state.tagstab = value

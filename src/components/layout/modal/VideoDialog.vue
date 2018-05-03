@@ -1,5 +1,5 @@
 <template>
-    <el-dialog :title="title" :visible.sync="modal" :before-close="handleModalClose" >
+    <el-dialog :title="title" :visible.sync="modal" class="video-dialog" :before-close="handleModalClose" >
         <el-form :model="form" ref="form" label-width="80px" class="modal-form" >
             <el-form-item label="视频文件">
                 <Upload
@@ -359,34 +359,36 @@ export default {
 .modal-form {
     width: 460px;
 }
-.dialog-duration-min {
-    width: 110px;
-    position: absolute;
-    top: 3px;
-    left: 100px;
-    .el-input.el-input-group {
-        display: inline-table;
+.video-dialog {
+    .dialog-duration-min {
+        width: 110px;
+        position: absolute;
+        top: 3px;
+        left: 100px;
+        .el-input.el-input-group {
+            display: inline-table;
+        }
+        .el-input__inner {
+            height: 36px;
+        }
+        .el-input-group__append {
+            padding: 0 10px;
+        }
     }
-    .el-input__inner {
-        height: 36px;
-    }
-    .el-input-group__append {
-        padding: 0 10px;
-    }
-}
-.dialog-duration-sec {
-    width: 90px;
-    position: absolute;
-    top: 3px;
-    left: 220px;
-    .el-input.el-input-group {
-        display: inline-table;
-    }
-    .el-input__inner {
-        height: 36px;
-    }
-    .el-input-group__append {
-        padding: 0 10px;
+    .dialog-duration-sec {
+        width: 90px;
+        position: absolute;
+        top: 3px;
+        left: 220px;
+        .el-input.el-input-group {
+            display: inline-table;
+        }
+        .el-input__inner {
+            height: 36px;
+        }
+        .el-input-group__append {
+            padding: 0 10px;
+        }
     }
 }
 </style>

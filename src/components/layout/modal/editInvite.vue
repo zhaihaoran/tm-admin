@@ -10,7 +10,7 @@
             <el-form-item label="学校名称" >
                 <span>{{form.schoolName}}</span>
             </el-form-item>
-            <el-form-item label="演讲主题"  show-overflow-tooltip >
+            <el-form-item label="演讲主题">
                 <el-input v-model="form.speakTitle" ></el-input>
             </el-form-item>
             <el-form-item label="演讲时间" >

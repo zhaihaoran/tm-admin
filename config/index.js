@@ -49,7 +49,8 @@ module.exports = {
 
         // Paths
         assetsRoot: path.resolve(__dirname, '../dist'),
-        assetsSubDirectory: 'static/adminConsole/static',
+        // 静态文件相对编译目录地址
+        assetsSubDirectory: 'static',
         // js css
         assetsPublicPath: '/static/adminConsole/',
 
