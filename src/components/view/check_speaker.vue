@@ -3,7 +3,7 @@
         <Search :cfg="searchCfg" ref="sr_component" >
             <template slot-scope="props" >
                 <div class="search-input">
-                    <el-input @keyup.native.enter="handleSearch" placeholder="演讲者名称" v-model="searchCfg.searchText" suffix-icon="el-icon-search" ></el-input>
+                    <el-input @keyup.native.enter="handleSearch" placeholder="梦享家名称" v-model="searchCfg.searchText" suffix-icon="el-icon-search" ></el-input>
                 </div>
             </template>
         </Search>

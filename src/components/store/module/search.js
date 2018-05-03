@@ -90,7 +90,7 @@ const mutations = {
     },
     /* 去除一行数据 */
     deleteRow(state, {
-        value, // 学校id或者演讲者id
+        value, // 学校id或者梦享家id
         type // 身份： speakerId | schoolId
     }) {
         state.data = state.data.filter(el => el[type] !== value);

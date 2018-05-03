@@ -59,8 +59,8 @@
                     </template>
                 </SlRemote>
             </el-form-item>
-            <!-- 演讲者 -->
-            <el-form-item label="演讲者">
+            <!-- 梦享家 -->
+            <el-form-item label="梦享家">
                 <el-radio-group @change="handleChangeRadio('sp_option')" v-model="form.speakerInfoType" size="small" >
                     <el-radio-button label="1">选择</el-radio-button>
                     <el-radio-button label="2">填写</el-radio-button>
@@ -68,12 +68,12 @@
                 <el-tooltip class="item" effect="dark" content="没有数据？请手动填写，手动填写的学校无法查看主页，无法对其发起邀约" placement="right">
                     <i class="el-icon-question md-qs"></i>
                 </el-tooltip>
-                <el-input placeholder="请输入演讲者名称" class="mt-10" v-show="form.speakerInfoType == 2 " v-model="form.speakerName" ></el-input>
+                <el-input placeholder="请输入梦享家名称" class="mt-10" v-show="form.speakerInfoType == 2 " v-model="form.speakerName" ></el-input>
 
                 <SlRemote
                     :dption="sp_option"
                     v-show="form.speakerInfoType == 1"
-                    placeholder="演讲者名称"
+                    placeholder="梦享家名称"
                     v-on:id="handleUpdateSpeakerId"
                     action="getSpeakerListForInput"
                 >

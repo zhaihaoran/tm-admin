@@ -9,7 +9,7 @@
             width="400px"
         >
             <h3 class="text-center modal-title" >确定完成邀约吗？</h3>
-            <span class="mb-20">完成邀约后，邀约将不在此列表中显示并且演讲者和学校双方的邀约将进入“已完成”列表</span>
+            <span class="mb-20">完成邀约后，邀约将不在此列表中显示并且梦享家和学校双方的邀约将进入“已完成”列表</span>
             <span slot="footer" class="tm-modal-footer">
                 <el-button class="tm-btn-border" @click="modal.finish = false">取 消</el-button>
                 <el-button class="tm-btn" type="primary" @click="handleFinish(scope.row)">确 定</el-button>

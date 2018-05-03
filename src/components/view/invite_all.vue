@@ -22,7 +22,7 @@
                         </SlRemote>
                     </div>
                     <div class="sr-input">
-                        <SlRemote placeholder="演讲者名称" v-on:id="handleUpdateSpeakerId" :id="searchCfg.speakerId" action="getSpeakerListForInput" >
+                        <SlRemote placeholder="梦享家名称" v-on:id="handleUpdateSpeakerId" :id="searchCfg.speakerId" action="getSpeakerListForInput" >
                             <template slot-scope="scope" >
                                 <div class="d-center sl_option">
                                     <div class="sl_image">
@@ -81,7 +81,7 @@
                 <el-table-column
                     prop="speakerName"
                     align="center"
-                    label="演讲者">
+                    label="梦享家">
                     <template slot-scope="scope">
                         <a target="_black" class="tm-link" :href="toSpeakerHome(scope.row.speakerId)">{{scope.row.speakerName}}</a>
                     </template>
@@ -131,7 +131,7 @@
                     prop="speakerStatus"
                     align="center"
                     width="120"
-                    label="演讲者进展">
+                    label="梦享家进展">
                     <template slot-scope="scope">
                         <SpProgress :scope="scope"></SpProgress>
                     </template>

@@ -6,7 +6,7 @@
     width="800px"
      :title="title" >
         <el-form class="tm-form" :model="data" label-width="120px">
-            <h2>演讲者基本信息（必填）</h2>
+            <h2>梦享家基本信息（必填）</h2>
             <el-form-item label="姓名">
                 <el-input v-model="data.name"></el-input>
             </el-form-item>
@@ -68,7 +68,7 @@
             <el-form-item label="介绍人">
                 <el-input v-model="data.inviter"></el-input>
             </el-form-item>
-            <el-form-item class="why-label" label="为什么申请途梦演讲者">
+            <el-form-item class="why-label" label="为什么申请途梦梦享家">
                 <el-input type="textarea" v-model="data.whyChooseUs"></el-input>
             </el-form-item>
             <el-form-item label="受益人次附加值">

@@ -25,7 +25,7 @@
             <el-table-column
                 align="center"
                 prop="speakerName"
-                label="演讲者"
+                label="梦享家"
                 >
             </el-table-column>
             <el-table-column

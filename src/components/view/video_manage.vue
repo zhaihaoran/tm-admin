@@ -23,7 +23,7 @@
                         <el-input @keyup.native.enter="handleSearch" placeholder="学校名称" v-model="searchCfg.schoolName" suffix-icon="el-icon-search" ></el-input>
                     </div>
                     <div class="sr-input">
-                        <el-input @keyup.native.enter="handleSearch" placeholder="演讲者名称" v-model="searchCfg.speakerName" suffix-icon="el-icon-search" ></el-input>
+                        <el-input @keyup.native.enter="handleSearch" placeholder="梦享家名称" v-model="searchCfg.speakerName" suffix-icon="el-icon-search" ></el-input>
                     </div>
                 </div>
             </template>
@@ -40,7 +40,7 @@
                 </el-table-column>
                 <el-table-column prop="videoTitle" label="标题" align="center"></el-table-column>
                 <el-table-column prop="schoolName" label="学校" align="center"></el-table-column>
-                <el-table-column prop="speakerName" label="演讲者" align="center"></el-table-column><el-table-column
+                <el-table-column prop="speakerName" label="梦享家" align="center"></el-table-column><el-table-column
                     prop="schoolName"
                     align="center"
                     label="学校">
@@ -51,7 +51,7 @@
                 <el-table-column
                     prop="speakerName"
                     align="center"
-                    label="演讲者">
+                    label="梦享家">
                     <template slot-scope="scope">
                         <a target="_black" class="tm-link" :href="toSpeakerHome(scope.row.speakerId)">{{scope.row.speakerName}}</a>
                     </template>

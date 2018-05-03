@@ -7,7 +7,7 @@
         <div class="card-content">
             <span class="card-title grey-333">{{video.title}}</span>
             <div class="vd-extra">
-                <span>演讲者：{{video.author}}</span>
+                <span>梦享家：{{video.author}}</span>
                 <span>学校：{{video.school}}</span>
                 <span>{{video.startTime}} <span class="text-right" >{{video.count}} 次播放</span> </span>
             </div>

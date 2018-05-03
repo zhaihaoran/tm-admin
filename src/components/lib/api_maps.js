@@ -79,7 +79,7 @@ const attrs = {
             },
             icon: "icon-ziliao",
         },
-        /* 演讲者 */
+        /* 梦享家 */
         20101: {
             name: "发起邀约",
             path: "/invite/send",
@@ -128,7 +128,7 @@ const attrs = {
             dividar: true
         },
         20401: {
-            name: "演讲者资料",
+            name: "梦享家资料",
             path: "/certification/check",
             status: {
                 1: "未审核",
@@ -145,7 +145,7 @@ const attrs = {
             icon: "el-icon-document"
         },
         30102: {
-            name: "演讲者申请管理",
+            name: "梦享家申请管理",
             path: "/check/speaker",
             icon: "el-icon-document",
             dividar: true
@@ -169,7 +169,7 @@ const attrs = {
             icon: "el-icon-document"
         },
         30302: {
-            name: "演讲者管理",
+            name: "梦享家管理",
             path: "/manage/speaker",
             icon: "el-icon-document",
             dividar: true
@@ -211,7 +211,7 @@ const attrs = {
     // 发起方
     "fromSide": {
         1: "学校",
-        2: "演讲者"
+        2: "梦享家"
     },
     // 学校进展状态
     "schoolStatus": {
@@ -221,7 +221,7 @@ const attrs = {
         4: "待课后反馈确认",
         100: "完成"
     },
-    // 演讲者进展状态
+    // 梦享家进展状态
     "speakerStatus": {
         1: "待开课通知",
         2: "待上课",
@@ -252,7 +252,7 @@ const attrs = {
     // 身份
     "userType": {
         1: "学校",
-        2: "演讲者",
+        2: "梦享家",
         3: "管理员"
     },
 }
