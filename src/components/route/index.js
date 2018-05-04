@@ -20,7 +20,10 @@ import Video_setting_hot from '@comp/view/video_setting_hot.vue'
 import ErrorPage from '@comp/view/errorPage.vue'
 
 // 登陆
-import Login from '@comp/view/login.vue'
+import Login from '@comp/Login.vue'
+
+// 主页面
+import Main from '@comp/Main.vue'
 
 Vue.use(Router)
 
@@ -28,108 +31,96 @@ Vue.use(Router)
 
 const router = new Router({
     mode: "history",
-    routes: [{
-        path: '/',
-        redirect: '/check/school'
-    }, {
-        path: '/404',
-        name: '404',
-        component: ErrorPage,
-    }, {
-        path: '/check/school',
-        name: 'check_school',
-        component: Check_school,
-        meta: {
-            requireAuth: true,
+    routes: [
+        {
+            path: '/',
+            redirect: '/common/check_school'
         },
-    }, {
-        path: '/check/speaker',
-        name: 'check_speaker',
-        component: Check_speaker,
-        meta: {
-            requireAuth: true,
+        {
+            path: '/404',
+            name: '404',
+            component: ErrorPage,
         },
-    }, {
-        path: '/invite/manage',
-        name: 'invite_manage',
-        component: Invite_manage,
-        meta: {
-            requireAuth: true,
+        {
+            path: '/login',
+            component: Login
         },
-    }, {
-        path: '/invite/all',
-        name: 'invite_all',
-        component: Invite_all,
-        meta: {
-            requireAuth: true,
+        {
+            path: '/common',
+            component: Main,
+            children: [{
+                path: 'check_school',
+                name: 'check_school',
+                component: Check_school,
+                meta: {
+                    requireAuth: true,
+                },
+            }, {
+                path: 'check_speaker',
+                name: 'check_speaker',
+                component: Check_speaker,
+                meta: {
+                    requireAuth: true,
+                },
+            }, {
+                path: 'invite_manage',
+                name: 'invite_manage',
+                component: Invite_manage,
+                meta: {
+                    requireAuth: true,
+                },
+            }, {
+                path: 'invite_all',
+                name: 'invite_all',
+                component: Invite_all,
+                meta: {
+                    requireAuth: true,
+                },
+            }, {
+                path: 'manage_school',
+                name: 'school_manage',
+                component: School_manage,
+                meta: {
+                    requireAuth: true,
+                },
+            }, {
+                path: 'manage_speaker',
+                name: 'speaker_manage',
+                component: Speaker_manage,
+                meta: {
+                    requireAuth: true,
+                },
+            }, {
+                path: 'video_manage',
+                name: 'video_manage',
+                component: Video_manage,
+                meta: {
+                    requireAuth: true,
+                },
+            }, {
+                path: 'video_category',
+                name: 'video_category',
+                component: Video_category,
+                meta: {
+                    requireAuth: true,
+                },
+            }, {
+                path: 'video_setting_top',
+                name: 'video_setting_top',
+                component: Video_setting_top,
+                meta: {
+                    requireAuth: true,
+                },
+            }, {
+                path: 'video_setting_hot',
+                name: 'video_setting_hot',
+                component: Video_setting_hot,
+                meta: {
+                    requireAuth: true,
+                },
+            }]
         },
-    }, {
-        path: '/manage/school',
-        name: 'school_manage',
-        component: School_manage,
-        meta: {
-            requireAuth: true,
-        },
-    }, {
-        path: '/manage/speaker',
-        name: 'speaker_manage',
-        component: Speaker_manage,
-        meta: {
-            requireAuth: true,
-        },
-    }, {
-        path: '/video/manage',
-        name: 'video_manage',
-        component: Video_manage,
-        meta: {
-            requireAuth: true,
-        },
-    }, {
-        path: '/video/category',
-        name: 'video_category',
-        component: Video_category,
-        meta: {
-            requireAuth: true,
-        },
-    }, {
-        path: '/login',
-        name: 'login',
-        component: Login,
-    }, {
-        path: '/video/setting/top',
-        name: 'video_setting_top',
-        component: Video_setting_top,
-        meta: {
-            requireAuth: true,
-        },
-    }, {
-        path: '/video/setting/hot',
-        name: 'video_setting_hot',
-        component: Video_setting_hot,
-        meta: {
-            requireAuth: true,
-        },
-    }],
-})
-
-// config -- axios
-import '@comp/lib/axios_config'
-import Util from '@comp/lib/utils'
-
-/* 获取登陆状态 */
-Util.commonPost({
-    url: "api/common/",
-    cfg: {
-        act: 'getUserLogin',
-    },
-    ActionSuccess: res => {
-        let cfg = res.data.data;
-        if (cfg && +cfg.isLogin > 0 && +cfg.userType == 3) {
-            sessionStorage.isLogin = 1;
-        } else {
-            sessionStorage.isLogin = 0;
-        }
-    },
+    ]
 })
 
 // 拦截器
@@ -142,7 +133,7 @@ router.beforeEach((to, from, next) => {
     }
     if (to.meta.requireAuth) { // 判断该路由是否需要登录权限
         // 判断用户是否登陆,必须在所有模块没有加载前，就事先取到login状态，并将其放入sessionStorage中,由于sessionStorage里不能存布尔值，会默认转成字符串，所以用数字。
-        if (+sessionStorage.isLogin>0) {
+        if (+sessionStorage.isLogin > 0) {
             next();
         } else {
             next({

@@ -8,6 +8,9 @@ import store from '@store/index'
 import '@scss/theme/index.css'
 import '@scss/admin_common.scss';
 
+// config -- axios
+import '@comp/lib/axios_config'
+
 // icon
 import 'assets/icon/iconfont.css'
 import ElementUI from 'element-ui'

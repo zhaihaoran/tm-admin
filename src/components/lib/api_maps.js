@@ -23,54 +23,54 @@ const attrs = {
     "menus": {
         10101: {
             name: "发起邀约",
-            path: "/invite/send",
+            path: "/common/invite_send",
             icon: "icon-faqiyaoyue",
             dividar: true
         },
         10201: {
             name: "已发起邀约",
-            path: "/invite/over",
+            path: "/common/invite_over",
             icon: "icon-yifaqiyaoyue"
         },
         10202: {
             name: "收到的邀约",
-            path: "/invite/received",
+            path: "/common/invite_received",
             icon: "icon-shoudaoyaoyue"
         },
         10203: {
             name: "进行中",
-            path: "/underway",
+            path: "/common/underway",
             icon: "icon-jinxingzhong"
         },
         10204: {
             name: "已完成",
-            path: "/done",
+            path: "/common/done",
             icon: "icon-yiwancheng"
         },
         10205: {
             name: "被拒绝",
-            path: "/refused",
+            path: "/common/refused",
             icon: "icon-beijujue"
         },
         10206: {
             name: "我拒绝",
-            path: "/refuse",
+            path: "/common/refuse",
             icon: "icon-shanchuguanbicha"
         },
         10207: {
             name: "全部邀约",
-            path: "/invite/all",
+            path: "/common/invite_all",
             icon: "icon-all"
         },
         10301: {
             name: "主页设置",
-            path: "/setting",
+            path: "/common/setting",
             icon: "icon-setting",
             dividar: true
         },
         10401: {
             name: "学校资料",
-            path: "/certification/check",
+            path: "/common/certification_check",
             status: {
                 1: "未审核",
                 2: "已提交",
@@ -82,54 +82,54 @@ const attrs = {
         /* 梦享家 */
         20101: {
             name: "发起邀约",
-            path: "/invite/send",
+            path: "/common/invite_send",
             icon: "icon-faqiyaoyue",
             dividar: true
         },
         20201: {
             name: "已发起邀约",
-            path: "/invite/over",
+            path: "/common/invite_over",
             icon: "icon-yifaqiyaoyue"
         },
         20202: {
             name: "收到的邀约",
-            path: "/invite/received",
+            path: "/common/invite_received",
             icon: "icon-shoudaoyaoyue"
         },
         20203: {
             name: "进行中",
-            path: "/underway",
+            path: "/common/underway",
             icon: "icon-jinxingzhong"
         },
         20204: {
             name: "已完成",
-            path: "/done",
+            path: "/common/done",
             icon: "icon-yiwancheng"
         },
         20205: {
             name: "被拒绝",
-            path: "/refused",
+            path: "/common/refused",
             icon: "icon-beijujue"
         },
         20206: {
             name: "我拒绝",
-            path: "/refuse",
+            path: "/common/refuse",
             icon: "icon-shanchuguanbicha"
         },
         20207: {
             name: "全部邀约",
-            path: "/invite/all",
+            path: "/common/invite_all",
             icon: "icon-all"
         },
         20301: {
             name: "主页设置",
-            path: "/setting",
+            path: "/common/setting",
             icon: "icon-setting",
             dividar: true
         },
         20401: {
             name: "梦享家资料",
-            path: "/certification/check",
+            path: "/common/certification_check",
             status: {
                 1: "未审核",
                 2: "已提交",
@@ -141,58 +141,58 @@ const attrs = {
         // 途梦端
         30101: {
             name: "学校申请管理",
-            path: "/check/school",
+            path: "/common/check_school",
             icon: "el-icon-document"
         },
         30102: {
             name: "梦享家申请管理",
-            path: "/check/speaker",
+            path: "/common/check_speaker",
             icon: "el-icon-document",
             dividar: true
         },
 
         30201: {
             name: "邀约管理",
-            path: "/invite/manage",
+            path: "/common/invite_manage",
             icon: "el-icon-document"
         },
         30202: {
             name: "所有邀约",
-            path: "/invite/all",
+            path: "/common/invite_all",
             icon: "el-icon-document",
             dividar: true
         },
 
         30301: {
             name: "学校管理",
-            path: "/manage/school",
+            path: "/common/manage_school",
             icon: "el-icon-document"
         },
         30302: {
             name: "梦享家管理",
-            path: "/manage/speaker",
+            path: "/common/manage_speaker",
             icon: "el-icon-document",
             dividar: true
         },
 
         30401: {
             name: "视频管理",
-            path: "/video/manage",
+            path: "/common/video_manage",
             icon: "el-icon-document"
         },
         30402: {
             name: "视频分类设置",
-            path: "/video/category",
+            path: "/common/video_category",
             icon: "el-icon-document"
         },
         30403: {
             name: "首页视频置顶设置",
-            path: "/video/setting/top",
+            path: "/common/video_setting_top",
             icon: "el-icon-document"
         },
         30404: {
             name: "首页推荐视频设置",
-            path: "/video/setting/hot",
+            path: "/common/video_setting_hot",
             icon: "el-icon-document"
         }
     },
@@ -257,7 +257,7 @@ const attrs = {
     },
 }
 
-const baseURL = 'http://10.0.0.148';
+const baseURL = process.env.BASE_URL;
 
 const Api = {
     upload: baseURL + '/api/common/?act=upload'

@@ -57,7 +57,7 @@ export default {
         }
     },
     methods: {
-        ...mapMutations(['getOptions', 'clearOptions']),
+        ...mapMutations(['getOptions']),
         onSearch(search) {
             this.search(search, this);
         },

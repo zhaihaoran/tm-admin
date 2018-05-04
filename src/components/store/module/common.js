@@ -2,8 +2,6 @@ import Util from '@comp/lib/utils'
 
 const state = {
     common_sidebar: false, // 主体侧边栏状态
-    help_sidebar: false, // 帮助侧边栏
-    sidebar_toggle: false, // 侧边栏展开状态
     checkState: 0, // 审核状态
     login: false,
     menuList: {}, // 菜单列表
@@ -15,8 +13,8 @@ const state = {
 }
 // 模块的mutations 、 actions、getter 默认注册在全局命名空间的
 const mutations = {
-    
-    
+
+
     /**
      * 远程获取数据
      *
@@ -109,7 +107,13 @@ const mutations = {
             cfg
         })
     },
-    /* 获取表单数据 */
+    /**
+     * 通用表单提交
+     *
+     * @param {any} state
+     * @param {any}
+     *
+     */
     formSubmit(state, {
         onError,
         onSuccess,
@@ -126,15 +130,6 @@ const mutations = {
             cfg,
             errorText
         })
-    },
-    switchSidebarView(state, view) {
-        if (view === "help") {
-            state.help_sidebar = true;
-            state.common_sidebar = false;
-        } else {
-            state.help_sidebar = false;
-            state.common_sidebar = true;
-        }
     },
     /**
      * 途梦端登陆
@@ -162,7 +157,13 @@ const mutations = {
             }
         })
     },
-    signout(state,{
+    /**
+     * 退出
+     *
+     * @param {any} state
+     * @param {any}
+     */
+    signout(state, {
         onSuccess,
     }) {
         Util.commonPost({
@@ -180,22 +181,9 @@ const mutations = {
             }
         })
     },
-    handleCheckState(state, ) {
-        state.check_state = 0;
-    }
-}
-
-const actions = {
-    toggle({
-        commit
-    }) {
-        //在这里改变state中的数据
-        commit('toggle')
-    }
 }
 
 export default {
     state,
     mutations,
-    actions
 };
