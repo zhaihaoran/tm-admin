@@ -17,7 +17,7 @@ import Video_category from '@comp/view/video_category.vue'
 import Video_setting_top from '@comp/view/video_setting_top.vue'
 import Video_setting_hot from '@comp/view/video_setting_hot.vue'
 // error
-import ErrorPage from '@comp/view/error_page.vue'
+import ErrorPage from '@comp/view/errorPage.vue'
 
 // 登陆
 import Login from '@comp/view/login.vue'
