@@ -17,7 +17,7 @@ import Video_category from '@comp/view/video_category.vue'
 import Video_setting_top from '@comp/view/video_setting_top.vue'
 import Video_setting_hot from '@comp/view/video_setting_hot.vue'
 // error
-import ErrorPage from '@comp/view/errorPage.vue'
+import ErrorPage from '@comp/view/error_page.vue'
 
 // 登陆
 import Login from '@comp/view/login.vue'
@@ -27,6 +27,7 @@ Vue.use(Router)
 // 默认路由，通过重定向实现
 
 const router = new Router({
+    mode: "history",
     routes: [{
         path: '/',
         redirect: '/check/school'
@@ -123,7 +124,7 @@ Util.commonPost({
     },
     ActionSuccess: res => {
         let cfg = res.data.data;
-        if (cfg && +cfg.isLogin > 0) {
+        if (cfg && +cfg.isLogin > 0 && +cfg.userType == 3) {
             sessionStorage.isLogin = 1;
         } else {
             sessionStorage.isLogin = 0;

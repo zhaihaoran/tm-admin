@@ -5,6 +5,7 @@
             :visible.sync="modal"
             class="message-modal"
             width="500px"
+            :before-close="handleClearPolling"
             title="留言板"
         >
             <div ref="mesbox" v-loading="loading" class="message-box">
@@ -112,10 +113,11 @@ export default {
                     appointmentId: row.appointmentId,
                     message: this.message,
                     onSuccess: res => {
-                        // 将滚动条控制在最底部
-                        this.$refs.mesbox.scrollTop = this.$refs.mesbox.scrollHeight;
                         // 清空内容
                         this.message = '';
+                        this.$nextTick(function() {
+                            this.$refs.mesbox.scrollTop = this.$refs.mesbox.scrollHeight;
+                        });
                     }
                 });
             }

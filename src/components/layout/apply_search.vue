@@ -5,7 +5,7 @@
             <el-radio-button label="1">申请时间</el-radio-button>
         </el-radio-group>
         <slot></slot>
-        <el-button type="primary" @click="handleSearch" class="search-btn" >检索</el-button>
+        <el-button icon="el-icon-search" type="primary" @click="handleSearch" class="search-btn" >检索</el-button>
     </div>
 </template>
 <script>

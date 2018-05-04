@@ -1,7 +1,7 @@
 <template>
     <div :class="boxClass" id="cropper">
         <el-upload
-            class="avatar-uploader"
+            :class="classes"
             :action="action"
             list-type="picture-card"
             :show-file-list="false"
@@ -42,6 +42,10 @@ export default {
             type: Boolean,
             default: true
         },
+        classes: {
+            type: String,
+            default: "avatar-uploader"
+        },
         accept: {
             type: String,
             default: 'image/gif, image/jpeg, image/png, image/jpg'
@@ -59,6 +63,14 @@ export default {
             default: true
         },
         action: {
+            type: String,
+            default: ''
+        },
+        width: {
+            type: String,
+            default: ''
+        },
+        height: {
             type: String,
             default: ''
         }
@@ -167,8 +179,8 @@ export default {
         getRoundedCanvas(sourceCanvas) {
             var canvas = document.createElement('canvas');
             var context = canvas.getContext('2d');
-            var width = sourceCanvas.width;
-            var height = sourceCanvas.height;
+            var width = this.width || sourceCanvas.width;
+            var height = this.height || sourceCanvas.height;
             canvas.width = width;
             canvas.height = height;
             context.imageSmoothingEnabled = true;

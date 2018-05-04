@@ -4,7 +4,6 @@ import App from '@comp/App.vue'
 import router from '@route/index'
 import store from '@store/index'
 
-
 // config -- scss
 import '@scss/theme/index.css'
 import '@scss/admin_common.scss';
