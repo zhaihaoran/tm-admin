@@ -7,30 +7,33 @@
             </div>
             <el-button class="mb-20" @click="handleSelectVideo(item)" type="primary" >选择视频</el-button>
             <el-row :gutter="10">
-                <el-col
-                    class="tm-col-5" :sm="12" :md="8" :lg="6"
-                    v-for="(video,index) in item.videoList"
-                    v-dragging="{ item: video, list: item.videoList, group: 'video' }"
-                    :key="video.videoId"
-                    track-by="videoId"
+                <draggable
+                    v-model="item.videoList" :options="{group: 't_video',draggable:'.item'}"
+                    @start="drag=true" @end="drag=false"
                 >
-                    <div :class="[videoClass]" >
-                        <div @click="handlePlayVideo(video.videoUrl)" class="card-image">
-                            <img class="img-fluid min-images" :src="video.previewUrl">
-                            <span class="vd-times badge">{{formatDuration(video.duration)}}</span>
-                        </div>
-                        <div class="card-content">
-                            <span class="card-title grey-333">{{video.videoTitle}}</span>
-                            <div class="vd-extra">
-                                <span>梦享家：{{video.speakerName}}</span>
-                                <span>学校：{{video.schoolName}}</span>
-                                <span>{{dateformat(video.addTimestamp)}} <span class="text-right" >{{video.playTimes}} 次播放</span> </span>
+                    <el-col
+                        class="tm-col-5 item" :sm="12" :md="8" :lg="6"
+                        v-for="(video,index) in item.videoList"
+                        :key="video.videoId"
+                    >
+                        <div ref="t_video" :class="[videoClass]" >
+                            <div @click="handlePlayVideo(video.videoUrl)" class="card-image">
+                                <img class="img-fluid min-images" :src="video.previewUrl">
+                                <span class="vd-times badge">{{formatDuration(video.duration)}}</span>
                             </div>
-                            <span v-if="+video.enable < 1" class="bages">未激活</span>
-                            <span class="delete-icon" @click="deleteVideo(item,index)" ><i class="el-icon-delete"></i></span>
+                            <div class="card-content">
+                                <span class="card-title grey-333">{{video.videoTitle}}</span>
+                                <div class="vd-extra">
+                                    <span>梦享家：{{video.speakerName}}</span>
+                                    <span>学校：{{video.schoolName}}</span>
+                                    <span>{{dateformat(video.addTimestamp)}} <span class="text-right" >{{video.playTimes}} 次播放</span> </span>
+                                </div>
+                                <span v-if="+video.enable < 1" class="bages">未激活</span>
+                                <span class="delete-icon" @click="deleteVideo(item,index)" ><i class="el-icon-delete"></i></span>
+                            </div>
                         </div>
-                    </div>
-                </el-col>
+                    </el-col>
+                </draggable>
             </el-row>
         </el-card>
         <!-- 选择视频 -->
@@ -57,8 +60,7 @@ import {
     attrs,
     formatAttr,
     dateformat,
-    formatDuration,
-    commonPageInit
+    formatDuration
 } from '@comp/lib/api_maps.js';
 
 import { videoPlayer } from 'vue-video-player';
@@ -68,7 +70,8 @@ import SelectVideo from '@layout/modal/selectVideo.vue';
 import VideoCard from '@layout/videoCard.vue';
 import Upload from '@layout/upload.vue';
 
-import image from '../../assets/image/logo/tsinghua.png';
+import draggable from 'vuedraggable';
+
 export default {
     data() {
         return {
@@ -88,8 +91,8 @@ export default {
             videoIdStr: [], // 修改视频置信息 videoIdstr -- 中间值
             selectTypeId: '', // 当前添加视频所在的分类 videoTypeId -- 中间值
             videoClass: {
-                video: true,
                 active: true,
+                video: true,
                 'card-hover': true,
                 hoverable: true
             }, // videoCard 样式
@@ -106,12 +109,12 @@ export default {
         VideoCard,
         Upload,
         SelectVideo,
-        videoPlayer
+        videoPlayer,
+        draggable
     },
 
     mounted() {
         this.init();
-        this.$dragging.$on('dragged', ({ value }) => {});
     },
     methods: {
         dateformat,
@@ -160,6 +163,14 @@ export default {
             let typeItem = this.videoTopList.find(
                 el => el.videoTypeId == this.selectTypeId
             );
+            /* 确保不能选到相同的视频 */
+            if (typeItem.videoList.some(el => el.videoId === obj.videoId)) {
+                this.$message({
+                    message: '无法选择相同的视频',
+                    type: 'warning'
+                });
+                return false;
+            }
             /* 将取到的video数据放进去 */
             typeItem.videoList.push(obj);
             this.isShow[this.selectTypeId] = true;
@@ -199,6 +210,9 @@ export default {
                 onSuccess: res => {
                     // 一定要记得回收
                     this.videoIdStr = [];
+                    this.isShow[item.videoTypeId] = false;
+                    // qs: 这里好像必须要强制刷新才能去掉保存按钮，是哪里写错了？
+                    this.$forceUpdate();
                 }
             });
         }
@@ -215,6 +229,15 @@ export default {
     float: right;
     position: relative;
     bottom: 6px;
+}
+
+.video {
+    position: relative;
+    &:hover {
+        .bages {
+            left: 12px;
+        }
+    }
 }
 
 .bages {

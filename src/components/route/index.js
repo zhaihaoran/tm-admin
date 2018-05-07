@@ -30,7 +30,6 @@ Vue.use(Router)
 // 默认路由，通过重定向实现
 
 const router = new Router({
-    mode: "history",
     routes: [
         {
             path: '/',

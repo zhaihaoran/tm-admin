@@ -89,12 +89,7 @@
 <script>
 import { mapState, mapMutations } from 'vuex';
 
-import {
-    attrs,
-    formatAttr,
-    dateformat,
-    commonPageInit
-} from '@comp/lib/api_maps.js';
+import { attrs, formatAttr, dateformat } from '@comp/lib/api_maps.js';
 
 import index_video from 'assets/image/video_bg.png';
 import SelectVideo from '@layout/modal/selectVideo.vue';

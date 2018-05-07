@@ -22,7 +22,7 @@
                 </el-date-picker>
             </el-form-item>
             <el-form-item label="演讲时长" width="80" >
-                <el-input v-model="d_duration" >
+                <el-input type="number" v-model="d_duration" >
                     <template slot="append">分钟</template>
                 </el-input>
             </el-form-item>
@@ -38,12 +38,7 @@
 </template>
 <script>
 import { mapState, mapMutations } from 'vuex';
-import {
-    attrs,
-    formatAttr,
-    dateformat,
-    commonPageInit
-} from '@comp/lib/api_maps.js';
+import { attrs, formatAttr, dateformat } from '@comp/lib/api_maps.js';
 
 export default {
     data() {
@@ -78,26 +73,35 @@ export default {
         ...mapMutations(['formSubmit', 'closeModal', 'updatelist']),
         dateformat,
         handleSubmitForm() {
-            let cfg = {
-                appointmentId: this.form.appointmentId,
-                speakTitle: this.form.speakTitle,
-                speakTimestamp: Math.floor(
-                    new Date(this.timestamp).getTime() / 1000
-                ),
-                speakDuration: this.d_duration * 60,
-                addTimestamp: this.form.addTimestamp
-            };
+            /* 必须全部填满值才可以提交 */
+            if (this.form.speakTitle && this.timestamp && this.d_duration) {
+                let cfg = {
+                    appointmentId: this.form.appointmentId,
+                    speakTitle: this.form.speakTitle,
+                    speakTimestamp: Math.floor(
+                        new Date(this.timestamp).getTime() / 1000
+                    ),
+                    speakDuration: this.d_duration * 60,
+                    addTimestamp: this.form.addTimestamp
+                };
 
-            this.formSubmit({
-                act: 'modifyAppointment',
-                ...cfg,
-                successText: '修改成功',
-                errorText: '修改失败',
-                onSuccess: res => {
-                    this.updatelist(cfg);
-                    this.handleClose();
-                }
-            });
+                this.formSubmit({
+                    act: 'modifyAppointment',
+                    ...cfg,
+                    successText: '修改成功',
+                    errorText: '修改失败',
+                    onSuccess: res => {
+                        this.updatelist(cfg);
+                        this.handleClose();
+                    }
+                });
+            } else {
+                this.$message({
+                    showClose: true,
+                    message: '请填写相关信息，不可空缺',
+                    type: 'warning'
+                });
+            }
         },
         handleClose() {
             this.closeModal();

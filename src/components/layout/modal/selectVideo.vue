@@ -81,12 +81,7 @@
 </template>
 <script>
 import { mapState, mapMutations } from 'vuex';
-import {
-    attrs,
-    formatAttr,
-    dateformat,
-    commonPageInit
-} from '@comp/lib/api_maps.js';
+import { attrs, formatAttr, dateformat } from '@comp/lib/api_maps.js';
 
 import image from 'assets/image/logo/tsinghua.png';
 

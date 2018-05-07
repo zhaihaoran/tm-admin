@@ -21,7 +21,8 @@ import { mapState, mapMutations } from 'vuex';
 export default {
     props: {
         action: {
-            type: String
+            type: String,
+            default: ''
         },
         disabled: {
             type: Boolean,

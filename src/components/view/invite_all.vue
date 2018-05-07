@@ -245,13 +245,16 @@ export default {
         Pagination
     },
     mounted() {
-        commonPageInit(this, {
-            act: 'getAppointmentList',
-            status: 0
-        });
-        this.updateValue({
-            status: 0
-        });
+        commonPageInit(
+            this,
+            {
+                act: 'getAppointmentList',
+                status: 0
+            },
+            {
+                status: 0
+            }
+        );
     },
     methods: {
         formatAttr,
@@ -260,6 +263,7 @@ export default {
         toSpeakerHome,
         toSchoolHome,
         ...mapMutations([
+            'clearSearchOps',
             'updateValue',
             'getFeedList',
             'getPageData',

@@ -229,13 +229,16 @@ export default {
         FeedList
     },
     mounted() {
-        commonPageInit(this, {
-            act: 'getAppointmentList',
-            status: 2
-        });
-        this.updateValue({
-            status: 2
-        });
+        commonPageInit(
+            this,
+            {
+                act: 'getAppointmentList',
+                status: 2
+            },
+            {
+                status: 2
+            }
+        );
     },
     methods: {
         dateformat,
@@ -244,6 +247,7 @@ export default {
         toSchoolHome,
         secToMin,
         ...mapMutations([
+            'clearSearchOps',
             'updateValue',
             'getPageData',
             'formSubmit',

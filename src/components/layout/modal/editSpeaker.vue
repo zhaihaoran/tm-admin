@@ -50,14 +50,6 @@
             </el-form-item>
             <el-form-item label="您的照片" >
                 <Upload classes="avatar" filepathname="photoShortPathFilename" previewname="photoUrl" action="a" :preview="photoUrl" ></Upload>
-                <div class="sp-pic-info">
-                    <h3>请拍摄能够清晰的看到正脸的照片</h3>
-                    <p class="info-p">图片类型：JPG、PNG</p>
-                    <p class="info-p">图片大小：不超过2M</p>
-                </div>
-                <div class="sp-pic-info pp">
-                    <img :src="personDemo" class="demo" alt="demo">
-                </div>
             </el-form-item>
             <div class="individar"></div>
             <h2>附加信息（选填）</h2>

@@ -206,6 +206,16 @@ const mutations = {
                 state.feedList = res.data.data.feedbackList;
             }
         });
+    },
+    /* 清空聊天 */
+    clearChatMsg(state) {
+        state.chatList = [];
+    },
+    /* 清空查询条件 */
+    clearSearchOps(state) {
+        state.orderType = 0
+        state.timerange = [];
+        state.data = [];
     }
 }
 

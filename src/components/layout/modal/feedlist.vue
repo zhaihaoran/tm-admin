@@ -1,11 +1,14 @@
 <template>
     <el-dialog :close-on-click-modal="false" :visible.sync="modal" :before-close="handleClose" title="查看反馈" >
-        <div class="photos">
+        <div v-if="feedList.length" class="photos">
             <el-row :gutter="10" >
                 <el-col class="img-box" :span="8" v-for="photo in feedList" :key="photo.$index" >
                     <img :src="photo.photoUrl" class="img-fluid" alt="">
                 </el-col>
             </el-row>
+        </div>
+        <div v-else class="empty" >
+            学校未上传反馈图片
         </div>
         <span slot="footer" class="dialog-footer center">
             <el-button class="tm-btn-border" @click="handleClose">取 消</el-button>
@@ -105,4 +108,12 @@ export default {
     }
 };
 </script>
+<style scoped >
+.empty {
+    padding: 20px;
+    font-size: 18px;
+    text-align: center;
+}
+</style>
+
 

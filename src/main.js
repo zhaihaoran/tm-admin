@@ -16,14 +16,11 @@ import 'assets/icon/iconfont.css'
 import ElementUI from 'element-ui'
 
 // plugin -- draggable
-import VueDND from 'awe-dnd'
 import vSelect from 'vue-select'
 
 Vue.config.productionTip = false
 Vue.use(ElementUI)
 Vue.component('v-select', vSelect)
-// 拖拽控件
-Vue.use(VueDND)
 
 new Vue({
     el: '#app',

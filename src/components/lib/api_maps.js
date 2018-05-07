@@ -259,14 +259,9 @@ const attrs = {
 
 const baseURL = process.env.BASE_URL;
 
-const Api = {
-    upload: baseURL + '/api/common/?act=upload'
-}
-
 module.exports = {
     // 日期格式化
     baseURL,
-    Api,
     attrs,
     dateformat(timestamp, state = 0) {
         if (timestamp < 1000) {
@@ -310,7 +305,12 @@ module.exports = {
         return menus[menuId][type];
     },
     /* getPageDate */
-    commonPageInit(context, cfg) {
+    commonPageInit(context, cfg, obj) {
+        /* 页面每次挂载，都要清空掉查询条件 */
+        context.clearSearchOps && context.clearSearchOps();
+        /* 更新status */
+        obj && context.updateValue(obj);
+        /* 获取页面数据 */
         context.getPageData(cfg);
     },
     /* 时间格式化   sec 转 min */

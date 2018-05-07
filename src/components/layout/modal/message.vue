@@ -69,7 +69,12 @@ export default {
     },
     methods: {
         dateformat,
-        ...mapMutations(['getChatList', 'sendChatMsg', 'updatelist']),
+        ...mapMutations([
+            'getChatList',
+            'sendChatMsg',
+            'updatelist',
+            'clearChatMsg'
+        ]),
         pollingAjax(row) {
             /* 15s 轮询一次 */
             this.polling = setInterval(args => {
@@ -81,6 +86,8 @@ export default {
         },
         handleClearPolling() {
             this.modal = false;
+            // 同时记得清空聊天信息
+            this.clearChatMsg();
             clearInterval(this.polling);
         },
         handleChatList(row) {
