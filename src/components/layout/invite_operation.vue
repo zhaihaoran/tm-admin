@@ -2,7 +2,8 @@
     <div class="cell" >
         <el-button size="mini" @click="handleEdit(scope.$index,scope.row)" >修改</el-button>
         <el-button size="mini" class="tm-btn-border" @click="handledelete(scope.row)" >删除</el-button>
-        <el-button v-if="+scope.row.status === 3" size="mini" type="primary" @click="modal.finish=true" >完成</el-button>
+        <!--  -->
+        <el-button v-if="+scope.row.schoolStatus === 100 && +scope.row.speakerStatus === 100" size="mini" type="primary" @click="modal.finish=true" >完成</el-button>
         <!-- 完成 提示 -->
         <el-dialog
             :visible.sync="modal.finish"
@@ -49,7 +50,10 @@ export default {
         handleFinish(obj) {
             this.finishInvite({
                 act: 'finishAppointment',
-                appointmentId: obj.appointmentId
+                appointmentId: obj.appointmentId,
+                onSuccess: res => {
+                    this.modal.finish = false;
+                }
             });
         }
     }

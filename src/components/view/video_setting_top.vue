@@ -28,7 +28,7 @@
                                     <span>学校：{{video.schoolName}}</span>
                                     <span>{{dateformat(video.addTimestamp)}} <span class="text-right" >{{video.playTimes}} 次播放</span> </span>
                                 </div>
-                                <span v-if="+video.enable < 1" class="bages">未激活</span>
+                                <span v-if="+video.enable < 1" class="bages">未启用</span>
                                 <span class="delete-icon" @click="deleteVideo(item,index)" ><i class="el-icon-delete"></i></span>
                             </div>
                         </div>

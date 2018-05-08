@@ -14,21 +14,6 @@ $sider_submenu_active: #bbb;
 $sider_submenu_bg: #efefef;
 $sider_item_active: #f5f5f5;
 $context_bg: #f6f6f6;
-// shadow
-.flow-step {
-    height: 800px;
-    padding: 40px;
-    .step-click.el-step.is-vertical {
-        .el-step__title {
-            color: #bb2133;
-            text-decoration: underline;
-            &:hover {
-                cursor: pointer;
-            }
-        }
-    }
-}
-
 body {
     margin: 0;
     padding: 0;
@@ -479,6 +464,32 @@ img {
 
 .admin-step {
     height: 200px;
+    .el-step {
+        &:hover {
+            .el-step__head {
+                color: #bb2133;
+                border-color: #bb2133;
+            }
+            .el-step__title {
+                color: #bb2133;
+                text-decoration: underline;
+            }
+        }
+    }
+    .el-step__head {
+        &.is-process {
+            color: #c0c4cc;
+            border-color: #c0c4cc;
+            cursor: pointer;
+        }
+    }
+    .el-step__title {
+        &.is-process {
+            color: #c0c4cc;
+            font-weight: normal;
+            cursor: pointer;
+        }
+    }
 }
 
 .hidden {
@@ -685,4 +696,8 @@ input::-webkit-input-placeholder {
 .mb-20 {
     margin-bottom: 15px;
     display: inline-block;
+}
+
+.el-textarea__inner {
+    padding: 5px 10px;
 }

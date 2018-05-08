@@ -3,7 +3,7 @@
         <el-button type="text" v-popover:speakerpopover >
             {{attrs['speakerStatus'][scope.row.speakerStatus]}}
         </el-button>
-        <el-popover class="offer-step" ref="speakerpopover">
+        <el-popover class="flow-step" ref="speakerpopover">
             <el-steps direction="vertical" class="admin-step" :active="+scope.row.speakerStatus">
                <el-step @click.native="handleSetStatus(1)" title="待开课通知"></el-step>
                 <el-step @click.native="handleSetStatus(2)" title="待上课"></el-step>

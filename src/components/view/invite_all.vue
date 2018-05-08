@@ -141,7 +141,7 @@
                     width="110"
                     label="学校反馈">
                     <template slot-scope="scope">
-                        <el-button v-show="scope.row.status == 2" type="text" @click="handleShowImage(scope.row)" >查看</el-button>
+                        <el-button type="text" @click="handleShowImage(scope.row)" >查看</el-button>
                     </template>
                 </el-table-column>
                 <el-table-column
