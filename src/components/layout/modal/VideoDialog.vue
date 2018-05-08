@@ -65,7 +65,7 @@
                     <el-radio-button label="1">选择</el-radio-button>
                     <el-radio-button label="2">填写</el-radio-button>
                 </el-radio-group>
-                <el-tooltip class="item" effect="dark" content="没有数据？请手动填写，手动填写的学校无法查看主页，无法对其发起邀约" placement="right">
+                <el-tooltip class="item" effect="dark" content="没有数据？请手动填写，手动填写的梦享家无法查看主页，无法对其发起邀约" placement="right">
                     <i class="el-icon-question md-qs"></i>
                 </el-tooltip>
                 <el-input placeholder="请输入梦享家名称" class="mt-10" v-show="form.speakerInfoType == 2 " v-model="form.speakerName" ></el-input>
@@ -102,7 +102,7 @@
                 </el-date-picker>
             </el-form-item>
             <el-form-item label="视频详情">
-                <el-input v-model="form.videoDesc" type="textarea"></el-input>
+                <el-input v-model="form.videoDesc" :autosize="{minRows: 3, maxRows: 8}" type="textarea"></el-input>
             </el-form-item>
 
             <el-form-item label="分类">
@@ -115,7 +115,7 @@
                     </el-option>
                 </el-select>
             </el-form-item>
-            <el-form-item label="受益人次附加值">
+            <el-form-item label="受益人次">
                 <el-input v-model="form.benefitPeopleTimes" type="number"></el-input>
             </el-form-item>
             <el-form-item label="播放次数">
@@ -147,6 +147,7 @@
     </el-dialog>
 </template>
 <script>
+import code from '@comp/lib/codes';
 import { mapState, mapMutations } from 'vuex';
 
 import Upload from '@layout/videoUpload.vue';
@@ -241,6 +242,7 @@ export default {
             'updateFormValue'
         ]),
         submitVideo() {
+            /* 手动校验 */
             let cfg = {
                 act: this.action,
                 videoId: this.form.videoId,
@@ -279,6 +281,12 @@ export default {
                         ...cfg
                     });
                     this.handleModalClose();
+                },
+                onError: res => {
+                    this.$message({
+                        type: 'warning',
+                        message: code[res.data.code] + ' ，必填项不可空缺'
+                    });
                 }
             });
         },

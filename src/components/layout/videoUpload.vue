@@ -10,6 +10,7 @@
         :on-exceed="handleExceed"
         :with-credentials="true"
         :auto-upload="false"
+        :before-upload="beforeUpload"
         :on-change="handlePicChange"
         >
         <el-button size="small" type="primary">点击上传</el-button>
@@ -75,20 +76,45 @@ export default {
     },
     methods: {
         ...mapMutations(['update', 'commonUpload']),
+        // 限制上传类型
+        beforeUpload(file) {
+            const isMP4 = file.type === 'video/mp4';
+            const isAVI = file.type === 'video/avi';
+            const isLt500M = file.size / 1024 / 1024 < 500;
+
+            if (!isMP4 && !isAVI) {
+                this.$message({
+                    message: '上传视频必须是MP4/AVI 格式!',
+                    type: 'error'
+                });
+            }
+            if (!isLt500M) {
+                this.$message({
+                    message: '上传视频大小不能超过 500MB!',
+                    type: 'error'
+                });
+            }
+            return (isMP4 || isAVI) && isLt500M;
+        },
+
         handlePicChange(file, fileList) {
-            /* 禁用按钮，并给提示 */
-            this.$emit('uploading');
-            let formCfg = new FormData();
-            formCfg.append('file', file.raw);
-            // 上传
-            this.commonUpload({
-                formCfg,
-                previewname: this.previewname,
-                filepathname: this.filepathname,
-                onSuccess: res => {
-                    this.$emit('end', res.data.data.originFilename);
-                }
-            });
+            if (this.beforeUpload(file.raw)) {
+                /* 禁用按钮，并给提示 */
+                this.$emit('uploading');
+                let formCfg = new FormData();
+                formCfg.append('file', file.raw);
+                // 上传
+                this.commonUpload({
+                    formCfg,
+                    previewname: this.previewname,
+                    filepathname: this.filepathname,
+                    onSuccess: res => {
+                        this.$emit('end', res.data.data.originFilename);
+                    }
+                });
+            } else {
+                this.fileList = [];
+            }
         },
         handleExceed(files, fileList) {
             this.$message.warning(`如需变更，请清除文件后再上传`);

@@ -74,9 +74,7 @@ export default {
             }, 350);
         },
         handleChange(val) {
-            if (val) {
-                this.$emit('id', val);
-            }
+            this.$emit('id', val);
             this.options = [];
         }
     }

@@ -2,7 +2,7 @@
     <div>
         <Search center-text="演讲时间" right-text="上传时间" :cfg="searchCfg" ref="sr_component" >
             <template slot-scope="props" >
-                <el-select @change="handleSearch" class="search-input" v-model="searchCfg.videoTypeId" placeholder="全部分类" >
+                <el-select @change="handleSearch" class="search-input" v-model="searchCfg.videoTypeId" placeholder="全部分类" clearable  >
                     <el-option
                         v-for="item in videoTypeList"
                         :key="item.videoTypeId"
@@ -100,7 +100,6 @@
             <el-dialog width="1200px" :visible.sync="modal.video" :before-close="handleVideoClose" >
                 <div class="video-player">
                     <video-player
-                        width="1200px"
                         class="vjs-custom-skin"
                         ref="videoPlayer"
                         :options="playerOptions"
@@ -128,7 +127,7 @@ import Search from '@layout/search.vue';
 import Table from '@layout/table.vue';
 import Pagination from '@layout/pagination.vue';
 import SlRemote from '@layout/slremote.vue';
-import VideoDialog from '@layout/modal/VideoDialog.vue';
+import VideoDialog from '@layout/modal/videoDialog.vue';
 
 import { videoPlayer } from 'vue-video-player';
 import 'video.js/dist/video-js.css';

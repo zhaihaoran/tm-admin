@@ -114,6 +114,7 @@ export default {
         };
     },
     mounted() {
+        this.clearSearchOps();
         this.getVideoTypeData({
             act: 'getVideoTypeList',
             onSuccess: res => {
@@ -132,6 +133,7 @@ export default {
     },
     methods: {
         ...mapMutations([
+            'clearSearchOps',
             'getVideoTypeData',
             'sortData',
             'updateRow',

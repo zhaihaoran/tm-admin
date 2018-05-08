@@ -139,6 +139,7 @@ export default {
         dateformat,
         toSpeakerHome,
         ...mapMutations([
+            'clearSearchOps',
             'updateValue',
             'getPageData',
             'formSubmit',

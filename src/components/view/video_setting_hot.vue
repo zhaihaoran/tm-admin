@@ -72,15 +72,13 @@
         </el-row>
         <!-- 视频播放弹窗 -->
         <el-dialog width="1200px" :visible.sync="modal.video" :before-close="handleVideoClose" >
-            <div class="video-player">
-                <video-player
-                    class="vjs-custom-skin"
-                    ref="videoPlayer"
-                    :options="playerOptions"
-                    :playsinline="true"
-                >
-                </video-player>
-            </div>
+            <video-player
+                class="vjs-custom-skin"
+                ref="videoPlayer"
+                :options="playerOptions"
+                :playsinline="true"
+            >
+            </video-player>
         </el-dialog>
         <!-- 替换视频 -->
         <SelectVideo :videoId="videoId" v-on:selectVideoId="handleModifyVideoRecommend" v-on:modal="handleClose" title="查看/修改" :modal="modal.selectVideo" ></SelectVideo>
@@ -98,6 +96,7 @@ import SelectVideo from '@layout/modal/selectVideo.vue';
 import video_1 from 'assets/image/video_sm.png';
 import video_2 from 'assets/image/video_sm1.png';
 
+import $ from 'jquery';
 import { videoPlayer } from 'vue-video-player';
 import 'video.js/dist/video-js.css';
 

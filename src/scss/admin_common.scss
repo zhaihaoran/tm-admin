@@ -5,7 +5,6 @@ $footer: 60px;
 $primary-color: #bb2133;
 $btn_hover: #e05162;
 $btn_active: #990e1f;
-
 $header_bg: #403434;
 $sider_bg: #fff;
 $sider_active: #f3f3f3;
@@ -15,9 +14,7 @@ $sider_submenu_active: #bbb;
 $sider_submenu_bg: #efefef;
 $sider_item_active: #f5f5f5;
 $context_bg: #f6f6f6;
-
 // shadow
-
 .flow-step {
     height: 800px;
     padding: 40px;
@@ -53,7 +50,7 @@ a {
 
 .video-js .vjs-tech {
     //这行代码最为关键，这样视频播放器的外层容器都由视频内容本身撑大
-    position: relative;
+    position: relative !important;
 }
 
 .video-player {
@@ -172,10 +169,11 @@ a {
     color: $primary-color;
 }
 
-.el-radio-button__orig-radio:checked + .el-radio-button__inner {
+.el-radio-button__orig-radio:checked+.el-radio-button__inner {
     background-color: $primary-color;
     border-color: $primary-color;
 }
+
 //
 @media only screen and (min-width: 1500px) {
     .tm-col-5 {
@@ -278,8 +276,7 @@ a {
     background: $header-bg;
     display: flex;
     flex-direction: row;
-    box-shadow: 0 4px 18px 0 rgba(0, 0, 0, 0.12),
-        0 7px 10px -5px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 4px 18px 0 rgba(0, 0, 0, 0.12), 0 7px 10px -5px rgba(0, 0, 0, 0.15);
     .logo {
         display: flex;
         align-items: center;
@@ -443,7 +440,7 @@ img {
     vertical-align: middle;
 }
 
-.el-tabs--border-card > .el-tabs__header .el-tabs__item {
+.el-tabs--border-card>.el-tabs__header .el-tabs__item {
     padding: 0 40px !important;
     height: 50px;
     line-height: 50px;
@@ -499,14 +496,12 @@ img {
     cursor: zoom-in;
     position: relative;
     transition: opacity 0.4s;
-
     &:hover {
         will-change: left, top, width, height;
     }
     &:hover:not(.active) {
         opacity: 0.8;
     }
-
     &.active {
         cursor: zoom-out;
     }
@@ -522,6 +517,7 @@ img {
     z-index: 999;
     will-change: opacity;
 }
+
 .materialbox-caption {
     position: fixed;
     display: none;
@@ -588,23 +584,20 @@ img {
                 bottom: 7px;
             }
         }
-
         .selected-tag {
             color: #606266;
             font-size: 14px;
             padding: 1px 0.25em 1px 0.4em;
             margin: 0 0 0 7px;
         }
-
         .dropdown-menu {
             overflow-y: auto;
             min-width: 200px;
-            > .highlight > a {
+            >.highlight>a {
                 background: #9fa0a3;
                 padding: 3px;
             }
         }
-
         input[type='search'],
         input[type='search']:focus {
             padding: 0 1em;
@@ -655,7 +648,6 @@ input::-webkit-input-placeholder {
     img {
         @include middle(absolute);
     }
-
     .video-mask {
         bottom: 0;
         padding: 15px 10px 15px 20px;

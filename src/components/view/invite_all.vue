@@ -141,7 +141,7 @@
                     width="110"
                     label="学校反馈">
                     <template slot-scope="scope">
-                        <el-button v-show="scope.row.status == 4" type="text" @click="handleShowImage(scope.row)" >查看</el-button>
+                        <el-button v-show="scope.row.status == 2" type="text" @click="handleShowImage(scope.row)" >查看</el-button>
                     </template>
                 </el-table-column>
                 <el-table-column
@@ -307,12 +307,15 @@ export default {
         handleClose() {
             this.modal.feed = false;
         },
+
         handleUpdateSchoolId(cfg) {
-            this.searchCfg.schoolId = cfg.schoolId;
+            this.searchCfg.schoolId = cfg ? cfg.schoolId : '';
+            this.$refs.sr_component.handleSearch();
         },
 
         handleUpdateSpeakerId(cfg) {
-            this.searchCfg.speakerId = cfg.speakerId;
+            this.searchCfg.speakerId = cfg ? cfg.speakerId : '';
+            this.$refs.sr_component.handleSearch();
         }
     }
 };

@@ -113,6 +113,7 @@ export default {
         dateformat,
         toSchoolHome,
         ...mapMutations([
+            'clearSearchOps',
             'updateValue',
             'getPageData',
             'formSubmit',

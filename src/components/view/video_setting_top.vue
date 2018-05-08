@@ -9,7 +9,7 @@
             <el-row :gutter="10">
                 <draggable
                     v-model="item.videoList" :options="{group: 't_video',draggable:'.item'}"
-                    @start="drag=true" @end="drag=false"
+                    @end="handleEndDrag(item.videoTypeId)"
                 >
                     <el-col
                         class="tm-col-5 item" :sm="12" :md="8" :lg="6"
@@ -181,10 +181,6 @@ export default {
             item.videoList.splice(index, 1);
             this.isShow[item.videoTypeId] = true;
         },
-        /* 唯一key 用于拖拽 */
-        unique(typeId, id) {
-            return `${typeId}_${id}`;
-        },
 
         // 播放视频
         handlePlayVideo(videourl) {
@@ -215,6 +211,11 @@ export default {
                     this.$forceUpdate();
                 }
             });
+        },
+        /* 结束拖拽 */
+        handleEndDrag(id) {
+            this.isShow[id] = true;
+            this.$forceUpdate();
         }
     }
 };

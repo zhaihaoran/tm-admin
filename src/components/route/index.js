@@ -1,24 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 
-// 审核信息
-import Check_school from '@comp/view/check_school.vue'
-import Check_speaker from '@comp/view/check_speaker.vue'
-// 邀约信息
-import Invite_manage from '@comp/view/invite_manage.vue'
-import Invite_all from '@comp/view/invite_all.vue'
-// 学校信息
-import School_manage from '@comp/view/school_manage.vue'
-import Speaker_manage from '@comp/view/speaker_manage.vue'
-// 演讲视频
-import Video_manage from '@comp/view/video_manage.vue'
-import Video_category from '@comp/view/video_category.vue'
-//
-import Video_setting_top from '@comp/view/video_setting_top.vue'
-import Video_setting_hot from '@comp/view/video_setting_hot.vue'
-// error
-import ErrorPage from '@comp/view/errorPage.vue'
-
 // 登陆
 import Login from '@comp/Login.vue'
 
@@ -38,7 +20,7 @@ const router = new Router({
         {
             path: '/404',
             name: '404',
-            component: ErrorPage,
+            component: resolve => require(['@comp/view/errorPage.vue'], resolve),
         },
         {
             path: '/login',
@@ -50,70 +32,70 @@ const router = new Router({
             children: [{
                 path: 'check_school',
                 name: 'check_school',
-                component: Check_school,
+                component: resolve => require(['@comp/view/check_school.vue'], resolve),
                 meta: {
                     requireAuth: true,
                 },
             }, {
                 path: 'check_speaker',
                 name: 'check_speaker',
-                component: Check_speaker,
+                component: resolve => require(['@comp/view/check_speaker.vue'], resolve),
                 meta: {
                     requireAuth: true,
                 },
             }, {
                 path: 'invite_manage',
                 name: 'invite_manage',
-                component: Invite_manage,
+                component: resolve => require(['@comp/view/invite_manage.vue'], resolve),
                 meta: {
                     requireAuth: true,
                 },
             }, {
                 path: 'invite_all',
                 name: 'invite_all',
-                component: Invite_all,
+                component: resolve => require(['@comp/view/invite_all.vue'], resolve),
                 meta: {
                     requireAuth: true,
                 },
             }, {
                 path: 'manage_school',
                 name: 'school_manage',
-                component: School_manage,
+                component: resolve => require(['@comp/view/school_manage.vue'], resolve),
                 meta: {
                     requireAuth: true,
                 },
             }, {
                 path: 'manage_speaker',
                 name: 'speaker_manage',
-                component: Speaker_manage,
+                component: resolve => require(['@comp/view/speaker_manage.vue'], resolve),
                 meta: {
                     requireAuth: true,
                 },
             }, {
                 path: 'video_manage',
                 name: 'video_manage',
-                component: Video_manage,
+                component: resolve => require(['@comp/view/video_manage.vue'], resolve),
                 meta: {
                     requireAuth: true,
                 },
             }, {
                 path: 'video_category',
                 name: 'video_category',
-                component: Video_category,
+                component: resolve => require(['@comp/view/video_category.vue'], resolve),
                 meta: {
                     requireAuth: true,
                 },
             }, {
                 path: 'video_setting_top',
                 name: 'video_setting_top',
-                component: Video_setting_top,
+                component: resolve => require(['@comp/view/video_setting_top.vue'], resolve),
                 meta: {
                     requireAuth: true,
                 },
             }, {
                 path: 'video_setting_hot',
                 name: 'video_setting_hot',
-                component: Video_setting_hot,
+                component: resolve => require(['@comp/view/video_setting_hot.vue'], resolve),
                 meta: {
                     requireAuth: true,
                 },
