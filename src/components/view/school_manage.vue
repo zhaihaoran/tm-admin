@@ -49,14 +49,10 @@
 </div>
 </template>
 <script>
-import { mapState, mapMutations } from 'vuex';
-import {
-    attrs,
-    formatAttr,
-    dateformat,
-    toSchoolHome,
-    commonPageInit
-} from '@comp/lib/api_maps.js';
+import { commonPageInit } from '@comp/lib/api_maps.js';
+
+import common from '@comp/mixin/common';
+import check from '@comp/mixin/check';
 
 import Table from '@layout/table.vue';
 import Search from '@layout/apply_search.vue';
@@ -67,6 +63,7 @@ import EditSchool from '@layout/modal/editSchool.vue';
 
 export default {
     name: 'school_manage',
+    mixins: [common, check],
     data() {
         return {
             searchCfg: {
@@ -75,8 +72,6 @@ export default {
                 searchText: '',
                 authStatus: 0
             },
-            modal: false,
-            form: {},
             actions: {
                 ok: 'passSchoolApplication',
                 refuse: 'rejectSchoolApplication'
@@ -91,41 +86,12 @@ export default {
         Operation,
         Search
     },
-    computed: {
-        ...mapState({
-            orderType: state => state.search.orderType,
-            timerange: state => state.search.timerange,
-            data: state => state.search.data,
-            count: state => state.search.count,
-            tableLoading: state => state.search.tableLoading,
-            page: state => state.search.page,
-            perPage: state => state.search.perPage,
-            status: state => state.search.status
-        })
-    },
     mounted() {
         commonPageInit(this, {
             act: 'getSchoolApplicationList'
         });
     },
     methods: {
-        formatAttr,
-        dateformat,
-        toSchoolHome,
-        ...mapMutations([
-            'clearSearchOps',
-            'updateValue',
-            'getPageData',
-            'formSubmit',
-            'showModal',
-            'update',
-            'getFormData',
-            'getRejectDesc'
-        ]),
-        handleEdit(index, row) {
-            this.showModal(row);
-        },
-
         handleShowReason(obj) {
             this.modal = true;
             this.getFormData({
@@ -144,12 +110,6 @@ export default {
                     });
                 }
             });
-        },
-        handleClose() {
-            this.modal = false;
-        },
-        handleSearch() {
-            this.$refs.sr_component.handleSearch();
         }
     }
 };

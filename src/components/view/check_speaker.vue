@@ -83,14 +83,10 @@
     </div>
 </template>
 <script>
-import { mapState, mapMutations } from 'vuex';
+import { commonPageInit } from '@comp/lib/api_maps.js';
 
-import {
-    dateformat,
-    commonPageInit,
-    toSpeakerHome,
-    formatAttr
-} from '@comp/lib/api_maps.js';
+import common from '@comp/mixin/common';
+import check from '@comp/mixin/check';
 
 import Table from '@layout/table.vue';
 import Search from '@layout/apply_search.vue';
@@ -99,10 +95,9 @@ import Pagination from '@layout/pagination.vue';
 import EditSpeaker from '@layout/modal/editSpeaker.vue';
 
 export default {
+    mixins: [common, check],
     data() {
         return {
-            modal: false,
-            form: {},
             searchCfg: {
                 act: 'getSpeakerApplicationList',
                 authStatus: 2,
@@ -115,18 +110,6 @@ export default {
             }
         };
     },
-    computed: {
-        ...mapState({
-            orderType: state => state.search.orderType,
-            timerange: state => state.search.timerange,
-            data: state => state.search.data,
-            count: state => state.search.count,
-            tableLoading: state => state.search.tableLoading,
-            page: state => state.search.page,
-            perPage: state => state.search.perPage,
-            status: state => state.search.status
-        })
-    },
     mounted() {
         commonPageInit(this, {
             act: 'getSpeakerApplicationList',
@@ -135,19 +118,6 @@ export default {
     },
     components: { Operation, Table, Pagination, Search, EditSpeaker },
     methods: {
-        formatAttr,
-        dateformat,
-        toSpeakerHome,
-        ...mapMutations([
-            'clearSearchOps',
-            'updateValue',
-            'getPageData',
-            'formSubmit',
-            'showModal',
-            'update',
-            'getFormData',
-            'getRejectDesc'
-        ]),
         handleShowReason(obj) {
             this.modal = true;
             this.getFormData({
@@ -162,15 +132,6 @@ export default {
                     });
                 }
             });
-        },
-        handleEdit(index, row) {
-            this.showModal(row);
-        },
-        handleClose() {
-            this.modal = false;
-        },
-        handleSearch() {
-            this.$refs.sr_component.handleSearch();
         }
     }
 };

@@ -7,49 +7,59 @@ import {
     Message
 } from 'element-ui';
 
+
+/**
+ * 通用的返回func
+ */
+const common_func = ({
+    res,
+    onSuccess,
+    onError,
+    isMessage = false, // 是否需要提示
+    successText = "成功", // 成功提示文本
+    errorText = "失败", // 失败提示文本
+    ActionSuccess,
+}) => {
+    if (res && res.data.code === 1) {
+        isMessage && Message.success(successText)
+        ActionSuccess && ActionSuccess(res);
+        onSuccess && onSuccess(res)
+    } else {
+        isMessage && Message.error(`${errorText},原因：${code[res.data.code]}`)
+        onError && onError(res);
+    }
+}
+
 export default {
     /**
      * axios 通用表单Post配置
      *
+     * todo： 后期全部换为Promise写法
      * @param {any}
      */
     fetchPost({
-        onSuccess,
-        onError,
-        isMessage = false,
         cfg,
-        successText = "成功",
-        errorText = "失败",
-        ActionSuccess
+        ...param
     }) {
         axios({
             data: qs.stringify(cfg)
         }).then(res => {
-            if (res && res.data.code === 1) {
-                isMessage && Message.success(successText)
-                ActionSuccess && ActionSuccess(res);
-                onSuccess && onSuccess(res)
-            } else {
-                isMessage && Message.error(`${errorText},原因：${code[res.data.code]}`)
-                onError && onError(res);
-            }
+            common_func({
+                res,
+                ...param
+            })
         });
     },
 
     /**
-     * 图片上传 post 配置
+     * 适用于访问api/common，上传接口
      *
      * @param {any}
      */
     uploadPost({
         url,
-        onSuccess,
-        onError,
         cfg,
-        isMessage = false,
-        successText = "上传成功",
-        errorText = "上传失败",
-        ActionSuccess
+        ...param
     }) {
         axios({
             url,
@@ -58,39 +68,30 @@ export default {
             },
             data: cfg
         }).then(res => {
-            if (res && res.data.code === 1) {
-                isMessage && Message.success(successText)
-                ActionSuccess && ActionSuccess(res);
-                onSuccess && onSuccess(res)
-            } else {
-                isMessage && Message.error(`${errorText},原因：${code[res.data.code]}`)
-                onError && onError(res);
-            }
+            common_func({
+                res,
+                ...param
+            })
         });
     },
-
+    /**
+     * 适用于访问api/common，非上传接口
+     *
+     * @param {any}
+     */
     commonPost({
         url,
-        onSuccess,
-        onError,
-        isMessage = false,
         cfg,
-        successText = "成功",
-        errorText = "失败",
-        ActionSuccess
+        ...param
     }) {
         axios({
             url,
             data: qs.stringify(cfg)
         }).then(res => {
-            if (res && res.data.code === 1) {
-                isMessage && Message.success(successText)
-                ActionSuccess && ActionSuccess(res);
-                onSuccess && onSuccess(res)
-            } else {
-                Message.error(`${errorText},原因：${code[res.data.code]}`)
-                onError && onError(res);
-            }
+            common_func({
+                res,
+                ...param
+            })
         });
     }
 }

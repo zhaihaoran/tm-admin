@@ -52,14 +52,10 @@
 </div>
 </template>
 <script>
-import { mapState, mapMutations } from 'vuex';
-import {
-    attrs,
-    formatAttr,
-    toSpeakerHome,
-    dateformat,
-    commonPageInit
-} from '@comp/lib/api_maps.js';
+import { commonPageInit } from '@comp/lib/api_maps.js';
+
+import common from '@comp/mixin/common';
+import check from '@comp/mixin/check';
 
 import Table from '@layout/table.vue';
 import Search from '@layout/apply_search.vue';
@@ -70,6 +66,7 @@ import EditSpeaker from '@layout/modal/editSpeaker.vue';
 
 export default {
     name: 'speaker_manage',
+    mixins: [common, check],
     data() {
         return {
             searchCfg: {
@@ -78,25 +75,11 @@ export default {
                 searchText: '',
                 authStatus: 0
             },
-            modal: false,
-            form: {},
             actions: {
                 ok: 'passSpeakerApplication',
                 refuse: 'rejectSpeakerApplication'
             }
         };
-    },
-    computed: {
-        ...mapState({
-            orderType: state => state.search.orderType,
-            timerange: state => state.search.timerange,
-            data: state => state.search.data,
-            count: state => state.search.count,
-            tableLoading: state => state.search.tableLoading,
-            page: state => state.search.page,
-            perPage: state => state.search.perPage,
-            status: state => state.search.status
-        })
     },
     mounted() {
         commonPageInit(this, {
@@ -112,22 +95,6 @@ export default {
         Search
     },
     methods: {
-        formatAttr,
-        dateformat,
-        toSpeakerHome,
-        ...mapMutations([
-            'clearSearchOps',
-            'updateValue',
-            'getPageData',
-            'formSubmit',
-            'showModal',
-            'update',
-            'getFormData',
-            'getRejectDesc'
-        ]),
-        handleEdit(index, row) {
-            this.showModal(row);
-        },
         handleShowReason(obj) {
             this.modal = true;
             this.getFormData({
@@ -142,12 +109,6 @@ export default {
                     });
                 }
             });
-        },
-        handleClose() {
-            this.modal = false;
-        },
-        handleSearch() {
-            this.$refs.sr_component.handleSearch();
         }
     }
 };

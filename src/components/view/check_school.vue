@@ -72,13 +72,10 @@
     </div>
 </template>
 <script>
-import { mapState, mapMutations } from 'vuex';
+import { commonPageInit } from '@comp/lib/api_maps.js';
 
-import {
-    dateformat,
-    commonPageInit,
-    toSchoolHome
-} from '@comp/lib/api_maps.js';
+import common from '@comp/mixin/common';
+import check from '@comp/mixin/check';
 
 import Search from '@layout/apply_search.vue';
 import EditSchool from '@layout/modal/editSchool.vue';
@@ -87,10 +84,9 @@ import Operation from '@layout/operation.vue';
 import Pagination from '@layout/pagination.vue';
 
 export default {
+    mixins: [common, check],
     data() {
         return {
-            modal: false,
-            form: {},
             searchCfg: {
                 act: 'getSchoolApplicationList',
                 authStatus: 2,
@@ -103,18 +99,6 @@ export default {
             }
         };
     },
-    computed: {
-        ...mapState({
-            orderType: state => state.search.orderType,
-            timerange: state => state.search.timerange,
-            data: state => state.search.data,
-            count: state => state.search.count,
-            tableLoading: state => state.search.tableLoading,
-            page: state => state.search.page,
-            perPage: state => state.search.perPage,
-            status: state => state.search.status
-        })
-    },
     mounted() {
         commonPageInit(this, {
             act: 'getSchoolApplicationList',
@@ -123,17 +107,6 @@ export default {
     },
     components: { Operation, Table, Pagination, Search, EditSchool },
     methods: {
-        dateformat,
-        toSchoolHome,
-        ...mapMutations([
-            'clearSearchOps',
-            'updateValue',
-            'getPageData',
-            'formSubmit',
-            'showModal',
-            'update',
-            'getFormData'
-        ]),
         handleShowReason(obj) {
             this.modal = true;
             this.getFormData({
@@ -152,15 +125,6 @@ export default {
                     });
                 }
             });
-        },
-        handleEdit(index, row) {
-            this.showModal(row);
-        },
-        handleClose() {
-            this.modal = false;
-        },
-        handleSearch() {
-            this.$refs.sr_component.handleSearch();
         }
     }
 };

@@ -171,6 +171,9 @@
     </div>
 </template>
 <script>
+import common from '@comp/mixin/common';
+import slremote from '@comp/mixin/slremote';
+
 import { mapState, mapMutations } from 'vuex';
 import {
     attrs,
@@ -197,6 +200,7 @@ import FeedList from '@layout/modal/feedlist.vue';
 import SlRemote from '@layout/slremote.vue';
 
 export default {
+    mixins: [common, slremote],
     data() {
         return {
             attrs,
@@ -278,22 +282,6 @@ export default {
             return this.attrs['status'][state][type];
         },
 
-        handleEdit(index, row) {
-            this.showModal(row);
-        },
-
-        showReason(obj) {
-            this.getRejectDesc({
-                act: 'getRejectDescOfAppointment',
-                appointmentId: obj.appointmentId,
-                onSuccess: res => {
-                    this.$alert(res.data.data.rejectDesc, '拒绝原因').catch(
-                        () => {}
-                    );
-                }
-            });
-        },
-
         // 学校预览照片，并可以上传
         handleShowImage(row) {
             this.modal.feed = true;
@@ -306,16 +294,6 @@ export default {
 
         handleClose() {
             this.modal.feed = false;
-        },
-
-        handleUpdateSchoolId(cfg) {
-            this.searchCfg.schoolId = cfg ? cfg.schoolId : '';
-            this.$refs.sr_component.handleSearch();
-        },
-
-        handleUpdateSpeakerId(cfg) {
-            this.searchCfg.speakerId = cfg ? cfg.speakerId : '';
-            this.$refs.sr_component.handleSearch();
         }
     }
 };

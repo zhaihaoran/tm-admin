@@ -154,6 +154,9 @@
     </div>
 </template>
 <script>
+import common from '@comp/mixin/common';
+import slremote from '@comp/mixin/slremote';
+
 import { mapState, mapMutations } from 'vuex';
 import {
     attrs,
@@ -180,6 +183,7 @@ import FeedList from '@layout/modal/feedlist.vue';
 import SlRemote from '@layout/slremote.vue';
 
 export default {
+    mixins: [common, slremote],
     data() {
         return {
             attrs,
@@ -255,9 +259,6 @@ export default {
             'getFeedList',
             'getRejectDesc'
         ]),
-        handleEdit(index, row) {
-            this.showModal(row);
-        },
 
         // 学校预览照片，并可以上传
         handleShowImage(row) {
@@ -271,16 +272,6 @@ export default {
 
         handleClose() {
             this.modal.feed = false;
-        },
-
-        handleUpdateSchoolId(cfg) {
-            this.searchCfg.schoolId = cfg ? cfg.schoolId : '';
-            this.$refs.sr_component.handleSearch();
-        },
-
-        handleUpdateSpeakerId(cfg) {
-            this.searchCfg.speakerId = cfg ? cfg.speakerId : '';
-            this.$refs.sr_component.handleSearch();
         }
     }
 };
