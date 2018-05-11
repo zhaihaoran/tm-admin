@@ -8,7 +8,7 @@ const state = {
         schoolInfoType: 1
     },
     videoTypeList: [], // 视频类型列表
-    videoTypeIdStr: [],
+    videoTypeIdStr: "",
     modal: false,
     speakTimestamp: '',
     tagstab: "",
@@ -30,6 +30,13 @@ const mutations = {
     },
     clearOption(state, type) {
         state[type] = undefined;
+    },
+    clearModalData(state) {
+        state.speakTimestamp = ""
+        state.time_min = ""
+        state.time_sec = ""
+        state.tagstab = ""
+        state.videoTypeIdStr = ""
     },
     setOption(state, payload) {
         state.sc_option = {

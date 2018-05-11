@@ -52,6 +52,10 @@ const mutations = {
             onSuccess,
             onError,
         })
+    },
+    /* 清空图片信息 */
+    clearPhotoData(state) {
+        state.previewUrl = ""
     }
 }
 

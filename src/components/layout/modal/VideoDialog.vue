@@ -1,6 +1,6 @@
 <template>
-    <el-dialog :title="title" :visible.sync="modal" class="video-dialog" :before-close="handleModalClose" >
-        <el-form :model="form" ref="form" label-width="80px" class="modal-form" >
+    <el-dialog width="560px" :title="title" :visible.sync="modal" class="video-dialog" :before-close="handleModalClose" >
+        <el-form ref="form" :rules="rules" :model="form"  label-width="80px" class="modal-form" >
             <el-form-item label="视频文件">
                 <Upload
                     v-on:uploading="handleUploading"
@@ -26,7 +26,7 @@
                 ></Cropper>
                 <div class="upload-image-box"></div>
             </el-form-item>
-            <el-form-item label="标题">
+            <el-form-item prop="videoTitle" label="标题">
                 <el-input v-model="form.videoTitle" ></el-input>
             </el-form-item>
 
@@ -91,7 +91,7 @@
                 </SlRemote>
 
             </el-form-item>
-            <el-form-item label="演讲时间">
+            <el-form-item prop="timestamp" label="演讲时间">
                 <el-date-picker
                     v-model="timestamp"
                     format="yyyy-MM-dd HH:mm"
@@ -101,10 +101,9 @@
                 >
                 </el-date-picker>
             </el-form-item>
-            <el-form-item label="视频详情">
+            <el-form-item prop="videoDesc" label="视频详情">
                 <el-input v-model="form.videoDesc" :autosize="{minRows: 3, maxRows: 8}" type="textarea"></el-input>
             </el-form-item>
-
             <el-form-item label="分类">
                 <el-select v-model="category" multiple placeholder="请选择">
                     <el-option
@@ -115,11 +114,15 @@
                     </el-option>
                 </el-select>
             </el-form-item>
-            <el-form-item label="受益人次">
-                <el-input v-model="form.benefitPeopleTimes" type="number"></el-input>
+            <el-form-item prop="benefitPeopleTimes" label="受益人次">
+                <el-input v-model="form.benefitPeopleTimes" type="number">
+                    <template slot="append">人</template>
+                </el-input>
             </el-form-item>
-            <el-form-item label="播放次数">
-                <el-input v-model="form.playTimes" type="number" ></el-input>
+            <el-form-item prop="playTimes" label="播放次数">
+                <el-input v-model="form.playTimes" type="number" >
+                    <template slot="append">次</template>
+                </el-input>
             </el-form-item>
             <el-form-item label="标签">
                 <el-select
@@ -142,7 +145,7 @@
         </el-form>
         <span slot="footer" class="center dialog-footer">
             <el-button @click="handleModalClose">取 消</el-button>
-            <el-button :disabled="uploadState" width="200px" type="primary" placeholder="请输入关键词查询" @click="submitVideo">确 定</el-button>
+            <el-button :disabled="uploadState" width="200px" type="primary" placeholder="请输入关键词查询" @click="submitVideo('form')">确 定</el-button>
         </span>
     </el-dialog>
 </template>
@@ -167,7 +170,49 @@ export default {
             timestamp: '',
             isClear: false,
             min: '',
-            sec: ''
+            sec: '',
+            rules: {
+                videoTitle: [
+                    {
+                        required: true,
+                        message: '请输入视频标题',
+                        trigger: 'blur'
+                    },
+                    {
+                        min: 1,
+                        max: 20,
+                        message: '视频标题长度在20字以内',
+                        trigger: 'blur'
+                    }
+                ],
+                benefitPeopleTimes: [
+                    {
+                        required: true,
+                        message: '受益人次必填',
+                        trigger: 'blur'
+                    }
+                ],
+                playTimes: [
+                    {
+                        required: true,
+                        message: '播放次数必填',
+                        trigger: 'blur'
+                    }
+                ],
+                videoDesc: [
+                    {
+                        required: true,
+                        message: '视频详情必填',
+                        trigger: 'blur'
+                    },
+                    {
+                        min: 10,
+                        max: 1000,
+                        message: '视频详情长度在10~1000字以内',
+                        trigger: 'blur'
+                    }
+                ]
+            }
         };
     },
     props: {
@@ -191,7 +236,8 @@ export default {
             this.timestamp = !!val ? new Date(+val * 1000) : '';
         },
         videoTypeIdStr(val) {
-            this.category = val.split(',');
+            /* 避免出现 [""] */
+            this.category = val ? val.split(',') : [];
         },
         time_min(val) {
             this.min = val;
@@ -215,7 +261,6 @@ export default {
             videoTypeIdStr: state => state.modal.videoTypeIdStr,
             form: state => state.modal.form,
             speakTimestamp: state => state.modal.speakTimestamp,
-            speakTimestamp: state => state.modal.speakTimestamp,
             time_min: state => state.modal.time_min,
             time_sec: state => state.modal.time_sec
         }),
@@ -236,12 +281,14 @@ export default {
     methods: {
         ...mapMutations([
             'formSubmit',
+            'clearModalData',
+            'clearPhotoData',
             'clearOption',
             'getArrayData',
-            'updateRow',
+            'getPageData',
             'updateFormValue'
         ]),
-        submitVideo() {
+        submitVideo(form) {
             /* 手动校验 */
             let cfg = {
                 act: this.action,
@@ -270,23 +317,31 @@ export default {
             if (!this.form.videoId) {
                 delete cfg.videoId;
             }
-            this.formSubmit({
-                ...cfg,
-                isMessage: true,
-                successText: '成功',
-                onSuccess: res => {
-                    this.updateRow({
-                        type: 'videoId',
-                        value: cfg.videoId,
-                        ...cfg
+
+            /* 校验 */
+            this.$refs[form].validate(valid => {
+                if (valid) {
+                    this.formSubmit({
+                        ...cfg,
+                        isMessage: true,
+                        successText: '成功',
+                        onSuccess: res => {
+                            /* 添加 */
+                            this.getPageData({
+                                act: 'getVideoList'
+                            });
+                            this.handleModalClose();
+                        },
+                        onError: res => {
+                            this.$message({
+                                type: 'warning',
+                                message:
+                                    code[res.data.code] + ' ，必填项不可空缺'
+                            });
+                        }
                     });
-                    this.handleModalClose();
-                },
-                onError: res => {
-                    this.$message({
-                        type: 'warning',
-                        message: code[res.data.code] + ' ，必填项不可空缺'
-                    });
+                } else {
+                    return false;
                 }
             });
         },
@@ -302,6 +357,9 @@ export default {
         handleModalClose() {
             // 通过$emit 实现子组件与父组件进行沟通
             this.$emit('modal');
+            // 清空所有的值
+            this.clearPhotoData();
+            this.clearModalData();
         },
 
         handleUpdateSchoolId(cfg) {

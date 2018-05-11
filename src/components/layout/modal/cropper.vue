@@ -44,7 +44,7 @@ export default {
         },
         classes: {
             type: String,
-            default: "avatar-uploader"
+            default: 'avatar-uploader'
         },
         accept: {
             type: String,

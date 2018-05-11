@@ -75,6 +75,14 @@ export default {
         handleSubmitForm() {
             /* 必须全部填满值才可以提交 */
             if (this.form.speakTitle && this.timestamp && this.d_duration) {
+                if (this.form.speakTitle.length > 25) {
+                    this.$message({
+                        showClose: true,
+                        message: '演讲标题长度不能超过25个字',
+                        type: 'warning'
+                    });
+                    return false;
+                }
                 let cfg = {
                     appointmentId: this.form.appointmentId,
                     speakTitle: this.form.speakTitle,
