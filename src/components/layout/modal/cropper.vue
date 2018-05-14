@@ -169,18 +169,29 @@ export default {
             this.url = roundedCanvas.toDataURL();
             // 经过剪裁之后，如何将canvas的数据传递给接口？
             // canvas转Blob后，file文件类型本身也是blob二进制类型，通过blob来作为接口数据传递
-            roundedCanvas.toBlob(blob => {
-                this.blob = blob;
-                //上传图片
-                this.postImg();
-            });
+            roundedCanvas.toBlob(
+                blob => {
+                    this.blob = blob;
+                    //上传图片
+                    this.postImg();
+                },
+                'image/jpeg',
+                0.5
+            );
         },
         //canvas画图
         getRoundedCanvas(sourceCanvas) {
             var canvas = document.createElement('canvas');
             var context = canvas.getContext('2d');
-            var width = this.width || sourceCanvas.width;
-            var height = this.height || sourceCanvas.height;
+            let width, height;
+            if (this.width) {
+                width = this.width;
+                height = this.width / this.aspectRatio;
+            } else {
+                width = sourceCanvas.width;
+                height = sourceCanvas.height;
+            }
+
             canvas.width = width;
             canvas.height = height;
             context.imageSmoothingEnabled = true;

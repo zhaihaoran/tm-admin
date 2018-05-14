@@ -37,6 +37,8 @@ const mutations = {
         state.time_sec = ""
         state.tagstab = ""
         state.videoTypeIdStr = ""
+        state.sc_option = undefined
+        state.sp_option = undefined
     },
     setOption(state, payload) {
         state.sc_option = {
@@ -48,10 +50,10 @@ const mutations = {
             speakerId: payload.speakerId
         };
     },
-    updateMin(state,value) {
+    updateMin(state, value) {
         state.time_min = value
     },
-    updateSec(state,value) {
+    updateSec(state, value) {
         state.time_sec = value
     },
     /* modal edit */
@@ -94,6 +96,7 @@ const mutations = {
         state.form = {
             schoolInfoType: 1,
             speakerInfoType: 1,
+            playTimes: "0"
         };
     },
     changeCategory(state, value) {

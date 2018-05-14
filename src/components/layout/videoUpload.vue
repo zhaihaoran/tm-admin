@@ -38,7 +38,7 @@ export default {
         },
         liststyle: {
             type: String,
-            default: 'picture-card'
+            default: ''
         },
         preview: {
             type: String,
@@ -66,6 +66,8 @@ export default {
                         url: this.videoShortPathFilename
                     }
                 ];
+            } else {
+                this.fileList = [];
             }
         }
     },

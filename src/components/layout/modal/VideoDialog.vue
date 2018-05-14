@@ -7,7 +7,8 @@
                     :disabled="uploadState"
                     v-on:end="handleUploadEnd"
                     :filename="form.videoOriginFilename"
-                    liststyle="" filepathname="videoShortPathFilename" ></Upload>
+                    liststyle="" filepathname="videoShortPathFilename" >
+                    </Upload>
                 <el-input-number class="dialog-duration-min" v-model="min" :controls="false" label="分钟" :min="0" :max="500">
                     <template slot="append">分钟</template>
                 </el-input-number>
@@ -23,6 +24,7 @@
                     previewname="previewUrl"
                     :previewUrl="previewUrl"
                     aspectRatio="1.5"
+                    width="900"
                 ></Cropper>
                 <div class="upload-image-box"></div>
             </el-form-item>
@@ -91,7 +93,7 @@
                 </SlRemote>
 
             </el-form-item>
-            <el-form-item prop="timestamp" label="演讲时间">
+            <el-form-item label="演讲时间">
                 <el-date-picker
                     v-model="timestamp"
                     format="yyyy-MM-dd HH:mm"
@@ -104,7 +106,7 @@
             <el-form-item prop="videoDesc" label="视频详情">
                 <el-input v-model="form.videoDesc" :autosize="{minRows: 3, maxRows: 8}" type="textarea"></el-input>
             </el-form-item>
-            <el-form-item label="分类">
+            <el-form-item prop="category" label="分类">
                 <el-select v-model="category" multiple placeholder="请选择">
                     <el-option
                     v-for="item in videoTypeList"
@@ -116,7 +118,7 @@
             </el-form-item>
             <el-form-item prop="benefitPeopleTimes" label="受益人次">
                 <el-input v-model="form.benefitPeopleTimes" type="number">
-                    <template slot="append">人</template>
+                    <template slot="append">次</template>
                 </el-input>
             </el-form-item>
             <el-form-item prop="playTimes" label="播放次数">
@@ -167,8 +169,8 @@ export default {
             videoTypeList: [],
             loading: false,
             category: [],
-            timestamp: '',
             isClear: false,
+            timestamp: '',
             min: '',
             sec: '',
             rules: {
@@ -286,10 +288,23 @@ export default {
             'clearOption',
             'getArrayData',
             'getPageData',
-            'updateFormValue'
+            'updateFormValue',
+            'update'
         ]),
         submitVideo(form) {
             /* 手动校验 */
+            if (
+                !this.min ||
+                !this.sec ||
+                !this.videoShortPathFilename ||
+                !this.timestamp
+            ) {
+                this.$message({
+                    type: 'warning',
+                    message: '参数必填项不可空缺'
+                });
+                return false;
+            }
             let cfg = {
                 act: this.action,
                 videoId: this.form.videoId,
@@ -378,7 +393,9 @@ export default {
         /* 设置cropperUrl */
         handleUpdateCropperUrl(obj) {
             this.form.previewUrl = obj.fileUrl;
-            this.form.pathFilename = obj.pathFilename;
+            this.update({
+                previewShortPathFilename: obj.shortPathFilename
+            });
         },
         /* 添加图片 */
         handleUploadVideo(file) {

@@ -54,19 +54,17 @@ export default {
         }
     },
     watch: {
-        speakTimestamp(val) {
+        'form.speakTimestamp'(val) {
             this.timestamp = !!val ? new Date(+val * 1000) : '';
         },
-        duration(val = 0) {
+        'form.speakDuration'(val = 0) {
             this.d_duration = val / 60;
         }
     },
     computed: {
         ...mapState({
             form: state => state.modal.form,
-            modal: state => state.modal.modal,
-            duration: state => state.modal.duration,
-            speakTimestamp: state => state.modal.speakTimestamp
+            modal: state => state.modal.modal
         })
     },
     methods: {
