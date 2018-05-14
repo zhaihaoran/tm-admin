@@ -209,7 +209,8 @@ export default {
                     this.isShow[item.videoTypeId] = false;
                     // qs: 这里好像必须要强制刷新才能去掉保存按钮，是哪里写错了？
                     this.$forceUpdate();
-                }
+                },
+                onError: res => {}
             });
         },
         /* 结束拖拽 */
