@@ -12,6 +12,7 @@
                 <el-table-column
                     prop="name"
                     align="center"
+                    show-overflow-tooltip
                     label="学校名称">
                     <template slot-scope="scope">
                         <a target="_black" class="tm-link" :href="toSchoolHome(scope.row.schoolId)">{{scope.row.name}}</a>

@@ -380,6 +380,10 @@ a {
         font-size: 17px;
         color: #333;
         line-height: 20px;
+        display: block;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
     }
 }
 
@@ -556,19 +560,35 @@ img {
     justify-content: center;
 }
 
+.el-main {
+    .v-select {
+        li {
+            &.highlight {
+                a {
+                    padding: 10px !important;
+                }
+            }
+            a {
+                padding: 10px;
+            }
+        }
+        .dropdown-menu {
+            overflow-x: hidden;
+        }
+    }
+}
+
 .sl_option {
     display: flex;
-    height: 70px;
-    padding: 0;
     .sl_image {
-        max-width: 50px;
-        margin-left: 10px;
+        min-width: 50px;
         display: flex;
         flex-direction: column;
         justify-content: center;
     }
     .sl_body {
-        flex: 1;
+        width: 100%;
+        overflow: hidden;
         display: flex;
         flex-direction: column;
         padding: 10px 15px;
@@ -578,6 +598,9 @@ img {
         }
         .sl_info {
             line-height: 25px;
+            max-height: 75px;
+            overflow: hidden;
+            white-space: initial;
             margin: 0;
         }
     }
@@ -600,6 +623,7 @@ img {
             font-size: 14px;
             padding: 1px 0.25em 1px 0.4em;
             margin: 0 0 0 7px;
+            overflow: hidden;
         }
         .dropdown-menu {
             overflow-y: auto;

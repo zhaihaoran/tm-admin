@@ -26,7 +26,7 @@
                             <template slot-scope="scope" >
                                 <div class="d-center sl_option">
                                     <div class="sl_image">
-                                        <img :src="scope.option.profilePhotoUrl" class="img-fluid" alt="">
+                                        <img width="50" :src="scope.option.profilePhotoUrl" class="img-fluid" alt="">
                                     </div>
                                     <div class="sl_body">
                                         <h4 class="sl_title">{{scope.option.name}}</h4>
