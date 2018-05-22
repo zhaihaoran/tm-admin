@@ -566,6 +566,7 @@ img {
             &.highlight {
                 a {
                     padding: 10px !important;
+                    background: #dadada !important;
                 }
             }
             a {
@@ -581,17 +582,20 @@ img {
 .sl_option {
     display: flex;
     .sl_image {
-        min-width: 50px;
+        width: 100px;
+        height: 100px;
+        background: #ccc;
         display: flex;
         flex-direction: column;
         justify-content: center;
     }
     .sl_body {
         width: 100%;
-        overflow: hidden;
         display: flex;
         flex-direction: column;
-        padding: 10px 15px;
+        padding: 0 10px;
+        flex: 1;
+        overflow: hidden;
         .sl_title {
             line-height: 25px;
             margin: 0;

@@ -1,14 +1,16 @@
 <template>
     <el-dialog width="560px" :title="title" :visible.sync="modal" class="video-dialog" :before-close="handleModalClose" >
         <el-form ref="form" :rules="rules" :model="form"  label-width="80px" class="modal-form" >
-            <el-form-item label="视频文件">
+            <el-form-item prop="videoOriginFilename" label="视频文件">
                 <Upload
                     v-on:uploading="handleUploading"
                     :disabled="uploadState"
                     v-on:end="handleUploadEnd"
                     :filename="form.videoOriginFilename"
                     liststyle="" filepathname="videoShortPathFilename" >
-                    </Upload>
+                </Upload>
+            </el-form-item>
+            <el-form-item prop="duration" label="视频时长">
                 <el-input-number class="dialog-duration-min" v-model="min" :controls="false" label="分钟" :min="0" :max="500">
                     <template slot="append">分钟</template>
                 </el-input-number>
@@ -16,7 +18,7 @@
                     <template slot="append">秒</template>
                 </el-input-number>
             </el-form-item>
-            <el-form-item label="预览图片" >
+            <el-form-item prop="previewShortPathFilename" label="预览图片" >
                 <Cropper
                     classes="card-uploader"
                     v-on:update="handleUpdateCropperUrl"
@@ -91,9 +93,8 @@
                         </div>
                     </template>
                 </SlRemote>
-
             </el-form-item>
-            <el-form-item label="演讲时间">
+            <el-form-item prop="speakTimestamp" label="演讲时间">
                 <el-date-picker
                     v-model="timestamp"
                     format="yyyy-MM-dd HH:mm"
@@ -106,16 +107,7 @@
             <el-form-item prop="videoDesc" label="视频详情">
                 <el-input v-model="form.videoDesc" :autosize="{minRows: 3, maxRows: 8}" type="textarea"></el-input>
             </el-form-item>
-            <el-form-item prop="category" label="分类">
-                <el-select v-model="category" multiple placeholder="请选择">
-                    <el-option
-                    v-for="item in videoTypeList"
-                    :key="item.videoTypeId"
-                    :label="item.name"
-                    :value="item.videoTypeId">
-                    </el-option>
-                </el-select>
-            </el-form-item>
+
             <el-form-item prop="benefitPeopleTimes" label="受益人次">
                 <el-input v-model="form.benefitPeopleTimes" type="number">
                     <template slot="append">次</template>
@@ -125,6 +117,16 @@
                 <el-input v-model="form.playTimes" type="number" >
                     <template slot="append">次</template>
                 </el-input>
+            </el-form-item>
+            <el-form-item prop="category" label="分类">
+                <el-select v-model="category" multiple placeholder="请选择">
+                    <el-option
+                    v-for="item in videoTypeList"
+                    :key="item.videoTypeId"
+                    :label="item.name"
+                    :value="item.videoTypeId">
+                    </el-option>
+                </el-select>
             </el-form-item>
             <el-form-item label="标签">
                 <el-select
@@ -171,47 +173,75 @@ export default {
             category: [],
             isClear: false,
             timestamp: '',
-            min: '',
-            sec: '',
+            min: 0,
+            sec: 0,
             rules: {
                 videoTitle: [
                     {
                         required: true,
                         message: '请输入视频标题',
-                        trigger: 'blur'
+                        trigger: 'change'
                     },
                     {
                         min: 1,
                         max: 20,
                         message: '视频标题长度在20字以内',
+                        trigger: 'change'
+                    }
+                ],
+                duration: [
+                    {
+                        required: true,
+                        message: '请输入视频时长',
                         trigger: 'blur'
+                    }
+                ],
+                videoOriginFilename: [
+                    {
+                        required: true,
+                        message: '请上传视频',
+                        trigger: 'change'
                     }
                 ],
                 benefitPeopleTimes: [
                     {
                         required: true,
-                        message: '受益人次必填',
+                        message: '受益人次为必填项',
+                        trigger: 'change'
+                    }
+                ],
+                speakTimestamp: [
+                    {
+                        required: true,
+                        message: '演讲时间为必填项',
+                        trigger: 'blur'
+                    }
+                ],
+                previewShortPathFilename: [
+                    {
+                        required: true,
+                        message: '封面图片为必填项',
                         trigger: 'blur'
                     }
                 ],
                 playTimes: [
                     {
                         required: true,
-                        message: '播放次数必填',
-                        trigger: 'blur'
+                        message: '播放次数为必填项',
+                        trigger: 'change'
                     }
                 ],
                 videoDesc: [
                     {
                         required: true,
-                        message: '视频详情必填',
-                        trigger: 'blur'
+                        message: '视频详情为必填项',
+                        trigger: 'change'
                     },
                     {
                         min: 10,
                         max: 1000,
                         message: '视频详情长度在10~1000字以内',
-                        trigger: 'blur'
+                        trigger: 'change'
                     }
                 ]
             }
@@ -233,21 +263,6 @@ export default {
     mounted() {
         this.handleGetVideoTypes();
     },
-    watch: {
-        speakTimestamp(val) {
-            this.timestamp = !!val ? new Date(+val * 1000) : '';
-        },
-        videoTypeIdStr(val) {
-            /* 避免出现 [""] */
-            this.category = val ? val.split(',') : [];
-        },
-        time_min(val) {
-            this.min = val;
-        },
-        time_sec(val) {
-            this.sec = val;
-        }
-    },
     computed: {
         ...mapState({
             pathfilename: state => state.upload.pathfilename,
@@ -261,10 +276,7 @@ export default {
             sc_option: state => state.modal.sc_option,
             sp_option: state => state.modal.sp_option,
             videoTypeIdStr: state => state.modal.videoTypeIdStr,
-            form: state => state.modal.form,
-            speakTimestamp: state => state.modal.speakTimestamp,
-            time_min: state => state.modal.time_min,
-            time_sec: state => state.modal.time_sec
+            form: state => state.modal.form
         }),
         tab: {
             set(value) {
@@ -273,6 +285,19 @@ export default {
             get() {
                 return this.tagstab;
             }
+        }
+    },
+    watch: {
+        'form.speakTimestamp'(val) {
+            this.timestamp = !!val ? new Date(+val * 1000) : '';
+        },
+        videoTypeIdStr(val) {
+            /* 避免出现 [""] */
+            this.category = val ? val.split(',') : [];
+        },
+        'form.duration'(val = 0) {
+            this.min = ~~(val / 60);
+            this.sec = val % 60;
         }
     },
     components: {
@@ -293,18 +318,17 @@ export default {
         ]),
         submitVideo(form) {
             /* 手动校验 */
-            if (
-                !this.min ||
-                !this.sec ||
-                !this.videoShortPathFilename ||
-                !this.timestamp
-            ) {
-                this.$message({
-                    type: 'warning',
-                    message: '参数必填项不可空缺'
-                });
-                return false;
-            }
+            let durations = this.min * 60 + this.sec;
+            this.updateFormValue({
+                type: 'duration',
+                value: durations || ''
+            });
+            this.updateFormValue({
+                type: 'speakTimestamp',
+                value: this.timestamp
+                    ? ~~(new Date(this.timestamp).getTime() / 1000)
+                    : ''
+            });
             let cfg = {
                 act: this.action,
                 videoId: this.form.videoId,
@@ -318,10 +342,8 @@ export default {
                 schoolInfoType: this.form.schoolInfoType,
                 schoolId: this.form.schoolId,
                 schoolName: this.form.schoolName,
-                duration: this.min * 60 + this.sec,
-                speakTimestamp: Math.floor(
-                    new Date(this.timestamp).getTime() / 1000
-                ),
+                duration: this.form.duration,
+                speakTimestamp: this.form.speakTimestamp,
                 videoDesc: this.form.videoDesc,
                 videoTypeIdStr: this.category.join(','),
                 benefitPeopleTimes: this.form.benefitPeopleTimes,
@@ -392,7 +414,10 @@ export default {
         },
         /* 设置cropperUrl */
         handleUpdateCropperUrl(obj) {
-            this.form.previewUrl = obj.fileUrl;
+            this.updateFormValue({
+                type: 'previewShortPathFilename',
+                value: obj.shortPathFilename
+            });
             this.update({
                 previewShortPathFilename: obj.shortPathFilename
             });
@@ -444,10 +469,8 @@ export default {
 }
 .video-dialog {
     .dialog-duration-min {
-        width: 110px;
+        width: 105px;
         position: absolute;
-        top: 3px;
-        left: 100px;
         .el-input.el-input-group {
             display: inline-table;
         }
@@ -461,8 +484,7 @@ export default {
     .dialog-duration-sec {
         width: 90px;
         position: absolute;
-        top: 3px;
-        left: 220px;
+        left: 120px;
         .el-input.el-input-group {
             display: inline-table;
         }
