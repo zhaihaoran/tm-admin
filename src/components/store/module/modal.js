@@ -33,6 +33,13 @@ const mutations = {
         state.speakTimestamp = ""
         state.time_min = ""
         state.time_sec = ""
+        state.form = {
+            speakTimestamp: '',
+            addTimestamp: new Date().getTime() / 1000,
+            speakerInfoType: 1,
+            schoolInfoType: 1,
+            duration: ''
+        }
         state.tagstab = ""
         state.videoTypeIdStr = ""
         state.sc_option = undefined

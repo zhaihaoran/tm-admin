@@ -180,13 +180,13 @@ export default {
                     {
                         required: true,
                         message: '请输入视频标题',
-                        trigger: 'change'
+                        trigger: 'blur'
                     },
                     {
                         min: 1,
                         max: 20,
                         message: '视频标题长度在20字以内',
-                        trigger: 'change'
+                        trigger: 'blur'
                     }
                 ],
                 duration: [
@@ -200,14 +200,14 @@ export default {
                     {
                         required: true,
                         message: '请上传视频',
-                        trigger: 'change'
+                        trigger: 'blur'
                     }
                 ],
                 benefitPeopleTimes: [
                     {
                         required: true,
                         message: '受益人次为必填项',
-                        trigger: 'change'
+                        trigger: 'blur'
                     }
                 ],
                 speakTimestamp: [
@@ -228,20 +228,20 @@ export default {
                     {
                         required: true,
                         message: '播放次数为必填项',
-                        trigger: 'change'
+                        trigger: 'blur'
                     }
                 ],
                 videoDesc: [
                     {
                         required: true,
                         message: '视频详情为必填项',
-                        trigger: 'change'
+                        trigger: 'blur'
                     },
                     {
                         min: 10,
                         max: 1000,
                         message: '视频详情长度在10~1000字以内',
-                        trigger: 'change'
+                        trigger: 'blur'
                     }
                 ]
             }
@@ -280,10 +280,11 @@ export default {
         }),
         tab: {
             set(value) {
+                console.log(value);
                 this.$store.commit('changeTags', value);
             },
             get() {
-                return this.tagstab;
+                return this.tagstab || [];
             }
         }
     },
