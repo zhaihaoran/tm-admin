@@ -192,8 +192,8 @@ export default {
                 duration: [
                     {
                         required: true,
-                        message: '请输入视频时长',
-                        trigger: 'blur'
+                        trigger: 'change',
+                        message: '请输入视频时长'
                     }
                 ],
                 videoOriginFilename: [
@@ -292,6 +292,12 @@ export default {
         'form.speakTimestamp'(val) {
             this.timestamp = !!val ? new Date(+val * 1000) : '';
         },
+        timestamp(val) {
+            this.updateFormValue({
+                type: 'speakTimestamp',
+                value: val ? ~~(new Date(val).getTime() / 1000) : ''
+            });
+        },
         videoTypeIdStr(val) {
             /* 避免出现 [""] */
             this.category = val ? val.split(',') : [];
@@ -299,6 +305,20 @@ export default {
         'form.duration'(val = 0) {
             this.min = ~~(val / 60);
             this.sec = val % 60;
+        },
+        min(val) {
+            let durations = val * 60 + this.sec || 0;
+            this.updateFormValue({
+                type: 'duration',
+                value: durations || ''
+            });
+        },
+        sec(val) {
+            let durations = (this.min || 0) * 60 + val;
+            this.updateFormValue({
+                type: 'duration',
+                value: durations || ''
+            });
         }
     },
     components: {
@@ -319,17 +339,6 @@ export default {
         ]),
         submitVideo(form) {
             /* 手动校验 */
-            let durations = this.min * 60 + this.sec;
-            this.updateFormValue({
-                type: 'duration',
-                value: durations || ''
-            });
-            this.updateFormValue({
-                type: 'speakTimestamp',
-                value: this.timestamp
-                    ? ~~(new Date(this.timestamp).getTime() / 1000)
-                    : ''
-            });
             let cfg = {
                 act: this.action,
                 videoId: this.form.videoId,
@@ -352,6 +361,7 @@ export default {
                 tag: this.tab.join(','),
                 enable: this.form.enable
             };
+            /* 如果是添加视频，不需要videoId */
             if (!this.form.videoId) {
                 delete cfg.videoId;
             }
