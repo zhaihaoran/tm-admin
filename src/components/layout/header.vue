@@ -13,7 +13,7 @@
 
             <!-- 未登录 -->
             <li v-show="!login" class="nav-header-item"  >
-                <router-link to="/login" >  请登陆</router-link>
+                <router-link to="/login" >请登陆</router-link>
             </li>
             <!-- 已登录 -->
             <li v-show="login" class="nav-header-item user-logo">

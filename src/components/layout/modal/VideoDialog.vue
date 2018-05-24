@@ -280,7 +280,6 @@ export default {
         }),
         tab: {
             set(value) {
-                console.log(value);
                 this.$store.commit('changeTags', value);
             },
             get() {
@@ -289,6 +288,9 @@ export default {
         }
     },
     watch: {
+        /**
+         * TODO: Needs refactorying
+         */
         'form.speakTimestamp'(val) {
             this.timestamp = !!val ? new Date(+val * 1000) : '';
         },

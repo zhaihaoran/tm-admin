@@ -290,10 +290,15 @@ export default {
         // 播放视频
         handlePlayVideo(videourl) {
             this.modal.video = true;
+            /* 判断视频类型 */
+            let type = videourl.match(/\w+$/)[0];
             this.playerOptions.sources[0].src = videourl;
+            this.playerOptions.sources[0].type = `video/${type}`;
+            console.log(this.playerOptions.sources);
         },
         handleVideoClose() {
-            this.$refs.videoPlayer.player.pause();
+            let player = this.$refs.videoPlayer.player;
+            player && player.pause();
             this.modal.video = false;
         },
         handleSearch() {

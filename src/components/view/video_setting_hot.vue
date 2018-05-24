@@ -132,6 +132,10 @@ export default {
                     {
                         type: 'video/mp4',
                         src: ''
+                    },
+                    {
+                        type: 'video/avi',
+                        src: ''
                     }
                 ],
                 notSupportedMessage: '此视频暂无法播放，请稍后再试',
