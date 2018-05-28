@@ -42,6 +42,7 @@
                 <el-table-column prop="schoolName" label="学校" align="center"></el-table-column>
                 <el-table-column prop="speakerName" label="梦享家" align="center"></el-table-column><el-table-column
                     prop="schoolName"
+                    show-overflow-tooltip
                     align="center"
                     label="学校">
                     <template slot-scope="scope">
@@ -82,7 +83,7 @@
                         </el-switch>
                     </template>
                 </el-table-column>
-                <el-table-column align="center" label="操作" width="120" >
+                <el-table-column  fixed="right" align="center" label="操作" width="120" >
                     <template class="cubes" slot-scope="scope">
                         <el-button type="primary" @click="handlePlayVideo(scope.row.videoUrl)" >播放</el-button>
                         <el-button class="no-margin" @click="handleGetVideoInfo(scope.row)" type="text" >查看/修改</el-button>

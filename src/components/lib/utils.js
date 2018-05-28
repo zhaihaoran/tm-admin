@@ -10,6 +10,7 @@ import {
 
 /**
  * 通用的返回func
+ * TODO：axios封装一层，promise封装回调处理
  */
 const common_func = ({
     res,
@@ -59,20 +60,30 @@ export default {
     uploadPost({
         url,
         cfg,
+        onProgress, // 上传进度回调处理
         ...param
     }) {
-        axios({
-            url,
+        let instance = axios.create({
             headers: {
                 'Content-Type': 'multipart/form-data',
             },
-            data: cfg
-        }).then(res => {
+        })
+        /* TODO: 只要加上 onUploadProgress方法就会有跨域问题。OPTIONS发送失败，未知原因，所以现在是假进度条 */
+        instance.post(`${url}`, cfg).then(res => {
             common_func({
                 res,
                 ...param
             })
-        });
+        })
+
+        // let config = {
+        //     onUploadProgress: function(progressEvent) {
+        //         if (progressEvent.lengthComputable) {
+        //             onProgress && onProgress(progressEvent);
+        //         }
+        //     },
+        // }
+
     },
     /**
      * 适用于访问api/common，非上传接口

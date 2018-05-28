@@ -42,14 +42,9 @@
         <div class="tm-card">
             <Table :data="data" :loading="tableLoading" >
                 <el-table-column
-                    type="index"
-                    align="center"
-                    width="40"
-                >
-                </el-table-column>
-                <el-table-column
                     prop="status"
                     align="center"
+                    fixed
                     label="状态">
                     <template slot-scope="scope">
                         <el-tag
@@ -61,6 +56,7 @@
                 <el-table-column
                     prop="fromSide"
                     align="center"
+                    fixed
                     :formatter="formatAttr"
                     label="发起者"
                 >
@@ -73,6 +69,7 @@
                 <el-table-column
                     prop="schoolName"
                     align="center"
+                    fixed
                     label="学校">
                     <template slot-scope="scope">
                         <a target="_black" class="tm-link" :href="toSchoolHome(scope.row.schoolId)">{{scope.row.schoolName}}</a>
@@ -81,6 +78,7 @@
                 <el-table-column
                     prop="speakerName"
                     align="center"
+                    fixed
                     label="梦享家">
                     <template slot-scope="scope">
                         <a target="_black" class="tm-link" :href="toSpeakerHome(scope.row.speakerId)">{{scope.row.speakerName}}</a>
@@ -155,12 +153,28 @@
                     align="center"
                     class="no-wrap"
                     width="250px"
+                    fixed="right"
                     label="操作">
                     <template slot-scope="scope" >
-                        <Operation :handleEdit="handleEdit" :scope="scope"></Operation>
+                        <Operation
+                        v-on:done="handleDoneModal" :handleEdit="handleEdit" :scope="scope"></Operation>
                     </template>
                 </el-table-column>
             </Table>
+
+            <!-- 完成 提示 -->
+            <el-dialog
+                :visible.sync="modal.finish"
+                width="400px"
+            >
+                <h3 class="text-center modal-title" >确定完成邀约吗？</h3>
+                <span class="mb-20">完成邀约后，邀约将不在此列表中显示并且梦享家和学校双方的邀约将进入“已完成”列表</span>
+                <span slot="footer" class="tm-modal-footer">
+                    <el-button class="tm-btn-border" @click="modal.finish = false">取 消</el-button>
+                    <el-button class="tm-btn" type="primary" @click="handleFinish">确 定</el-button>
+                </span>
+            </el-dialog>
+
             <Pagination :cfg="searchCfg" :count="count" ></Pagination>
             <!-- edit -->
             <EditInvite></EditInvite>
@@ -217,8 +231,11 @@ export default {
             modal: {
                 response: false,
                 edit: false,
-                feed: false
-            }
+                feed: false,
+                finish: false
+            },
+            // 当前选中行数据
+            selectRow: {}
         };
     },
     computed: {
@@ -273,8 +290,24 @@ export default {
             'getPageData',
             'formSubmit',
             'showModal',
-            'getRejectDesc'
+            'getRejectDesc',
+            'finishInvite'
         ]),
+
+        handleDoneModal(obj) {
+            this.modal.finish = true;
+            this.selectRow = obj; // 当前选中行的数据
+        },
+
+        handleFinish() {
+            this.finishInvite({
+                act: 'finishAppointment',
+                appointmentId: this.selectRow.appointmentId,
+                onSuccess: res => {
+                    this.modal.finish = false;
+                }
+            });
+        },
 
         /* 渲染状态 */
         handleRendorState(obj, type) {

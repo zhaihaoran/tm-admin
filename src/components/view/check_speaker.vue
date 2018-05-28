@@ -70,6 +70,7 @@
                 <el-table-column
                     width="180px"
                     align="center"
+                    fixed="right"
                     label="操作">
                     <template slot-scope="scope">
                         <Operation :is-hidden="true" :handleEdit="handleEdit" :scope="scope" type="speakerId" :action="actions" ></Operation>
@@ -78,7 +79,7 @@
             </Table>
             <Pagination :cfg="searchCfg" :count="count" ></Pagination>
             <!-- 查看/修改 -->
-            <EditSpeaker :data="form" v-on:modal="handleClose" title="修改信息" :modal="modal" ></EditSpeaker>
+            <EditSpeaker :data="form" v-on:modal="handleClose" title="修改信息" :modal="modals" ></EditSpeaker>
         </div>
     </div>
 </template>

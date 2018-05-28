@@ -136,12 +136,26 @@
                 <el-table-column
                     align="center"
                     width="180px"
+                    fixed="right"
                     label="操作">
                     <template slot-scope="scope" >
-                        <Operation :handleEdit="handleEdit" :scope="scope"></Operation>
+                        <Operation v-on:done="handleDoneModal" :handleEdit="handleEdit" :scope="scope"></Operation>
                     </template>
                 </el-table-column>
             </Table>
+
+            <!-- 完成 提示 -->
+            <el-dialog
+                :visible.sync="modal.finish"
+                width="400px"
+            >
+                <h3 class="text-center modal-title" >确定完成邀约吗？</h3>
+                <span class="mb-20">完成邀约后，邀约将不在此列表中显示并且梦享家和学校双方的邀约将进入“已完成”列表</span>
+                <span slot="footer" class="tm-modal-footer">
+                    <el-button class="tm-btn-border" @click="modal.finish = false">取 消</el-button>
+                    <el-button class="tm-btn" type="primary" @click="handleFinish">确 定</el-button>
+                </span>
+            </el-dialog>
 
             <Pagination :cfg="searchCfg" :count="count" ></Pagination>
 
@@ -201,8 +215,11 @@ export default {
             modal: {
                 edit: false,
                 response: false,
-                feed: false
-            }
+                feed: false,
+                finish: false
+            },
+            // 当前选中行数据
+            selectRow: {}
         };
     },
     computed: {
@@ -257,8 +274,24 @@ export default {
             'formSubmit',
             'showModal',
             'getFeedList',
-            'getRejectDesc'
+            'getRejectDesc',
+            'finishInvite'
         ]),
+
+        handleDoneModal(obj) {
+            this.modal.finish = true;
+            this.selectRow = obj; // 当前选中行的数据
+        },
+
+        handleFinish() {
+            this.finishInvite({
+                act: 'finishAppointment',
+                appointmentId: this.selectRow.appointmentId,
+                onSuccess: res => {
+                    this.modal.finish = false;
+                }
+            });
+        },
 
         // 学校预览照片，并可以上传
         handleShowImage(row) {

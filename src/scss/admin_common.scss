@@ -213,7 +213,8 @@ a {
     position: relative;
     padding-top: 20px;
     z-index: 200;
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: auto;
     background-color: $sider_bg;
     box-shadow: 0 0px 3px 1px rgba(0, 0, 0, 0.1);
     .el-submenu__title {
@@ -560,25 +561,6 @@ img {
     justify-content: center;
 }
 
-.el-main {
-    .v-select {
-        li {
-            &.highlight {
-                a {
-                    padding: 10px !important;
-                    background: #dadada !important;
-                }
-            }
-            a {
-                padding: 10px;
-            }
-        }
-        .dropdown-menu {
-            overflow-x: hidden;
-        }
-    }
-}
-
 .sl_option {
     display: flex;
     .sl_image {
@@ -613,6 +595,22 @@ img {
 .el-main {
     .v-select {
         margin-top: 10px;
+        .dropdown-menu {
+            overflow-y: auto;
+            width: auto;
+            li {
+                &.highlight {
+                    a {
+                        padding: 10px;
+                        background: #dadada;
+                    }
+                }
+                a {
+                    padding: 10px;
+                    min-width: 400px;
+                }
+            }
+        }
         .dropdown-toggle {
             display: flex;
             align-items: center;
@@ -628,14 +626,6 @@ img {
             padding: 1px 0.25em 1px 0.4em;
             margin: 0 0 0 7px;
             overflow: hidden;
-        }
-        .dropdown-menu {
-            overflow-y: auto;
-            min-width: 200px;
-            >.highlight>a {
-                background: #9fa0a3;
-                padding: 3px;
-            }
         }
         input[type='search'],
         input[type='search']:focus {
@@ -728,4 +718,8 @@ input::-webkit-input-placeholder {
 
 .el-textarea__inner {
     padding: 5px 10px;
+}
+
+.no-ml {
+    margin-left: 0 !important;
 }

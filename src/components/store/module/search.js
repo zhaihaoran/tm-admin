@@ -83,9 +83,9 @@ const mutations = {
         })
     },
     /* 排序 , 根据data中的type字段进行排序 */
-    sortData(state,type) {
-        state.data = state.data.sort((a,b)=>{
-            return a[type] - b [type]
+    sortData(state, type) {
+        state.data = state.data.sort((a, b) => {
+            return a[type] - b[type]
         })
     },
     /* 去除一行数据 */
@@ -103,7 +103,8 @@ const mutations = {
             isMessage: true,
             successText: "删除成功",
             errorText: "删除失败",
-            onSuccess: res => {
+            onSuccess: cfg.onSuccess,
+            ActionSuccess: res => {
                 // 提交成功
                 state.data = state.data.filter(el => el.appointmentId !== cfg.appointmentId);
                 state.count = state.count - 1
@@ -116,11 +117,7 @@ const mutations = {
             cfg,
             isMessage: true,
             successText: "成功",
-            onSuccess: res => {
-                // 提交成功
-                state.data = state.data.filter(el => el.appointmentId !== cfg.appointmentId);
-                state.count = state.count - 1
-            },
+            onSuccess: cfg.onSuccess,
         });
     },
     /* 拒绝 */

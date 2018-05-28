@@ -115,6 +115,8 @@ img {
 
 .empty {
     padding: 20px;
+    width: 100%;
+    width: 198px;
 }
 </style>
 

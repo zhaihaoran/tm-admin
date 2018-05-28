@@ -39,15 +39,37 @@
                     <Operation :handleEdit="handleEdit" :scope="scope" type="speakerId" :action="actions" ></Operation>
                 </template>
             </el-table-column>
-            <el-table-column align="center" width="230" label="冻结操作" >
+            <el-table-column fixed="right" align="center" width="230" label="冻结操作" >
                 <template slot-scope="scope">
-                    <Suspend :scope="scope" ></Suspend>
+                    <div v-if="scope.row.suspend && +scope.row.suspend > 0" >
+                        <span>已冻结</span>
+                        <el-button size="mini" class="no-ml" type="text" @click="showReason(scope.row.suspendDesc)" >查看原因</el-button>
+                        <el-button size="mini" class="tm-btn-border no-ml" @click="handleUnsuspend(scope.row)" >解冻</el-button>
+                    </div>
+                    <el-button size="mini" v-else type="primary" class="tm-btn" @click="handleOnModal(scope.row)" >冻结</el-button>
                 </template>
             </el-table-column>
         </Table>
         <Pagination :cfg="searchCfg" :count="count" ></Pagination>
         <!-- 查看原因 -->
-        <EditSpeaker :data="form" v-on:modal="handleClose" title="修改信息" :modal="modal" ></EditSpeaker>
+        <EditSpeaker :data="form" v-on:modal="handleClose" title="修改信息" :modal="modal.reason" ></EditSpeaker>
+        <!-- 冻结账户 -->
+        <el-dialog
+            :visible.sync="modal.suspend"
+            width="500px"
+        >
+            <h3 class="text-center modal-title" >确定冻结账号吗？</h3>
+            <span class="mb-20" >请填写冻结原因</span>
+            <el-form ref="form" >
+                <el-form-item class="no-margin" >
+                    <el-input type="textarea" v-model="suspendDesc" class="tm-textarea"></el-input>
+                </el-form-item>
+            </el-form>
+            <span slot="footer" class="tm-modal-footer">
+                <el-button class="tm-btn-border" @click="modal.suspend=false">取 消</el-button>
+                <el-button class="tm-btn" :disabled="suspendDesc.length == 0" type="primary" @click="handleSuspend">确 定</el-button>
+            </span>
+        </el-dialog>
     </el-card>
 </div>
 </template>
@@ -56,17 +78,17 @@ import { commonPageInit } from '@comp/lib/api_maps.js';
 
 import common from '@comp/mixin/common';
 import check from '@comp/mixin/check';
+import suspend from '@comp/mixin/suspend';
 
 import Table from '@layout/table.vue';
 import Search from '@layout/apply_search.vue';
-import Suspend from '@layout/suspend.vue';
 import Pagination from '@layout/pagination.vue';
 import Operation from '@layout/operation.vue';
 import EditSpeaker from '@layout/modal/editSpeaker.vue';
 
 export default {
     name: 'speaker_manage',
-    mixins: [common, check],
+    mixins: [common, check, suspend],
     data() {
         return {
             searchCfg: {
@@ -91,12 +113,11 @@ export default {
         Table,
         EditSpeaker,
         Operation,
-        Suspend,
         Search
     },
     methods: {
         handleShowReason(obj) {
-            this.modal = true;
+            this.modal.reason = true;
             this.getFormData({
                 act: 'getSpeakerApplication',
                 speakerId: obj.speakerId,
@@ -113,6 +134,5 @@ export default {
     }
 };
 </script>
-
 
 

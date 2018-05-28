@@ -20,6 +20,7 @@ const mutations = {
     commonUpload(state, {
         onSuccess,
         onError,
+        onProgress,
         filepathname,
         previewname,
         formCfg
@@ -30,6 +31,7 @@ const mutations = {
             url: "api/common/",
             cfg: formCfg,
             onSuccess,
+            onProgress,
             isMessage: true,
             onError,
             ActionSuccess: res => {

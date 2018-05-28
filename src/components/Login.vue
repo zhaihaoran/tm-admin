@@ -20,6 +20,7 @@
 </template>
 <script>
 import { mapState, mapMutations } from 'vuex';
+import codes from '@comp/lib/codes';
 
 export default {
     data() {
@@ -68,7 +69,11 @@ export default {
                             this.$route.query.redirect || '/common/check_school'
                     });
                 },
-                onError: res => {}
+                onError: res => {
+                    this.$message.error(
+                        `登陆失败，原因：${codes[res.data.code]}`
+                    );
+                }
             });
         },
         ...mapMutations(['login'])

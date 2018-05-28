@@ -16,6 +16,7 @@
         <el-button size="small" type="primary">点击上传</el-button>
         <div slot="tip" class="el-upload__tip upload-tip">上传文件格式为 mp4 文件，且不超过500MB</div>
     </el-upload>
+    <el-progress class="v-progress" v-if="isUpload" :text-inside="true" :stroke-width="18" :percentage="progress"></el-progress>
 </div>
 </template>
 <script>
@@ -24,7 +25,9 @@ import { mapState, mapMutations } from 'vuex';
 export default {
     data() {
         return {
-            fileList: []
+            fileList: [],
+            isUpload: false, // 是否显示进度条
+            progress: 0 // 上传进度
         };
     },
     props: {
@@ -99,24 +102,46 @@ export default {
         },
 
         handlePicChange(file, fileList) {
+            let _this = this;
             if (this.beforeUpload(file.raw)) {
                 /* 禁用按钮，并给提示 */
                 this.$emit('uploading');
                 let formCfg = new FormData();
                 formCfg.append('file', file.raw);
+                // 按300000 byte/s速度算上传时间，设置定时器
+                let hasUpload = 0; // 已上传byte
+                let speed = 300000;
+                this.isUpload = true;
+
+                let timer = setInterval(() => {
+                    hasUpload += speed;
+                    _this.progress =
+                        ~~(hasUpload / file.raw.size * 100) > 100
+                            ? 100
+                            : ~~(hasUpload / file.raw.size * 100) > 100;
+                }, 1000);
+
                 // 上传
                 this.commonUpload({
                     formCfg,
                     previewname: this.previewname,
                     filepathname: this.filepathname,
                     onSuccess: res => {
-                        this.$emit('end', res.data.data.originFilename);
+                        clearInterval(timer);
+                        _this.progress = 100;
+                        setTimeout(() => {
+                            _this.isUpload = false;
+                            this.$emit('end', res.data.data.originFilename);
+                        }, 2000);
                     }
                 });
             } else {
                 this.fileList = [];
             }
         },
+
+        progressTimer(speed) {},
+
         handleExceed(files, fileList) {
             this.$message.warning(`如需变更，请清除文件后再上传`);
         }
@@ -126,6 +151,9 @@ export default {
 <style scoped>
 .el-upload__tip {
     line-height: 20px;
+}
+.v-progress {
+    margin-top: 10px;
 }
 </style>
 

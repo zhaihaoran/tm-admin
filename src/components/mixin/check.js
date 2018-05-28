@@ -17,8 +17,8 @@ import { mapState, mapMutations } from 'vuex';
 const mixin = {
     data() {
         return {
-            modal: false,
             form: {},
+            modals: false
         }
     },
     computed: {
