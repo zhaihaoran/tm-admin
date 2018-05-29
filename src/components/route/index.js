@@ -104,29 +104,4 @@ const router = new Router({
     ]
 })
 
-// 拦截器
-router.beforeEach((to, from, next) => {
-    // 如果跳转到其他网站，则404
-    if (to.matched.length < 1) {
-        next({
-            path: '/404',
-        })
-    }
-    if (to.meta.requireAuth) { // 判断该路由是否需要登录权限
-        // 判断用户是否登陆,必须在所有模块没有加载前，就事先取到login状态，并将其放入sessionStorage中,由于sessionStorage里不能存布尔值，会默认转成字符串，所以用数字。
-        if (+sessionStorage.isLogin > 0) {
-            next();
-        } else {
-            next({
-                path: '/login',
-                query: {
-                    redirect: to.fullPath
-                } // 将跳转的路由path作为参数，登录成功后跳转到该路由
-            })
-        }
-    } else {
-        next();
-    }
-})
-
 export default router;

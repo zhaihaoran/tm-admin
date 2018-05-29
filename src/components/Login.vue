@@ -61,18 +61,31 @@ export default {
     },
     methods: {
         submit() {
-            this.login({
-                ...this.form,
-                onSuccess: res => {
-                    this.$router.push({
-                        path:
-                            this.$route.query.redirect || '/common/check_school'
+            this.$refs.form.validate(valid => {
+                if (valid) {
+                    const loading = this.$loading({
+                        lock: true,
+                        text: '登陆中'
                     });
-                },
-                onError: res => {
-                    this.$message.error(
-                        `登陆失败，原因：${codes[res.data.code]}`
-                    );
+                    this.login({
+                        ...this.form,
+                        onSuccess: res => {
+                            setTimeout(() => {
+                                loading.close();
+                                this.$router.push({
+                                    path:
+                                        this.$route.query.redirect ||
+                                        '/common/check_school'
+                                });
+                            }, 1000);
+                        },
+                        onError: res => {
+                            loading.close();
+                            this.$message.error(
+                                `登陆失败，原因：${codes[res.data.code]}`
+                            );
+                        }
+                    });
                 }
             });
         },

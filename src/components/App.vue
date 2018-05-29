@@ -1,6 +1,6 @@
 <template>
     <el-container class="admin-layout">
-        <router-view/>
+        <router-view />
     </el-container>
 </template>
 
@@ -9,5 +9,6 @@ export default {
     name: 'App'
 };
 </script>
+
 
 

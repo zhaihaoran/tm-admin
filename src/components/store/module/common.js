@@ -10,9 +10,20 @@ const state = {
     }, //用户信息
     selectOptions: [], // 远程select option
     optionsCounts: 0, // option count
+    routeLoading: false // 页面的loading状态
 }
 // 模块的mutations 、 actions、getter 默认注册在全局命名空间的
 const mutations = {
+
+    /**
+     * 页面route切换loading
+     *
+     * @param {any} state
+     * @param {boolean} [value=false]
+     */
+    onLoading(state, value = false) {
+        state.routeLoading = value
+    },
 
 
     /**
@@ -39,6 +50,13 @@ const mutations = {
         state.selectOptions = [];
         state.optionsCounts = 0;
     },
+
+    /**
+     * 通用获取表单数据
+     *
+     * @param {any} state
+     * @param {any} {
+     */
     getFormData(state, {
         onError,
         onSuccess,
@@ -50,27 +68,13 @@ const mutations = {
             cfg
         })
     },
-    /**
-     * 拿到用户登陆状态
-     *
-     * @param {any} state
-     * @param {any}
-     */
-    getUserLogin(state) {
-        const cfg = {
-            act: 'getUserLogin',
+
+    getUserLogin(state, res) {
+        let cfg = res.data.data;
+        if (cfg && +cfg.isLogin > 0 && +cfg.userType == 3) {
+            state.users = cfg
+            state.login = true;
         }
-        Util.commonPost({
-            url: "api/common/",
-            cfg,
-            ActionSuccess: res => {
-                let cfg = res.data.data;
-                if (cfg && +cfg.isLogin > 0 && +cfg.userType == 3) {
-                    state.users = cfg
-                    state.login = true;
-                }
-            },
-        })
     },
 
     /**
@@ -183,7 +187,45 @@ const mutations = {
     },
 }
 
+/*
+    TODO：有时间 - 重构
+    1.异步放到action里，通过dispatch分发。
+    2.回调全部替换成promise进行链式调用。
+    3.mutation里的方法统一用常量或symbol命名替换。
+
+    参考：https://vuex.vuejs.org/zh/guide/actions.html
+*/
+
 export default {
     state,
     mutations,
+    actions: {
+        onLoading({
+            commit,
+        }, val) {
+            commit('onLoading', val)
+        },
+        /**
+         * 拿到用户登陆状态
+         *
+         * @param {any} state
+         * @param {any}
+         */
+        getUserLogin({
+            commit
+        }) {
+            return new Promise((resolve) => {
+                Util.commonPost({
+                    url: "api/common/",
+                    cfg: {
+                        act: 'getUserLogin',
+                    },
+                    ActionSuccess: res => {
+                        commit('getUserLogin', res)
+                        resolve(res)
+                    },
+                })
+            })
+        }
+    }
 };
