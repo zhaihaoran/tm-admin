@@ -1,5 +1,8 @@
 <template>
     <div class="cell" >
+        <!--
+            todo:  把modal抽离出来，防止渲染多次
+         -->
         <div>
             <el-button v-show="+scope.row.authStatus !== 3" size="mini" type="danger" class="tm-btn" @click="modal.agree=true" >通过</el-button>
             <el-button size="mini" class="tm-btn-border" @click="modal.refuse=true" >驳回</el-button>

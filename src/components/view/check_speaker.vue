@@ -70,7 +70,6 @@
                 <el-table-column
                     width="180px"
                     align="center"
-                    fixed="right"
                     label="操作">
                     <template slot-scope="scope">
                         <Operation :is-hidden="true" :handleEdit="handleEdit" :scope="scope" type="speakerId" :action="actions" ></Operation>

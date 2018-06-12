@@ -59,13 +59,13 @@
                 <el-table-column
                     width="180px"
                     align="center"
-                    fixed="right"
                     label="操作">
                     <template slot-scope="scope">
                         <Operation :is-hidden="true" :handleEdit="handleEdit" :scope="scope" type="schoolId" :action="actions" ></Operation>
                     </template>
                 </el-table-column>
             </Table>
+            <!--  -->
             <!-- 查看原因 -->
             <EditSchool :data="form" v-on:modal="handleClose" title="修改信息" :modal="modals" ></EditSchool>
             <!-- 分页 -->

@@ -71,9 +71,11 @@ const mutations = {
 
     getUserLogin(state, res) {
         let cfg = res.data.data;
+        state.users = cfg
         if (cfg && +cfg.isLogin > 0 && +cfg.userType == 3) {
-            state.users = cfg
             state.login = true;
+        } else {
+            state.login = false;
         }
     },
 

@@ -315,6 +315,7 @@ a {
 .admin-wrapper {
     position: relative;
     background: $context_bg;
+    overflow-x: hidden;
 }
 
 .flex-end {
